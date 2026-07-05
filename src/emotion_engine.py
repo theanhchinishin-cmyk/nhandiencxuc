@@ -22,7 +22,17 @@ class EmotionEngine:
     def __init__(self, model_name: str = 'enet_b0_8_best_afew',
                  weights_path: str = None):
         self.model_name = model_name
+
+        # Fix PyTorch 2.6+: HSEmotion weights (.pth) duoc luu bang format cu
+        # co chua class timm -> can weights_only=False.
+        # Monkey-patch tam thoi de HSEmotionRecognizer load duoc, roi restore lai.
+        _orig_load = torch.load
+        torch.load = lambda f, **kw: _orig_load(f, **{**kw, 'weights_only': False})
+
         self.emotion_recognizer = HSEmotionRecognizer(model_name=model_name)
+
+        # Khoi phuc lai torch.load goc
+        torch.load = _orig_load
         self.face_cascade = os.path.join(cv2.data.haarcascades, 'haarcascade_frontalface_default.xml')
         self.face_classifier = cv2.CascadeClassifier(self.face_cascade)
         if self.face_classifier.empty():

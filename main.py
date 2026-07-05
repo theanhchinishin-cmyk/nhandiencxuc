@@ -38,6 +38,7 @@ def run_webcam(args):
     """nhan dien emotion truc tiep tu webcam"""
     from src.capture import CameraCapture
     from src.emotion_engine import EmotionEngine
+    from src.emotion_stats import SessionStats
 
     print_header("WEBCAM")
 
@@ -59,6 +60,9 @@ def run_webcam(args):
     last_results = []
     start_time = time.time()
 
+    # Thong ke cam xuc trong phien
+    stats = SessionStats()
+
     try:
         while True:
             ret, frame = camera.read_frame()
@@ -79,6 +83,10 @@ def run_webcam(args):
             results = engine.process_frame(frame)
             last_results = results
 
+            # Ghi nhan thong ke cam xuc (append-only, O(1) -> ko anh huong FPS)
+            elapsed = time.time() - start_time
+            stats.record(elapsed, results)
+
             display = _draw_webcam_overlay(frame, results, frame_count, start_time)
             camera.show_frame(display, "Emotion Detection")
 
@@ -93,6 +101,9 @@ def run_webcam(args):
         elapsed = time.time() - start_time
         fps = frame_count / elapsed if elapsed > 0 else 0
         print(f"\n Ket thuc | {frame_count} frames | {elapsed:.1f}s | {fps:.1f} FPS")
+
+        # Tao bao cao thong ke cam xuc
+        stats.generate_report()
 
 
 def _draw_webcam_overlay(frame, results, frame_count, start_time):
@@ -183,6 +194,7 @@ def run_video(args):
     """nhan dien emotion tu file video (.mp4, .avi, .mov, ...)"""
     import cv2
     from src.emotion_engine import EmotionEngine
+    from src.emotion_stats import SessionStats
 
     print_header("VIDEO")
 
@@ -228,6 +240,9 @@ def run_video(args):
     paused = False
     start_time = time.time()
 
+    # Thong ke cam xuc trong video
+    stats = SessionStats()
+
     try:
         while True:
             if not paused:
@@ -241,6 +256,9 @@ def run_video(args):
                 # Chi chay AI moi skip_frames frame
                 if frame_count % skip_frames == 0:
                     last_results = engine.process_frame(frame)
+                    # Ghi nhan thong ke cam xuc (append-only)
+                    elapsed = time.time() - start_time
+                    stats.record(elapsed, last_results)
 
                 display = _draw_video_overlay(
                     frame, last_results, frame_count, total_frames, fps_src
@@ -278,6 +296,9 @@ def run_video(args):
         elapsed = time.time() - start_time
         proc_fps = frame_count / elapsed if elapsed > 0 else 0
         print(f" Ket thuc | {frame_count}/{total_frames} frames | {elapsed:.1f}s | {proc_fps:.1f} FPS")
+
+        # Tao bao cao thong ke cam xuc cho video
+        stats.generate_report()
 
 
 def _draw_video_overlay(frame, results, frame_count, total_frames, src_fps):

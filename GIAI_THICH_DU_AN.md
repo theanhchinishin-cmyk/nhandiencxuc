@@ -616,6 +616,83 @@ Giúp bạn phát hiện overfitting: nếu val loss tăng dần trong khi train
 
 ---
 
+### 4.8. `src/emotion_stats.py` ✨ Thống kê và báo cáo cảm xúc
+
+**Vai trò:** Ghi lại lịch sử cảm xúc trong suốt phiên làm việc và tạo báo cáo trực quan dưới dạng biểu đồ (Pie Chart + Timeline). Tính năng này được thiết kế để **không làm giảm FPS** của hệ thống nhận diện chính.
+
+#### Lớp `SessionStats`
+
+**`__init__(self)`** (dòng 27)
+Khởi tạo bộ đệm `self.history` — một list rỗng để chứa dữ liệu cảm xúc theo thời gian.
+
+- Cơ chế **append-only**: mỗi lần ghi chỉ thêm 1 phần tử vào cuối list, độ phức tạp **O(1)** nên hoàn toàn không ảnh hưởng đến tốc độ xử lý AI.
+- `self._emotion_order`: danh sách 6 cảm xúc được lấy từ `EMOTION_COLORS` trong `constants.py`, đảm bảo thứ tự vẽ biểu đồ nhất quán.
+
+**`record(elapsed_sec, results)`** (dòng 42)
+Ghi nhận trạng thái cảm xúc tại một thời điểm:
+
+1. `elapsed_sec` — số giây đã trôi qua từ đầu phiên (dùng `time.time() - start_time`).
+2. `results` — kết quả từ `EmotionEngine.process_frame()`, là một list các dict, mỗi dict chứa `{'bbox', 'emotion', 'confidence', 'probabilities'}`.
+3. **Chỉ lấy face đầu tiên** (primary face) làm đại diện — nếu frame không có khuôn mặt nào (`results` rỗng) thì bỏ qua, không ghi nhận.
+
+Mỗi bản ghi lưu vào `self.history` dưới dạng:
+```python
+{'time': elapsed_sec, 'emotion': 'Happy', 'confidence': 0.95}
+```
+
+**`generate_report(output_dir='reports')`** (dòng 59)
+Tạo báo cáo trực quan cuối phiên:
+
+1. Kiểm tra nếu `self.history` rỗng → in cảnh báo, không tạo biểu đồ.
+2. Giai nén dữ liệu: tách `history` thành 3 mảng `timestamps`, `emotions`, `confidences`.
+3. Dùng `Counter` để đếm tần suất xuất hiện của từng emotion.
+4. Chuyển đổi màu từ **BGR** (OpenCV) sang **RGB** (matplotlib) bằng cách đảo ngược thứ tự tuple và chia cho 255 để chuẩn hóa về `[0, 1]`.
+5. Vẽ **2 biểu đồ trên cùng một figure**:
+
+   **Biểu đồ tròn (Pie Chart):**
+   - Thể hiện **phần trăm phân bổ** các loại cảm xúc trong toàn bộ phiên.
+   - Mỗi phần (wedge) có màu tương ứng với `EMOTION_COLORS`.
+   - Hiển thị cả % lẫn số lượng tuyệt đối (ví dụ: `60.0% (120/200)`).
+   - Vị trí bắt đầu: `startangle=90` (từ trên xuống).
+
+   **Biểu đồ đường thời gian (Timeline Chart):**
+   - Trục X: thời gian (giây) từ đầu phiên đến hiện tại.
+   - Trục Y: 6 mức cảm xúc (mapped từ tên sang số nguyên 0-5).
+   - **Step line** (nét đứt, màu xám): thể hiện sự chuyển đổi cảm xúc — mỗi khi cảm xúc thay đổi, đường sẽ "bậc" lên/xuống.
+   - **Scatter dots** (chấm tròn): mỗi chấm là một frame, kích thước chấm tỉ lệ với `confidence` (càng tự tin → chấm càng to), màu sắc theo emotion.
+   - Grid dạng chấm (`:`) để dễ đọc.
+
+6. **Session summary**: hiển thị tổng thời gian phiên, số bản ghi, tốc độ ghi (record/s), số loại cảm xúc xuất hiện.
+7. Lưu file PNG: `reports/emotion_report.png` (DPI=150).
+8. Hiển thị biểu đồ lên màn hình bằng `plt.show(block=True)` — người dùng xem xong thì đóng cửa sổ, chương trình kết thúc.
+
+**Xử lý edge cases:**
+- **History rỗng:** in warning, không tạo chart.
+- **Chỉ có 1 emotion:** pie chart = 100% một màu, timeline là đường thẳng ngang.
+- **Confidence rất thấp:** marker trên timeline nhỏ (min size = 40).
+
+#### Cách tích hợp vào hệ thống
+
+SessionStats được gọi ở 2 nơi trong `main.py`:
+
+**Trong `run_webcam()`** (webcam realtime):
+```python
+stats = SessionStats()                          # khởi tạo trước vòng lặp
+while True:
+    results = engine.process_frame(frame)
+    stats.record(time.time() - start_time, results)  # ghi mỗi frame AI
+# khi thoát (nhấn q/ESC):
+stats.generate_report()                         # trong finally block
+```
+
+**Trong `run_video()`** (xử lý video file):
+- Tương tự webcam, record sau mỗi lần gọi `process_frame`.
+- `generate_report()` được gọi trong `finally` sau khi giải phóng video.
+
+**Lưu ý:** Do `record()` chỉ là `list.append()` (O(1)), việc thêm thống kê **không làm giảm FPS** của hệ thống nhận diện chính.
+
+---
+
 ## 5. Giải thích các khái niệm chuyên môn
 
 ### 5.1. Phát hiện khuôn mặt (Face Detection)
