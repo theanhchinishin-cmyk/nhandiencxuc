@@ -20,7 +20,7 @@ SUPPORTED_EXTENSIONS = ('.jpg', '.jpeg', '.png', '.bmp', '.webp')
 def _is_image_file(path: str) -> bool:
     return path.lower().endswith(SUPPORTED_EXTENSIONS)
 
-from src.constants import EMOTION_LABELS_8 as MODEL_CLASSES
+from src.constants import EMOTION_LABELS_6 as MODEL_CLASSES
 
 
 class EmotionFineTuner:

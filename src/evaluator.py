@@ -8,7 +8,7 @@ import seaborn as sns
 from sklearn.metrics import (
     classification_report, confusion_matrix, accuracy_score
 )
-from src.constants import EMOTION_LABELS_8 as MODEL_CLASSES
+from src.constants import EMOTION_LABELS_6 as MODEL_CLASSES
 
 
 class ModelEvaluator:

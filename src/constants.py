@@ -7,7 +7,6 @@ EMOTION_COLORS = {
     'Angry':    (0, 0, 255),      # Đỏ
     'Surprise': (0, 165, 255),    # Cam
     'Neutral':  (180, 180, 180),  # Xám
-    'Fear':     (180, 0, 180),    # Tím
     'Disgust':  (0, 160, 160),    # Xanh lục
 }
 
@@ -20,12 +19,7 @@ EMOTION_DISPLAY_MAP = {
 }
 
 # 8 emotion labels (theo thu tu output cua model)
-EMOTION_LABELS_8 = [
-    'Anger', 'Contempt', 'Disgust', 'Fear',
+EMOTION_LABELS_6 = [
+    'Anger', 'Disgust',
     'Happiness', 'Neutral', 'Sadness', 'Surprise'
-]
-
-# 7 labels (bo Contempt) cho thu thap data
-EMOTION_LABELS_7 = [
-    'Anger', 'Disgust', 'Fear', 'Happiness', 'Neutral', 'Sadness', 'Surprise'
 ]

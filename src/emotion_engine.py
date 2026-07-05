@@ -7,7 +7,7 @@ import torch
 from hsemotion.facial_emotions import HSEmotionRecognizer
 from collections import deque
 from typing import Tuple, List, Optional, Dict
-from src.constants import EMOTION_LABELS_8, EMOTION_DISPLAY_MAP
+from src.constants import EMOTION_LABELS_6, EMOTION_DISPLAY_MAP
 
 
 class EmotionEngine:
@@ -30,7 +30,7 @@ class EmotionEngine:
             print(f"  Da tim: {self.face_cascade}")
 
         # labels emotion (theo output model 8 classes)
-        self.emotion_labels = EMOTION_LABELS_8[:]
+        self.emotion_labels = EMOTION_LABELS_6[:]
 
         # load fine-tuned weights neu co
         if weights_path is not None:
