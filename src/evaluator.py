@@ -24,17 +24,31 @@ class ModelEvaluator:
     # inference helpers
     # ──────────────────────────────────────────────
 
-    def _predict(self, model, dataloader) -> tuple:
+    def _predict(self, model, dataloader, is_original: bool = False) -> tuple:
         """chay model tren dataloader, tra ve (y_true, y_pred)"""
         model.eval()
         all_labels, all_preds = [], []
+        
+        # Mapping 8 classes model goc -> 6 classes MODEL_CLASSES
+        map_8_to_6 = {0: 0, 1: 1, 2: 1, 3: 1, 4: 2, 5: 3, 6: 4, 7: 5}
+
         with torch.no_grad():
             for images, labels in dataloader:
                 images = images.to(self.device)
                 outputs = model(images)
-                _, predicted = outputs.max(1)
+                
+                if is_original:
+                    _, predicted = outputs.max(1)
+                    pred_np = predicted.cpu().numpy()
+                    mapped_pred = [map_8_to_6.get(p, 3) for p in pred_np]
+                    all_preds.extend(mapped_pred)
+                else:
+                    # Fine-tuned model only trained classes 0-5
+                    outputs_sliced = outputs[:, :6]
+                    _, predicted = outputs_sliced.max(1)
+                    all_preds.extend(predicted.cpu().numpy())
+                    
                 all_labels.extend(labels.cpu().numpy())
-                all_preds.extend(predicted.cpu().numpy())
         return np.array(all_labels), np.array(all_preds)
 
     # ──────────────────────────────────────────────
@@ -44,17 +58,17 @@ class ModelEvaluator:
     def evaluate_and_compare(self, original_model, finetuned_model,
                              test_loader, history: dict = None) -> tuple:
         """so sanh model goc va fine-tuned tren test set
-
+ 
         Returns:
             (acc_original, acc_finetuned)
         """
         print("\n" + "=" * 52)
         print("     DANH GIA MO HINH EMOTION DETECTION")
         print("=" * 52)
-
-        y_true, y_pred_orig = self._predict(original_model, test_loader)
-        _, y_pred_ft = self._predict(finetuned_model, test_loader)
-
+ 
+        y_true, y_pred_orig = self._predict(original_model, test_loader, is_original=True)
+        _, y_pred_ft = self._predict(finetuned_model, test_loader, is_original=False)
+ 
         acc_orig = accuracy_score(y_true, y_pred_orig) * 100
         acc_ft = accuracy_score(y_true, y_pred_ft) * 100
         delta = acc_ft - acc_orig
