@@ -1,0 +1,22 @@
+# NHỮNG THƯ VIỆN CẦN THIẾT
+# --- Xử lý hình ảnh và video ---
+opencv-python==4.9.0.80
+opencv-contrib-python==4.9.0.80
+
+# --- Nhận dạng cảm xúc (HSEmotion / EfficientNet) ---
+hsemotion==0.2.0
+torch==2.2.0
+torchvision==0.17.0
+timm==0.9.16
+
+# --- Fine-tuning & Evaluation ---
+scikit-learn==1.4.1          # Confusion matrix, classification report, accuracy score
+
+# --- Visualization (training curve, confusion matrix heatmap) ---
+matplotlib==3.8.3
+seaborn==0.13.2
+
+# --- Xử lý dữ liệu ---
+numpy==1.26.4
+pillow==10.2.0
+

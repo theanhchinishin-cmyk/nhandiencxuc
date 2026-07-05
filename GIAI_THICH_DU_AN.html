@@ -1,0 +1,1019 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Nhận Diện Cảm Xúc Người Học Online — Giải Thích Đồ Án</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=Inter:opsz,wght@14..32,400;14..32,500;14..32,600;14..32,700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ── Reset & Base ── */
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+html{font-size:16px;scroll-behavior:smooth;scroll-padding-top:80px}
+body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:#0f172a;background:#fafbfc;line-height:1.65;-webkit-font-smoothing:antialiased;display:flex}
+
+/* ── Scrollbar ── */
+::-webkit-scrollbar{width:6px}
+::-webkit-scrollbar-track{background:transparent}
+::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px}
+::-webkit-scrollbar-thumb:hover{background:#94a3b8}
+
+/* ── Variables ── */
+:root{
+  --slate-900:#0f172a;
+  --slate-800:#1e293b;
+  --slate-700:#334155;
+  --slate-600:#475569;
+  --slate-500:#64748b;
+  --slate-400:#94a3b8;
+  --slate-200:#e2e8f0;
+  --slate-100:#f1f5f9;
+  --slate-50:#f8fafc;
+  --blue-700:#1d4ed8;
+  --blue-600:#2563eb;
+  --blue-100:#dbeafe;
+  --blue-50:#eff6ff;
+  --emerald-600:#059669;
+  --emerald-50:#ecfdf5;
+  --amber-500:#f59e0b;
+  --amber-50:#fffbeb;
+  --rose-600:#e11d48;
+  --rose-50:#fff1f2;
+  --purple-600:#9333ea;
+  --purple-50:#faf5ff;
+  --sidebar-w:270px;
+  --shadow-sm:0 1px 2px rgba(0,0,0,.04);
+  --shadow-md:0 4px 16px rgba(0,0,0,.06);
+}
+
+/* ── Emotion spectrum gradient bar ── */
+.spectrum-bar{height:5px;background:linear-gradient(90deg,#10b981,#e11d48,#ef4444,#f59e0b,#94a3b8,#a855f7,#14b8a6)}
+
+/* ── Sidebar ── */
+.sidebar{position:fixed;top:0;left:0;width:var(--sidebar-w);height:100vh;overflow-y:auto;background:#fff;border-right:1px solid var(--slate-200);z-index:100;padding:24px 20px;transition:transform .3s}
+.sidebar-logo{font-family:'DM Serif Display',serif;font-size:1.1rem;color:var(--slate-900);line-height:1.3;margin-bottom:20px}
+.sidebar-logo small{font-family:'Inter',sans-serif;font-size:.7rem;color:var(--slate-500);font-weight:400;display:block;margin-top:2px}
+.sidebar nav{font-size:.82rem}
+.sidebar nav a{display:block;color:var(--slate-600);text-decoration:none;padding:4px 0;transition:color .15s;line-height:1.4;border-left:2px solid transparent;padding-left:12px}
+.sidebar nav a:hover,.sidebar nav a.active{color:var(--blue-600);border-left-color:var(--blue-600)}
+.sidebar .toc-l1{font-weight:600;color:var(--slate-800);margin-top:12px;font-size:.85rem}
+.sidebar .toc-l1:first-child{margin-top:0}
+.sidebar .toc-l2{padding-left:24px;font-size:.78rem}
+.sidebar .toc-l3{padding-left:36px;font-size:.75rem}
+.mobile-toggle{display:none;position:fixed;top:12px;left:12px;z-index:200;background:#fff;border:1px solid var(--slate-200);border-radius:8px;width:40px;height:40px;cursor:pointer;font-size:1.2rem;align-items:center;justify-content:center;box-shadow:var(--shadow-sm);color:var(--slate-700)}
+
+/* ── Overlay ── */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.3);z-index:99}
+
+/* ── Content ── */
+.content{flex:1;margin-left:var(--sidebar-w);max-width:900px;padding:0 48px 80px}
+
+/* ── Hero ── */
+.hero{padding:48px 0 32px;margin-bottom:32px;border-bottom:1px solid var(--slate-200)}
+.hero h1{font-family:'DM Serif Display',serif;font-size:2.4rem;font-weight:400;color:var(--slate-900);letter-spacing:-.02em;line-height:1.2;margin-bottom:8px}
+.hero .meta{color:var(--slate-500);font-size:.9rem;line-height:1.6}
+.hero .meta span{display:inline-block}
+.hero .meta .divider{margin:0 8px;color:var(--slate-300)}
+.hero .emotion-spectrum{margin-top:24px;height:5px;border-radius:3px;background:linear-gradient(90deg,
+  #10b981 0%,#10b981 14%,
+  #e11d48 14%,#e11d48 28%,
+  #ef4444 28%,#ef4444 42%,
+  #f59e0b 42%,#f59e0b 57%,
+  #94a3b8 57%,#94a3b8 71%,
+  #a855f7 71%,#a855f7 85%,
+  #14b8a6 85%,#14b8a6 100%);position:relative}
+.hero .emotion-spectrum::after{content:'7 Emotion Classes — Happy / Sad / Angry / Surprise / Neutral / Fear / Disgust';position:absolute;right:0;top:10px;font-size:.68rem;color:var(--slate-400);letter-spacing:.02em;text-transform:uppercase;font-weight:500}
+
+/* ── Typography ── */
+article h2{font-family:'DM Serif Display',serif;font-size:1.7rem;font-weight:400;color:var(--slate-900);margin:40px 0 16px;padding-bottom:8px;border-bottom:2px solid var(--slate-200);letter-spacing:-.01em}
+article h2 .section-num{color:var(--blue-600);margin-right:8px}
+article h3{font-size:1.2rem;font-weight:600;color:var(--slate-800);margin:32px 0 12px}
+article h3 .section-num{color:var(--slate-400);font-weight:500;margin-right:6px}
+article h4{font-size:1rem;font-weight:600;color:var(--slate-800);margin:24px 0 8px}
+article p{margin-bottom:16px;color:var(--slate-700)}
+article p:last-child{margin-bottom:0}
+article a{color:var(--blue-600);text-decoration:underline;text-underline-offset:2px}
+article a:hover{color:var(--blue-700)}
+article strong{color:var(--slate-900);font-weight:600}
+article em{font-style:italic}
+
+/* ── Lists ── */
+article ul,article ol{margin:0 0 16px;padding-left:24px}
+article li{margin-bottom:6px;color:var(--slate-700)}
+article li strong{color:var(--slate-900)}
+
+/* ── Code blocks ── */
+pre{background:var(--slate-800);color:#e2e8f0;border-radius:10px;padding:20px 24px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:.82rem;line-height:1.55;margin:0 0 20px;tab-size:2;-webkit-text-size-adjust:100%}
+code{font-family:'JetBrains Mono',monospace;font-size:.85em}
+p code,li code{background:var(--slate-100);color:var(--blue-700);padding:2px 6px;border-radius:4px;font-size:.82em}
+pre code{background:transparent;color:inherit;padding:0;font-size:inherit}
+
+/* ── Tables ── */
+.table-wrap{overflow-x:auto;margin:0 0 20px}
+table{width:100%;border-collapse:collapse;font-size:.9rem}
+thead{background:var(--slate-100)}
+th{font-weight:600;text-align:left;padding:10px 14px;color:var(--slate-800);border-bottom:2px solid var(--slate-200);white-space:nowrap}
+td{padding:9px 14px;border-bottom:1px solid var(--slate-200);color:var(--slate-700)}
+tr:last-child td{border-bottom:none}
+tbody tr:hover{background:var(--slate-50)}
+
+/* ── Blockquotes / Notes ── */
+blockquote{margin:0 0 20px;padding:14px 18px;border-left:4px solid var(--blue-600);background:var(--blue-50);border-radius:0 8px 8px 0;color:var(--slate-700);font-size:.92rem}
+blockquote strong:first-child{color:var(--blue-700);display:block;margin-bottom:4px;font-size:.85rem;text-transform:uppercase;letter-spacing:.03em}
+blockquote.warn{border-left-color:var(--amber-500);background:var(--amber-50)}
+blockquote.warn strong:first-child{color:#d97706}
+blockquote.danger{border-left-color:var(--rose-600);background:var(--rose-50)}
+blockquote.danger strong:first-child{color:var(--rose-600)}
+blockquote.success{border-left-color:var(--emerald-600);background:var(--emerald-50)}
+blockquote.success strong:first-child{color:var(--emerald-600)}
+
+/* ── Mermaid boxes ── */
+.mermaid-box{background:#fff;border:1px solid var(--slate-200);border-radius:10px;padding:24px;margin:0 0 20px;overflow-x:auto;font-size:.82rem;line-height:1.5}
+.mermaid-box .mermaid-label{font-size:.72rem;color:var(--slate-500);text-transform:uppercase;letter-spacing:.05em;font-weight:600;margin-bottom:12px;display:flex;align-items:center;gap:8px}
+.mermaid-box .mermaid-label::after{content:'';flex:1;height:1px;background:var(--slate-200)}
+
+/* ── ASCII art (architecture diagrams) ── */
+.ascii-art{background:var(--slate-50);border:1px solid var(--slate-200);border-radius:10px;padding:20px 24px;margin:0 0 20px;white-space:pre;font-family:'JetBrains Mono',monospace;font-size:.75rem;line-height:1.5;overflow-x:auto;color:var(--slate-600)}
+
+/* ── Func cards ── */
+.func-card{border:1px solid var(--slate-200);border-radius:10px;margin:0 0 20px;background:#fff;overflow:hidden}
+.func-card-header{padding:14px 20px;background:var(--slate-50);border-bottom:1px solid var(--slate-200);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.func-card-header .file-badge{background:var(--blue-600);color:#fff;font-size:.68rem;font-weight:600;padding:2px 10px;border-radius:20px;letter-spacing:.02em;font-family:'JetBrains Mono',monospace}
+.func-card-header .fn-name{font-weight:600;color:var(--slate-900);font-family:'JetBrains Mono',monospace;font-size:.88rem}
+.func-card-header .fn-lines{color:var(--slate-400);font-size:.78rem}
+.func-card-body{padding:14px 20px;color:var(--slate-700);font-size:.9rem;line-height:1.55}
+.func-card-body p:last-child{margin-bottom:0}
+.func-card-body strong{color:var(--slate-900)}
+.func-card-body code{background:var(--slate-100);color:var(--blue-700);padding:1px 5px;border-radius:3px;font-size:.85em}
+
+/* ── QA cards ── */
+.qa-item{border:1px solid var(--slate-200);border-radius:10px;margin:0 0 16px;background:#fff;overflow:hidden}
+.qa-q{padding:14px 20px;background:var(--slate-50);font-weight:600;color:var(--slate-900);cursor:pointer;display:flex;align-items:center;gap:10px;user-select:none;transition:background .15s}
+.qa-q:hover{background:var(--slate-100)}
+.qa-q .num{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:var(--blue-600);color:#fff;font-size:.72rem;font-weight:600;flex-shrink:0}
+.qa-q .arrow{color:var(--slate-400);margin-left:auto;transition:transform .2s;font-size:.8rem}
+.qa-q.active .arrow{transform:rotate(180deg)}
+.qa-a{padding:0 20px 0 56px;max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s ease;color:var(--slate-700);line-height:1.6;font-size:.9rem}
+.qa-a.open{padding:4px 20px 16px 56px;max-height:600px}
+
+/* ── Horizontal rules ── */
+hr{margin:32px 0;border:none;height:1px;background:var(--slate-200)}
+
+/* ── Mobile responsive ── */
+@media(max-width:900px){
+  body{flex-direction:column}
+  .sidebar{transform:translateX(-100%);width:300px}
+  .sidebar.open{transform:translateX(0)}
+  .overlay.show{display:block}
+  .mobile-toggle{display:flex}
+  .content{margin-left:0;padding:0 20px 60px}
+  .hero{padding:56px 0 24px}
+  .hero h1{font-size:1.6rem}
+  .hero .emotion-spectrum::after{display:none}
+  article h2{font-size:1.3rem}
+  pre{font-size:.75rem;padding:14px 16px}
+  .qa-a{padding:0 16px 0 16px}
+  .qa-a.open{padding:4px 16px 14px 16px}
+  .qa-q .num{display:none}
+}
+
+/* ── Print ── */
+@media print{
+  .sidebar,.mobile-toggle,.overlay{display:none!important}
+  .content{margin-left:0;padding:20px;max-width:none}
+  .hero{padding:20px 0}
+  pre{page-break-inside:avoid;border:1px solid #ddd;background:#f5f5f5!important;color:#333!important}
+  .qa-q{cursor:default;background:#f9f9f9!important}
+  .qa-a{max-height:none!important;padding:4px 20px 14px 56px!important}
+  .mermaid-box{page-break-inside:avoid}
+  .func-card{page-break-inside:avoid}
+  .qa-item{page-break-inside:avoid}
+  a{color:inherit!important;text-decoration:none!important}
+  h2,h3{page-break-after:avoid}
+}
+</style>
+</head>
+<body>
+
+<!-- Mobile toggle -->
+<button class="mobile-toggle" id="menuToggle" aria-label="Toggle menu">☰</button>
+<div class="overlay" id="overlay"></div>
+
+<!-- ─── Sidebar ─── -->
+<aside class="sidebar" id="sidebar">
+  <div class="sidebar-logo">
+    📘 Giải Thích Đồ Án
+    <small>Nhận diện cảm xúc — Khai thác ĐPT</small>
+  </div>
+  <nav id="toc">
+    <a href="#tongs-quan" class="toc-l1">1. Tổng quan dự án</a>
+    <a href="#cau-truc-thu-muc" class="toc-l1">2. Cấu trúc thư mục</a>
+    <a href="#so-do-luong-du-lieu" class="toc-l1">3. Sơ đồ luồng dữ liệu</a>
+    <a href="#giai-thich-tung-file" class="toc-l1">4. Giải thích từng file</a>
+    <a href="#41-mainpy" class="toc-l2">4.1 main.py</a>
+    <a href="#42-srcconstantspy" class="toc-l2">4.2 constants.py</a>
+    <a href="#43-srccapturepy" class="toc-l2">4.3 capture.py</a>
+    <a href="#44-srcemotionenginepy" class="toc-l2">4.4 emotion_engine.py</a>
+    <a href="#45-srcimagepredictorpy" class="toc-l2">4.5 image_predictor.py</a>
+    <a href="#46-srcfiletunerpy" class="toc-l2">4.6 file_tuner.py</a>
+    <a href="#47-srcevaluatorpy" class="toc-l2">4.7 evaluator.py</a>
+    <a href="#giai-thich-khai-niem" class="toc-l1">5. Giải thích khái niệm</a>
+    <a href="#cau-hoi-bao-ve" class="toc-l1">6. Câu hỏi bảo vệ</a>
+  </nav>
+</aside>
+
+<!-- ─── Main ─── -->
+<div class="content">
+
+<header class="hero">
+  <h1>Nhận Diện Cảm Xúc<br>Người Học Online</h1>
+  <div class="meta">
+    <span>📚 Môn: Khai thác thông tin đa phương tiện</span>
+    <span class="divider">·</span>
+    <span>🧰 Python + OpenCV + HSEmotion + PyTorch</span>
+  </div>
+  <div class="emotion-spectrum"></div>
+</header>
+
+<article>
+
+<!-- ════════════════════════════════════════════ -->
+<!--  1. TỔNG QUAN DỰ ÁN                         -->
+<!-- ════════════════════════════════════════════ -->
+
+<section id="tongs-quan">
+<h2><span class="section-num">1</span> Tổng quan dự án</h2>
+
+<h3>1.1. Dự án này làm gì?</h3>
+<p>Đây là một chương trình <strong>nhận diện cảm xúc trên khuôn mặt người</strong> theo thời gian thực. Bạn mở webcam lên, chương trình sẽ:</p>
+<ol>
+  <li><strong>Phát hiện khuôn mặt</strong> trong khung hình (dùng Haar Cascade).</li>
+  <li><strong>Cắt riêng từng khuôn mặt</strong> ra.</li>
+  <li><strong>Đưa qua mô hình AI</strong> (EfficientNet đã được huấn luyện trên hàng trăm nghìn ảnh) để dự đoán cảm xúc.</li>
+  <li><strong>Hiển thị kết quả</strong> ngay trên màn hình: khung màu quanh mặt + tên cảm xúc + độ tin cậy.</li>
+</ol>
+<p>Ngoài chế độ webcam, chương trình còn có thể nhận diện từ <strong>ảnh tĩnh</strong>, <strong>file video</strong>, <strong>fine-tune</strong> model, và <strong>đánh giá</strong> kết quả.</p>
+
+<h3>1.2. Công nghệ và thư viện sử dụng</h3>
+<div class="table-wrap">
+<table>
+  <thead><tr><th>Thư viện</th><th>Phiên bản</th><th>Mục đích</th></tr></thead>
+  <tbody>
+    <tr><td><code>opencv-python</code></td><td>4.9.0</td><td>Đọc hình từ camera/file, vẽ hình, xử lý ảnh</td></tr>
+    <tr><td><code>hsemotion</code></td><td>0.2.0</td><td>Model HSEmotion (EfficientNet) đã huấn luyện sẵn</td></tr>
+    <tr><td><code>torch</code> (PyTorch)</td><td>2.2.0</td><td>Chạy neural network, GPU/CPU</td></tr>
+    <tr><td><code>torchvision</code></td><td>0.17.0</td><td>Biến đổi ảnh + load dataset</td></tr>
+    <tr><td><code>timm</code></td><td>0.9.16</td><td>Kiến trúc EfficientNet</td></tr>
+    <tr><td><code>scikit-learn</code></td><td>1.4.1</td><td>Confusion matrix, classification report</td></tr>
+    <tr><td><code>matplotlib</code>+<code>seaborn</code></td><td>—</td><td>Vẽ biểu đồ</td></tr>
+    <tr><td><code>numpy</code></td><td>1.26.4</td><td>Xử lý mảng số liệu</td></tr>
+  </tbody>
+</table>
+</div>
+
+<blockquote class="success">
+<strong>Tại sao dùng HSEmotion?</strong>
+HSEmotion là thư viện nhận diện cảm xúc khuôn mặt do Đại học ITMO (Nga) phát triển. Nó dùng mạng EfficientNet — kiến trúc neural network nhẹ, chạy nhanh nhưng vẫn chính xác — đã được huấn luyện trên bộ ảnh AffectNet (hơn 450,000 ảnh khuôn mặt gán nhãn cảm xúc).
+</blockquote>
+
+<h3>1.3. Kiến trúc tổng thể</h3>
+<div class="ascii-art">                    ┌─────────────────┐
+                    │    main.py      │  ← Entry point, dispatch các chế độ
+                    └────────┬────────┘
+                             │
+          ┌──────────────────┼──────────────────────┐
+          │                  │                      │
+   ┌──────▼──────┐   ┌──────▼──────┐    ┌─────────▼──────────┐
+   │  Webcam     │   │  Image/     │    │  Fine-tune /        │
+   │  Capture    │   │  Video      │    │  Evaluate           │
+   └──────┬──────┘   └──────┬──────┘    └─────────┬──────────┘
+          │                  │                      │
+          └──────────┬───────┘                      │
+                     │                              │
+          ┌──────────▼──────────┐       ┌───────────▼───────────┐
+          │  emotion_engine.py   │       │  file_tuner.py        │
+          │  (HSEmotion + các    │       │  + evaluator.py        │
+          │   kỹ thuật nâng cao) │       │  (huấn luyện + đánh   │
+          └─────────────────────┘       │   giá thêm)            │
+                                         └───────────────────────┘</div>
+</section>
+
+<!-- ════════════════════════════════════════ -->
+<!--  2. CẤU TRÚC THƯ MỤC                    -->
+<!-- ════════════════════════════════════════ -->
+
+<section id="cau-truc-thu-muc">
+<h2><span class="section-num">2</span> Cấu trúc thư mục</h2>
+
+<div class="ascii-art">khaithac/                         ← Thư mục gốc của dự án
+│
+├── main.py                      ← File chính, chạy chương trình
+├── GIAI_THICH_DU_AN.html        ← Tài liệu giải thích (file này)
+├── requirements.txt             ← Thư viện cần cài đặt
+│
+├── src/                         ← Mã nguồn chính
+│   ├── constants.py             ← Hằng số: màu sắc, tên cảm xúc
+│   ├── capture.py               ← Lớp CameraCapture
+│   ├── emotion_engine.py        ← "Trái tim" của hệ thống
+│   ├── image_predictor.py       ← Nhận diện từ ảnh tĩnh
+│   ├── file_tuner.py            ← Huấn luyện thêm model
+│   └── evaluator.py             ← Đánh giá kết quả
+│
+├── dataset/                     ← Ảnh fine-tune
+│   ├── Anger/                   ← 20 ảnh
+│   ├── Disgust/                 ← 20 ảnh
+│   ├── Fear/                    ← 20 ảnh
+│   ├── Happiness/               ← 20 ảnh
+│   ├── Neutral/                 ← 20 ảnh
+│   ├── Sadness/                 ← 20 ảnh
+│   └── Surprise/                ← 20 ảnh
+│
+├── models/                      ← File .pt sau fine-tune (sẽ có)
+└── reports/                     ← Biểu đồ đánh giá (sẽ có)</div>
+</section>
+
+<!-- ════════════════════════════════════════ -->
+<!--  3. SƠ ĐỒ LUỒNG DỮ LIỆU                -->
+<!-- ════════════════════════════════════════ -->
+
+<section id="so-do-luong-du-lieu">
+<h2><span class="section-num">3</span> Sơ đồ luồng dữ liệu</h2>
+
+<h3>3.1. Luồng tổng quát (webcam / image / video)</h3>
+<div class="mermaid-box">
+<div class="mermaid-label">Flowchart</div>
+<pre>Chọn chế độ: webcam / image / video
+        │
+        ├── webcam ──→ Mở camera
+        ├── image  ──→ Đọc file ảnh
+        └── video  ──→ Mở file video
+                │
+                ▼
+        Đọc 1 frame
+                │
+                ▼
+        emotion_engine.process_frame()
+                │
+                ▼
+        detect_faces ──→ Phát hiện khuôn mặt
+                │
+          ┌─────┴─────┐
+          │           │
+        Không       Có
+          │           │
+          ▼           ▼
+    Bỏ qua frame    Với mỗi khuôn mặt
+                        │
+                        ▼
+                  Crop ảnh mặt
+                        │
+                        ▼
+                  _preprocess_face
+                  Gray → CLAHE → RGB
+                        │
+                        ▼
+                  HSEmotionRecognizer
+                  predict_emotions
+                  → 8 số xác suất
+                        │
+                        ▼
+                  Temporal Smoothing
+                  Trung bình 10 frame
+                        │
+                        ▼
+                  Adaptive Threshold
+                  So sánh với ngưỡng riêng
+                        │
+                  ┌─────┴─────┐
+                  │           │
+               Dưới        Trên
+              ngưỡng      ngưỡng
+                  │           │
+                  ▼           ▼
+            Trả về        Trả về emotion
+            Neutral       có điểm cao nhất
+                  │           │
+                  └─────┬─────┘
+                        │
+                        ▼
+                  Vẽ kết quả lên frame
+                        │
+                        ▼
+                  Hiển thị / Lưu file
+                        │
+                  ┌─────┴─────┐
+                  │           │
+                Còn        Hết
+                  │           │
+                  ▼           ▼
+              [quay lại]  Kết thúc
+</pre>
+</div>
+
+<h3>3.2. Luồng fine-tune</h3>
+<div class="mermaid-box">
+<div class="mermaid-label">Fine-tune Pipeline</div>
+<pre>dataset/Classname/*.jpg
+        │
+        ▼
+EmotionFineTuner.load_dataset()
+        │
+        ▼
+Chia 70/15/15 (train / val / test)
+        │
+        ▼
+Đóng băng backbone
+Mở 2 blocks cuối + classifier
+        │
+        ▼
+Train N epoch
+        │
+        ├──→ Lưu best weights → models/finetuned.pt
+        └──→ Lưu lịch sử → models/finetuned_history.npy
+</pre>
+</div>
+
+<h3>3.3. Luồng evaluate</h3>
+<div class="mermaid-box">
+<div class="mermaid-label">Evaluation</div>
+<pre>models/finetuned.pt    +    Model gốc HSEmotion
+        │                           │
+        └──────────┬────────────────┘
+                   ▼
+          Chạy trên test set
+                   │
+                   ▼
+          So sánh accuracy
+                   │
+                   ├──→ Vẽ confusion matrix
+                   └──→ Vẽ training curve
+</pre>
+</div>
+</section>
+
+<!-- ════════════════════════════════════════ -->
+<!--  4. GIẢI THÍCH TỪNG FILE               -->
+<!-- ════════════════════════════════════════ -->
+
+<section id="giai-thich-tung-file">
+<h2><span class="section-num">4</span> Giải thích từng file và từng hàm</h2>
+
+<!-- 4.1 main.py -->
+<section id="41-mainpy">
+<h3><span class="section-num">4.1</span> <code>main.py</code> — File chính (entry point)</h3>
+
+<p>Khi bạn gõ <code>python main.py --mode webcam</code>, file này là file đầu tiên được chạy. Nó làm 3 việc:</p>
+<ol>
+  <li>Đọc tham số từ dòng lệnh.</li>
+  <li>Dựa vào chế độ, gọi hàm xử lý tương ứng.</li>
+  <li>Bắt lỗi nếu có.</li>
+</ol>
+
+<div class="func-card">
+<div class="func-card-header">
+<span class="file-badge">main.py</span>
+<span class="fn-name">main()</span>
+<span class="fn-lines">dòng 482</span>
+</div>
+<div class="func-card-body">
+<p><strong>Công việc:</strong> Gọi <code>build_parser()</code> → đọc tham số → dùng dispatch dict để gọi đúng hàm theo mode.</p>
+<p><strong>Dispatch pattern:</strong> <code>{ 'webcam': run_webcam, 'image': run_image, ... }</code> — thay vì 5 câu if/else, dùng dict cho gọn.</p>
+</div>
+</div>
+
+<div class="func-card">
+<div class="func-card-header">
+<span class="file-badge">main.py</span>
+<span class="fn-name">run_webcam(args)</span>
+<span class="fn-lines">dòng 37</span>
+</div>
+<div class="func-card-body">
+<p><strong>Luồng chạy:</strong></p>
+<ul>
+  <li>Mở camera → vòng lặp <code>while True</code> đọc frame.</li>
+  <li><strong>Frame chẵn</strong> (mỗi 2 frame): chạy AI → vẽ kết quả mới.</li>
+  <li><strong>Frame lẻ</strong> (skip): vẽ lại kết quả cũ — tiết kiệm CPU, không giật hình.</li>
+  <li>Xử lý phím: <kbd>q</kbd>/<kbd>ESC</kbd> thoát, <kbd>s</kbd> chụp ảnh, <kbd>r</kbd> reset buffer.</li>
+</ul>
+<p><code>engine.process_frame(frame)</code> — lệnh quan trọng nhất: detect mặt + predict emotion.</p>
+</div>
+</div>
+
+<div class="func-card">
+<div class="func-card-header">
+<span class="file-badge">main.py</span>
+<span class="fn-name">run_image(args) / run_video(args)</span>
+<span class="fn-lines">dòng 157 / 182</span>
+</div>
+<div class="func-card-body">
+<p><strong>run_image:</strong> Tạo <code>ImagePredictor</code> → gọi <code>.predict()</code> với đường dẫn ảnh.</p>
+<p><strong>run_video:</strong> Giống webcam nhưng đọc từ file video. Thêm thanh tiến trình + phím SPACE tạm dừng.</p>
+</div>
+</div>
+
+<div class="func-card">
+<div class="func-card-header">
+<span class="file-badge">main.py</span>
+<span class="fn-name">build_parser()</span>
+<span class="fn-lines">dòng 425</span>
+</div>
+<div class="func-card-body">
+<p>Định nghĩa tất cả tham số dòng lệnh:</p>
+<ul>
+  <li><code>--mode</code>: webcam / image / video / finetune / evaluate</li>
+  <li><code>--model</code>: tên model HSEmotion</li>
+  <li><code>--weights</code>: đường dẫn file .pt fine-tuned</li>
+  <li><code>--input</code>, <code>--output</code>, <code>--dataset</code>, <code>--epochs</code>, <code>--lr</code>, <code>--batch-size</code>, ...</li>
+</ul>
+</div>
+</div>
+
+<div class="func-card">
+<div class="func-card-header">
+<span class="file-badge">main.py</span>
+<span class="fn-name">_draw_webcam_overlay()</span>
+<span class="fn-lines">dòng 98</span>
+</div>
+<div class="func-card-body">
+<p>Vẽ khung màu quanh mặt + tên cảm xúc + % tin cậy. Màu sắc lấy từ <code>EMOTION_COLORS</code> (ví dụ: Happy → xanh lá, Angry → đỏ).</p>
+</div>
+</div>
+
+<div class="func-card">
+<div class="func-card-header">
+<span class="file-badge">main.py</span>
+<span class="fn-name">_handle_key()</span>
+<span class="fn-lines">dòng 135</span>
+</div>
+<div class="func-card-body">
+<p>Kiểm tra phím bấm: <kbd>q</kbd>/<kbd>ESC</kbd> → thoát, <kbd>s</kbd> → chụp ảnh, <kbd>r</kbd> → xoá buffer smoothing.</p>
+</div>
+</div>
+</section>
+
+<!-- 4.2 constants.py -->
+<section id="42-srcconstantspy">
+<h3><span class="section-num">4.2</span> <code>src/constants.py</code> — Hằng số dùng chung</h3>
+
+<div class="func-card">
+<div class="func-card-header">
+<span class="file-badge">constants.py</span>
+</div>
+<div class="func-card-body">
+<p>Chứa 4 nhóm hằng số:</p>
+<ul>
+  <li><strong><code>EMOTION_COLORS</code></strong> — Màu BGR cho từng emotion, dùng khi vẽ khung.</li>
+  <li><strong><code>EMOTION_DISPLAY_MAP</code></strong> — Map tên model → tên hiển thị thân thiện. VD: <code>'Anger'→'Angry'</code>, <code>'Happiness'→'Happy'</code>, <code>'Contempt'→'Disgust'</code>.</li>
+  <li><strong><code>EMOTION_LABELS_8</code></strong> — 8 lớp cảm xúc đầy đủ: Anger, Contempt, Disgust, Fear, Happiness, Neutral, Sadness, Surprise.</li>
+  <li><strong><code>EMOTION_LABELS_7</code></strong> — 7 lớp (bỏ Contempt) cho thu thập dữ liệu.</li>
+</ul>
+<p>Lưu ý: OpenCV dùng BGR, không phải RGB. <code>(0,255,0)</code> = xanh lá (Green), <code>(0,0,255)</code> = đỏ (Red).</p>
+</div>
+</div>
+</section>
+
+<!-- 4.3 capture.py -->
+<section id="43-srccapturepy">
+<h3><span class="section-num">4.3</span> <code>src/capture.py</code> — Xử lý camera</h3>
+
+<div class="func-card">
+<div class="func-card-header">
+<span class="file-badge">capture.py</span>
+<span class="fn-name">CameraCapture</span>
+</div>
+<div class="func-card-body">
+<p>Lớp quản lý camera với các phương thức:</p>
+<ul>
+  <li><code>open_camera()</code> — Mở (ưu tiên DirectShow), đặt độ phân giải 640×480.</li>
+  <li><code>read_frame()</code> — Đọc 1 frame, trả về <code>(success, frame)</code>.</li>
+  <li><code>release_camera()</code> — Giải phóng camera (tránh khoá).</li>
+  <li><code>draw_text()</code> / <code>draw_emotion_box()</code> — Vẽ chữ và khung lên frame.</li>
+  <li><code>show_frame()</code> / <code>wait_key()</code> — Hiển thị + chờ phím.</li>
+</ul>
+</div>
+</div>
+</section>
+
+<!-- 4.4 emotion_engine.py -->
+<section id="44-srcemotionenginepy">
+<h3><span class="section-num">4.4</span> <code>src/emotion_engine.py</code> — Engine nhận diện cảm xúc</h3>
+<p><strong>Vai trò:</strong> "Trái tim" của hệ thống — chứa toàn bộ logic AI phát hiện mặt và nhận diện cảm xúc.</p>
+
+<div class="func-card">
+<div class="func-card-header">
+<span class="file-badge">emotion_engine.py</span>
+<span class="fn-name">EmotionEngine.__init__()</span>
+<span class="fn-lines">dòng 22</span>
+</div>
+<div class="func-card-body">
+<p>Khi tạo EmotionEngine, 4 việc xảy ra:</p>
+<ol>
+  <li><strong>Khởi tạo HSEmotionRecognizer</strong> — tải model EfficientNet (~20-30MB) vào bộ nhớ.</li>
+  <li><strong>Tải Haar Cascade</strong> — bộ phát hiện khuôn mặt cổ điển (nhanh, chạy CPU).</li>
+  <li><strong>Load fine-tuned weights</strong> (nếu có) — nạp trọng số đã huấn luyện thêm.</li>
+  <li><strong>Khởi tạo 3 kỹ thuật nâng cao:</strong>
+    <ul>
+      <li><strong>Temporal Smoothing:</strong> Buffer 10 frame/khuôn mặt → lấy trung bình → mượt.</li>
+      <li><strong>Adaptive Thresholds:</strong> Ngưỡng riêng: Happiness ≥ 50%, Sadness ≥ 30%, ...</li>
+      <li><strong>CLAHE:</strong> Cân bằng sáng cục bộ → rõ nét hơn khi thiếu sáng.</li>
+    </ul>
+  </li>
+</ol>
+</div>
+</div>
+
+<div class="func-card">
+<div class="func-card-header">
+<span class="file-badge">emotion_engine.py</span>
+<span class="fn-name">predict_emotion(face_img, face_key)</span>
+<span class="fn-lines">dòng 114</span>
+</div>
+<div class="func-card-body">
+<p><strong>Quy trình đầy đủ:</strong></p>
+<ol>
+  <li>Tiền xử lý ảnh mặt: <code>_preprocess_face</code> (BGR→Gray→CLAHE→RGB).</li>
+  <li>Gọi HSEmotionRecognizer → ra 8 xác suất (softmax).</li>
+  <li><strong>Temporal Smoothing:</strong> Lưu scores vào buffer → tính trung bình 10 frame.</li>
+  <li>Lấy emotion có điểm cao nhất (<code>argmax</code>).</li>
+  <li><strong>Adaptive Threshold:</strong> Nếu điểm &lt; ngưỡng → Neutral. Ngược lại → emotion đã map tên.</li>
+</ol>
+<p><strong>Trả về:</strong> <code>(emotion, confidence, prob_vector)</code> — ví dụ: <code>("Happy", 0.85, [0.02, ...])</code></p>
+</div>
+</div>
+
+<div class="func-card">
+<div class="func-card-header">
+<span class="file-badge">emotion_engine.py</span>
+<span class="fn-name">detect_faces(frame) / process_frame(frame)</span>
+<span class="fn-lines">dòng 157 / 165</span>
+</div>
+<div class="func-card-body">
+<p><strong>detect_faces:</strong> Chuyển ảnh sang xám → Haar Cascade → trả về list <code>[(x,y,w,h), ...]</code>.</p>
+<p><strong>process_frame:</strong> Hàm tổng hợp: gọi detect → dọn buffer cũ → với mỗi mặt ≥48px, gọi predict_emotion → trả về list kết quả.</p>
+<p>Tham số Haar: <code>scaleFactor=1.1</code> (quét 10% mỗi lần), <code>minNeighbors=5</code> (giảm false positive).</p>
+</div>
+</div>
+</section>
+
+<!-- 4.5 image_predictor.py -->
+<section id="45-srcimagepredictorpy">
+<h3><span class="section-num">4.5</span> <code>src/image_predictor.py</code> — Nhận diện từ ảnh tĩnh</h3>
+
+<div class="func-card">
+<div class="func-card-header">
+<span class="file-badge">image_predictor.py</span>
+<span class="fn-name">ImagePredictor.predict()</span>
+</div>
+<div class="func-card-body">
+<p>Dùng <code>EmotionEngine</code> để xử lý 1 frame duy nhất. Quy trình:</p>
+<ol>
+  <li>Đọc ảnh, gọi <code>engine.process_frame</code>.</li>
+  <li>Vẽ bounding box + label + thanh xác suất.</li>
+  <li>Hiển thị cửa sổ (nếu <code>show=True</code>) và lưu ảnh.</li>
+</ol>
+<p>Điểm đặc biệt: <strong>Probability bars</strong> — cột ngang hiển thị % từng cảm xúc ở góc phải, gộp Contempt+Disgust về chung 1 bar.</p>
+</div>
+</div>
+</section>
+
+<!-- 4.6 file_tuner.py -->
+<section id="46-srcfiletunerpy">
+<h3><span class="section-num">4.6</span> <code>src/file_tuner.py</code> — Fine-tune model</h3>
+
+<blockquote>
+<strong>Fine-tune là gì?</strong>
+Hãy tưởng tượng model AI như một đầu bếp đã học trường danh tiếng (450,000 ảnh). Bạn muốn đầu bếp này nấu theo <em>phong cách gia đình bạn</em> (dataset của bạn). Fine-tune là: giữ kỹ năng cơ bản (backbone), chỉ điều chỉnh cách "trang trí" (classifier).
+</blockquote>
+
+<div class="func-card">
+<div class="func-card-header">
+<span class="file-badge">file_tuner.py</span>
+<span class="fn-name">EmotionFineTuner</span>
+</div>
+<div class="func-card-body">
+<p><strong>Chiến lược:</strong></p>
+<ul>
+  <li><strong>Đóng băng toàn bộ backbone</strong> — giữ đặc trưng học từ 450k ảnh.</li>
+  <li><strong>Mở 2 blocks cuối + classifier</strong> — chỉ ~5% tham số được học tiếp.</li>
+  <li><strong>Lý do:</strong> Dataset riêng chỉ 140-350 ảnh — nếu mở toàn bộ sẽ overfit ngay.</li>
+</ul>
+<p><code>_load_model()</code> — static method tải model từ file .pt cache, sửa lỗi tương thích key <code>classifier.0.weight</code> → <code>classifier.weight</code>.</p>
+</div>
+</div>
+
+<div class="func-card">
+<div class="func-card-header">
+<span class="file-badge">file_tuner.py</span>
+<span class="fn-name">load_dataset() / train()</span>
+</div>
+<div class="func-card-body">
+<p><strong>load_dataset:</strong> Đọc cấu trúc thư mục → map tên lớp → chia 70/15/15 → tạo DataLoader.</p>
+<p><strong>train:</strong> Với mỗi epoch:</p>
+<ul>
+  <li>Train: nạp batch → forward → tính loss → backward → update weights.</li>
+  <li>Validation: nạp batch → tính loss + accuracy (không update).</li>
+  <li>Lưu model nếu val accuracy tốt hơn (best model).</li>
+</ul>
+</div>
+</div>
+</section>
+
+<!-- 4.7 evaluator.py -->
+<section id="47-srcevaluatorpy">
+<h3><span class="section-num">4.7</span> <code>src/evaluator.py</code> — Đánh giá model</h3>
+
+<div class="func-card">
+<div class="func-card-header">
+<span class="file-badge">evaluator.py</span>
+<span class="fn-name">ModelEvaluator</span>
+</div>
+<div class="func-card-body">
+<p>So sánh model gốc và fine-tuned trên test set:</p>
+<ul>
+  <li><code>evaluate_and_compare()</code> — Tính accuracy, in classification report.</li>
+  <li><code>_plot_confusion_matrix()</code> — Bảng N×N: hàng=nhãn thật, cột=nhãn dự đoán.</li>
+  <li><code>_plot_training_curve()</code> — Biểu đồ loss + accuracy theo epoch.</li>
+</ul>
+<p><strong>Confusion matrix:</strong> Đường chéo = đúng, ngoài đường chéo = sai. Giúp biết lớp nào model yếu.</p>
+</div>
+</div>
+</section>
+</section>
+
+<!-- ════════════════════════════════════ -->
+<!--  5. GIẢI THÍCH KHÁI NIỆM            -->
+<!-- ════════════════════════════════════ -->
+
+<section id="giai-thich-khai-niem">
+<h2><span class="section-num">5</span> Giải thích các khái niệm chuyên môn</h2>
+
+<div class="func-card">
+<div class="func-card-header"><span class="fn-name">Haar Cascade</span></div>
+<div class="func-card-body">
+<p>Thuật toán phát hiện vật thể cổ điển (Viola-Jones 2001). Quét cửa sổ nhỏ qua ảnh, so sánh tổng pixel giữa các vùng. Ví dụ: vùng mắt tối hơn vùng trán → 1 đặc trưng. Nếu đủ nhiều đặc trưng khớp → đó là khuôn mặt.</p>
+<p><strong>Ưu:</strong> rất nhanh, chạy CPU. <strong>Nhược:</strong> kém với mặt nghiêng/thiếu sáng.</p>
+</div>
+</div>
+
+<div class="func-card">
+<div class="func-card-header"><span class="fn-name">BGR vs RGB — OpenCV</span></div>
+<div class="func-card-body">
+<p>OpenCV đọc ảnh theo BGR (Blue-Green-Red), khác RGB thông thường. Cần chuyển đổi khi dùng matplotlib: <code>cv2.cvtColor(img, cv2.COLOR_BGR2RGB)</code>.</p>
+</div>
+</div>
+
+<div class="func-card">
+<div class="func-card-header"><span class="fn-name">EfficientNet</span></div>
+<div class="func-card-body">
+<p>Kiến trúc neural network do Google phát triển (2019). Cân bằng 3 chiều: độ sâu, độ rộng, độ phân giải → chính xác tối đa với ít tham số nhất. Code dùng phiên bản B0 (nhẹ nhất) với 8 lớp output.</p>
+</div>
+</div>
+
+<div class="func-card">
+<div class="func-card-header"><span class="fn-name">Softmax &amp; Argmax</span></div>
+<div class="func-card-body">
+<p><strong>Softmax:</strong> Biến mảng số thành xác suất (tổng = 1). Công thức: <code>softmax(x<sub>i</sub>) = exp(x<sub>i</sub>) / sum(exp(x<sub>j</sub>))</code>.</p>
+<p><strong>Argmax:</strong> Lấy chỉ số phần tử lớn nhất. <code>argmax([0.02, 0.85, 0.03]) = 1</code>.</p>
+</div>
+</div>
+
+<div class="func-card">
+<div class="func-card-header"><span class="fn-name">Temporal Smoothing</span></div>
+<div class="func-card-body">
+<p>Dùng deque lưu 10 kết quả gần nhất, mỗi frame lấy trung bình. Tác dụng: (1) bù cho frame bị nhiễu, (2) cảm xúc thay đổi từ từ, smoothing phản ánh đúng bản chất.</p>
+</div>
+</div>
+
+<div class="func-card">
+<div class="func-card-header"><span class="fn-name">CLAHE</span></div>
+<div class="func-card-body">
+<p>Contrast Limited Adaptive Histogram Equalization — cân bằng sáng cục bộ. Chia ảnh thành ô nhỏ, cân bằng từng ô riêng, có giới hạn tương phản → nổi chi tiết, tránh nhiễu.</p>
+</div>
+</div>
+
+<div class="func-card">
+<div class="func-card-header"><span class="fn-name">CrossEntropyLoss</span></div>
+<div class="func-card-body">
+<p>Hàm mất mát cho phân loại nhiều lớp. <code>Loss = -log(softmax_score[của lớp đúng])</code>. Nếu model đoán đúng 95% → loss ≈ 0.05. Nếu sai → loss cao.</p>
+</div>
+</div>
+
+<div class="func-card">
+<div class="func-card-header"><span class="fn-name">Learning Rate &amp; Epoch</span></div>
+<div class="func-card-body">
+<p><strong>Epoch:</strong> 1 lần quét hết dataset. <strong>Learning Rate:</strong> kích thước bước cập nhật trọng số. Mặc định <code>1e-4</code> (0.0001) — phù hợp fine-tune.</p>
+</div>
+</div>
+
+<div class="func-card">
+<div class="func-card-header"><span class="fn-name">Overfitting (Quá khớp)</span></div>
+<div class="func-card-body">
+<p>Model "học thuộc" dữ liệu train, không khái quát hoá được. Dấu hiệu: train acc 98%, val acc 60%.</p>
+<p>Code chống: (1) đóng băng backbone, (2) validation mỗi epoch, (3) chỉ lưu best model.</p>
+</div>
+</div>
+
+<div class="func-card">
+<div class="func-card-header"><span class="fn-name">Confusion Matrix</span></div>
+<div class="func-card-body">
+<table style="width:auto;font-size:.82rem">
+<thead><tr><th></th><th>Pred: Angry</th><th>Pred: Happy</th><th>Pred: Neutral</th></tr></thead>
+<tbody>
+<tr><td><strong>True: Angry</strong></td><td style="background:#dbeafe;text-align:center;font-weight:600">15</td><td style="text-align:center">2</td><td style="text-align:center">3</td></tr>
+<tr><td><strong>True: Happy</strong></td><td style="text-align:center">1</td><td style="background:#dbeafe;text-align:center;font-weight:600">18</td><td style="text-align:center">1</td></tr>
+<tr><td><strong>True: Neutral</strong></td><td style="text-align:center">4</td><td style="text-align:center">2</td><td style="background:#dbeafe;text-align:center;font-weight:600">14</td></tr>
+</tbody>
+</table>
+<p>Đường chéo (xanh) = 15+18+14 = 47 đúng. Ngoài = 13 sai. Accuracy = 78.3%.</p>
+</div>
+</div>
+
+<div class="func-card">
+<div class="func-card-header"><span class="fn-name">GPU vs CPU</span></div>
+<div class="func-card-body">
+<p>Code tự động chọn device: <code>'cuda' if torch.cuda.is_available() else 'cpu'</code>. GPU (NVIDIA CUDA) nhanh hơn 10-50 lần.</p>
+</div>
+</div>
+</section>
+
+<!-- ════════════════════════════════════ -->
+<!--  6. CÂU HỎI BẢO VỆ                  -->
+<!-- ════════════════════════════════════ -->
+
+<section id="cau-hoi-bao-ve">
+<h2><span class="section-num">6</span> Câu hỏi bảo vệ và câu trả lời gợi ý</h2>
+
+<div class="qa-item">
+<div class="qa-q" onclick="toggleQA(this)">
+<span class="num">1</span> Tại sao dùng HSEmotion mà không tự train từ đầu?
+<span class="arrow">▼</span>
+</div>
+<div class="qa-a">Training EfficientNet từ đầu cần hàng trăm nghìn ảnh và nhiều ngày trên GPU mạnh. HSEmotion đã train sẵn trên AffectNet (450,000 ảnh). Mình chỉ cần fine-tune trên dataset nhỏ (140 ảnh) — vừa nhanh (vài phút), vừa tận dụng được kiến thức từ tập dữ liệu lớn (transfer learning).</div>
+</div>
+
+<div class="qa-item">
+<div class="qa-q" onclick="toggleQA(this)">
+<span class="num">2</span> Haar Cascade — ưu nhược điểm? Có thể thay bằng gì?
+<span class="arrow">▼</span>
+</div>
+<div class="qa-a">Haar Cascade nhanh (real-time trên CPU), nhưng kém với mặt nghiêng, bị che, thiếu sáng. Có thể thay bằng MTCNN (chính xác hơn, chậm hơn) hoặc YOLOv8-face (cần GPU).</div>
+</div>
+
+<div class="qa-item">
+<div class="qa-q" onclick="toggleQA(this)">
+<span class="num">3</span> Temporal Smoothing hoạt động thế nào?
+<span class="arrow">▼</span>
+</div>
+<div class="qa-a">Mỗi khuôn mặt có buffer lưu 10 kết quả gần nhất (dùng deque). Kết quả cuối = trung bình 10 frame. Giúp tránh nhảy loạn emotion do ảnh bị nhiễu hoặc face bị mờ tạm thời.</div>
+</div>
+
+<div class="qa-item">
+<div class="qa-q" onclick="toggleQA(this)">
+<span class="num">4</span> Tại sao mỗi emotion có ngưỡng riêng (Adaptive Threshold)?
+<span class="arrow">▼</span>
+</div>
+<div class="qa-a">Happiness thường được dự đoán với độ tin cậy cao (≥80%), ngưỡng 0.50 an toàn. Sadness và Surprise dễ bị nhầm, điểm thấp hơn — hạ ngưỡng xuống 0.30-0.35 để không bỏ sót. Nếu không đạt ngưỡng → trả về Neutral (an toàn nhất).</div>
+</div>
+
+<div class="qa-item">
+<div class="qa-q" onclick="toggleQA(this)">
+<span class="num">5</span> Dataset gồm những emotion nào? Số lượng?
+<span class="arrow">▼</span>
+</div>
+<div class="qa-a">7 lớp: Anger, Disgust, Fear, Happiness, Neutral, Sadness, Surprise. Mỗi lớp 20 ảnh → tổng 140 ảnh. Ảnh được sưu tầm từ nhiều nguồn (Kaggle, Google Images).</div>
+</div>
+
+<div class="qa-item">
+<div class="qa-q" onclick="toggleQA(this)">
+<span class="num">6</span> Quá trình fine-tune chia dữ liệu thế nào?
+<span class="arrow">▼</span>
+</div>
+<div class="qa-a">Chia 70% train (~98 ảnh), 15% val (~21 ảnh), 15% test (~21 ảnh). Chia ngẫu nhiên với seed cố định 42 để kết quả tái lập được.</div>
+</div>
+
+<div class="qa-item">
+<div class="qa-q" onclick="toggleQA(this)">
+<span class="num">7</span> Tại sao đóng băng backbone, chỉ mở 2 blocks cuối?
+<span class="arrow">▼</span>
+</div>
+<div class="qa-a">Backbone đã học đặc trưng tổng quát từ 450k ảnh. Dataset riêng quá nhỏ (98 ảnh train) — nếu mở toàn bộ sẽ overfit ngay. Chỉ mở 2 blocks cuối (~5% tham số) để tinh chỉnh riêng cho dataset của mình.</div>
+</div>
+
+<div class="qa-item">
+<div class="qa-q" onclick="toggleQA(this)">
+<span class="num">8</span> Dấu hiệu overfit? Code xử lý gì để chống?
+<span class="arrow">▼</span>
+</div>
+<div class="qa-a">Dấu hiệu: train acc cao nhưng val acc thấp. Code chống bằng: (1) đóng băng backbone, (2) validation mỗi epoch, (3) chỉ lưu model khi val accuracy tốt nhất (best model), không lưu model cuối.</div>
+</div>
+
+<div class="qa-item">
+<div class="qa-q" onclick="toggleQA(this)">
+<span class="num">9</span> Confusion matrix và classification report cho biết gì?
+<span class="arrow">▼</span>
+</div>
+<div class="qa-a">CM là bảng N×N: hàng=nhãn thật, cột=nhãn dự đoán. Đường chéo = đúng, ngoài = sai. Classification report gồm precision, recall, F1 cho từng lớp — biết lớp nào model yếu nhất.</div>
+</div>
+
+<div class="qa-item">
+<div class="qa-q" onclick="toggleQA(this)">
+<span class="num">10</span> Nếu muốn cải thiện độ chính xác, sẽ làm gì?
+<span class="arrow">▼</span>
+</div>
+<div class="qa-a">(1) Tăng dataset, nhất là các lớp model yếu. (2) Thay Haar bằng MTCNN/YOLO. (3) Tăng epoch hoặc giảm lr. (4) Dùng EfficientNet-B2 (lớn hơn B0). (5) Thêm data augmentation (xoay, lật, thay đổi độ sáng).</div>
+</div>
+
+<div class="qa-item">
+<div class="qa-q" onclick="toggleQA(this)">
+<span class="num">11</span> <code>skip_frames</code> hoạt động thế nào?
+<span class="arrow">▼</span>
+</div>
+<div class="qa-a"><code>skip_frames = 2</code> → chỉ xử lý AI trên frame chẵn. Frame lẻ vẽ lại kết quả cũ. Webcam 30 FPS, AI ~15 FPS → kỹ thuật này cho hình mượt (30 FPS) mà AI vẫn kịp.</div>
+</div>
+
+<div class="qa-item">
+<div class="qa-q" onclick="toggleQA(this)">
+<span class="num">12</span> File .pt là gì? Bên trong chứa gì?
+<span class="arrow">▼</span>
+</div>
+<div class="qa-a">.pt là checkpoint PyTorch. Chứa: <code>model_state_dict</code> (trọng số), <code>class_names</code>, <code>model_name</code>, <code>val_acc</code> (accuracy tốt nhất), <code>epoch</code>.</div>
+</div>
+
+<div class="qa-item">
+<div class="qa-q" onclick="toggleQA(this)">
+<span class="num">13</span> <code>_get_face_key</code> làm gì? Ý nghĩa lưới 60px?
+<span class="arrow">▼</span>
+</div>
+<div class="qa-a">Tạo mã định danh cho khuôn mặt từ toạ độ tâm, lượng tử hoá vào lưới 60px. Nếu mặt rung &lt; 60px — key không đổi → cùng buffer → kết quả mượt. Tránh tạo buffer mới liên tục khi mặt không di chuyển nhiều.</div>
+</div>
+
+<div class="qa-item">
+<div class="qa-q" onclick="toggleQA(this)">
+<span class="num">14</span> Tại sao BGR→Gray→RGB trong tiền xử lý?
+<span class="arrow">▼</span>
+</div>
+<div class="qa-a">OpenCV đọc ảnh BGR. Chuyển Gray (1 kênh) để CLAHE xử lý — CLAHE chỉ hoạt động với ảnh xám. Sau đó chuyển lại RGB (3 kênh) vì HSEmotion yêu cầu đầu vào 3 kênh màu.</div>
+</div>
+
+<div class="qa-item">
+<div class="qa-q" onclick="toggleQA(this)">
+<span class="num">15</span> Kiến trúc tổng thể của hệ thống?
+<span class="arrow">▼</span>
+</div>
+<div class="qa-a">Gồm 3 khối: (1) <strong>Input</strong> — webcam/image/video. (2) <strong>Xử lý</strong> — EmotionEngine (Haar Cascade detect + HSEmotion predict + smoothing + threshold). (3) <strong>Output</strong> — overlay hiển thị, có thể lưu ảnh/video. Fine-tune/evaluate hoạt động riêng với luồng chính.</div>
+</div>
+
+</section>
+
+</article>
+
+<hr>
+
+<footer style="text-align:center;padding:32px 0 16px;color:var(--slate-400);font-size:.82rem">
+  📘 Giải thích đồ án — Nhận diện cảm xúc người học online<br>
+  Môn: Khai thác thông tin đa phương tiện
+</footer>
+
+</div><!-- /content -->
+
+<script>
+// Mobile menu toggle
+const toggle = document.getElementById('menuToggle');
+const sidebar = document.getElementById('sidebar');
+const overlay = document.getElementById('overlay');
+
+toggle.addEventListener('click', () => {
+  sidebar.classList.toggle('open');
+  overlay.classList.toggle('show');
+  toggle.textContent = sidebar.classList.contains('open') ? '✕' : '☰';
+});
+overlay.addEventListener('click', () => {
+  sidebar.classList.remove('open');
+  overlay.classList.remove('show');
+  toggle.textContent = '☰';
+});
+
+// QA toggle
+function toggleQA(el) {
+  el.classList.toggle('active');
+  const answer = el.nextElementSibling;
+  answer.classList.toggle('open');
+}
+
+// Highlight current TOC item on scroll
+const observer = new IntersectionObserver((entries) => {
+  entries.forEach(entry => {
+    if (entry.isIntersecting) {
+      document.querySelectorAll('#toc a').forEach(a => a.classList.remove('active'));
+      const id = entry.target.getAttribute('id');
+      const link = document.querySelector(`#toc a[href="#${id}"]`);
+      if (link) link.classList.add('active');
+    }
+  });
+}, { rootMargin: '-80px 0 -60% 0' });
+
+document.querySelectorAll('section[id]').forEach(s => observer.observe(s));
+</script>
+
+</body>
+</html>
