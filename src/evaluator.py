@@ -73,6 +73,14 @@ class ModelEvaluator:
         present_indices = sorted(set(y_true.tolist()))
         present_names = [MODEL_CLASSES[i] for i in present_indices if i < len(MODEL_CLASSES)]
 
+        print(f"\n Classification Report (Model Goc - Pretrained):")
+        print(classification_report(
+            y_true, y_pred_orig,
+            labels=present_indices,
+            target_names=present_names,
+            zero_division=0
+        ))
+
         print(f"\n Classification Report (Model Fine-tuned):")
         print(classification_report(
             y_true, y_pred_ft,
