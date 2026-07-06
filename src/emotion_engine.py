@@ -43,6 +43,7 @@ class EmotionEngine:
         self.emotion_labels = EMOTION_LABELS_6[:]
 
         # load fine-tuned weights neu co
+        self.is_finetuned = (weights_path is not None)
         if weights_path is not None:
             self._load_finetuned_weights(weights_path)
 
@@ -64,7 +65,7 @@ class EmotionEngine:
         self.clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8, 8))
 
         mode = f"Fine-tuned ({weights_path})" if weights_path else "Pretrained goc"
-        print(f" EmotionEngine san sang | Model: {model_name} | Weights: {mode}")
+        print(f" EmotionEngine san sang | Model: {model_name} | Weights: {mode} | Fine-tuned: {self.is_finetuned}")
 
     def _load_finetuned_weights(self, weights_path: str):
         """load fine-tuned weights vao model
@@ -138,6 +139,16 @@ class EmotionEngine:
                 processed_face, logits=False
             )
 
+            # Map 8 classes to 6 classes (Subspace Extraction & Re-normalization)
+            if not self.is_finetuned:
+                # 0: Anger (0), 2: Disgust (2), 4: Happiness (4), 5: Neutral (5), 6: Sadness (6), 7: Surprise (7)
+                raw_6 = np.array([scores[0], scores[2], scores[4], scores[5], scores[6], scores[7]])
+                sum_raw = np.sum(raw_6)
+                scores = raw_6 / sum_raw if sum_raw > 0 else raw_6
+            else:
+                # Fine-tuned model only trained classes 0-5
+                scores = scores[:6]
+
             if face_key not in self.face_buffers:
                 self.face_buffers[face_key] = deque(maxlen=self.BUFFER_SIZE)
             buf = self.face_buffers[face_key]
@@ -162,6 +173,8 @@ class EmotionEngine:
 
         except Exception as e:
             print(f" Loi predict emotion: {e}")
+            import traceback
+            traceback.print_exc()
             return "Neutral", 0.0, np.zeros(len(self.emotion_labels))
 
     def detect_faces(self, frame: np.ndarray) -> List[Tuple[int, int, int, int]]:
