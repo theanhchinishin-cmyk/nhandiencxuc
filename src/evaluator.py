@@ -90,7 +90,8 @@ class ModelEvaluator:
         ))
 
         # luu bieu do
-        self._plot_confusion_matrix(y_true, y_pred_ft, present_indices, present_names)
+        self._plot_confusion_matrix(y_true, y_pred_orig, present_indices, present_names, is_original=True)
+        self._plot_confusion_matrix(y_true, y_pred_ft, present_indices, present_names, is_original=False)
         if history:
             self._plot_training_curve(history)
 
@@ -101,7 +102,7 @@ class ModelEvaluator:
     # ──────────────────────────────────────────────
 
     def _plot_confusion_matrix(self, y_true, y_pred,
-                               present_indices, present_names):
+                               present_indices, present_names, is_original: bool = False):
         """ve va luu confusion matrix"""
         cm = confusion_matrix(y_true, y_pred, labels=present_indices)
 
@@ -109,12 +110,14 @@ class ModelEvaluator:
         sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',
                     xticklabels=present_names, yticklabels=present_names,
                     linewidths=0.5)
-        plt.title('Confusion Matrix — Fine-tuned Model', fontsize=14, fontweight='bold', pad=15)
+        title = 'Confusion Matrix — Original Model' if is_original else 'Confusion Matrix — Fine-tuned Model'
+        plt.title(title, fontsize=14, fontweight='bold', pad=15)
         plt.xlabel('Predicted Label', fontsize=12)
         plt.ylabel('True Label', fontsize=12)
         plt.tight_layout()
 
-        path = os.path.join(self.output_dir, 'confusion_matrix.png')
+        filename = 'confusion_matrix_original.png' if is_original else 'confusion_matrix_finetuned.png'
+        path = os.path.join(self.output_dir, filename)
         plt.savefig(path, dpi=150, bbox_inches='tight')
         plt.close()
         print(f" Da luu: {path}")
