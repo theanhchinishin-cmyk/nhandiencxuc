@@ -1,445 +1,602 @@
-<!DOCTYPE html>
-<html lang="vi">
-<head>
+<!DOCTYPE html><html lang="vi"><head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Nhận Diện Cảm Xúc Người Học Online — Tài Liệu Giải Thích</title>
+<title>Giải Thích Đồ Án — Nhận Diện Cảm Xúc</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 <style>
-/* ── Reset & Base ── */
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
 html{font-size:16px;scroll-behavior:smooth;scroll-padding-top:80px}
-body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:#0f172a;background:#f8fafc;line-height:1.7;-webkit-font-smoothing:antialiased;display:flex}
-
-/* ── Scrollbar ── */
+body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:#0f172a;background:#fafbfc;line-height:1.65;display:flex}
+:root{--slate-900:#0f172a;--slate-800:#1e293b;--slate-700:#334155;--slate-600:#475569;--slate-500:#64748b;--slate-400:#94a3b8;--slate-200:#e2e8f0;--slate-100:#f1f5f9;--slate-50:#f8fafc;--blue-700:#1d4ed8;--blue-600:#2563eb;--blue-100:#dbeafe;--blue-50:#eff6ff;--emerald-600:#059669;--emerald-50:#ecfdf5;--amber-500:#f59e0b;--amber-50:#fffbeb;--rose-600:#e11d48;--rose-50:#fff1f2;--sidebar-w:270px;--shadow-sm:0 1px 2px rgba(0,0,0,.04);--shadow-md:0 4px 16px rgba(0,0,0,.06)}
 ::-webkit-scrollbar{width:6px}
 ::-webkit-scrollbar-track{background:transparent}
 ::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px}
 ::-webkit-scrollbar-thumb:hover{background:#94a3b8}
-
-/* ── Variables ── */
-:root{
-  --slate-900:#0f172a;
-  --slate-800:#1e293b;
-  --slate-700:#334155;
-  --slate-600:#475569;
-  --slate-500:#64748b;
-  --slate-400:#94a3b8;
-  --slate-200:#e2e8f0;
-  --slate-100:#f1f5f9;
-  --slate-50:#f8fafc;
-  --blue-700:#1d4ed8;
-  --blue-600:#2563eb;
-  --blue-100:#dbeafe;
-  --blue-50:#eff6ff;
-  --emerald-600:#059669;
-  --emerald-50:#ecfdf5;
-  --amber-500:#f59e0b;
-  --amber-50:#fffbeb;
-  --rose-600:#e11d48;
-  --rose-50:#fff1f2;
-  --purple-600:#9333ea;
-  --purple-50:#faf5ff;
-  --sidebar-w:280px;
-  --shadow-sm:0 1px 2px rgba(0,0,0,.04);
-  --shadow-md:0 4px 20px rgba(15,23,42,.05);
-  --shadow-lg:0 10px 30px rgba(15,23,42,.08);
-}
-
-/* ── Sidebar ── */
-.sidebar{position:fixed;top:0;left:0;width:var(--sidebar-w);height:100vh;overflow-y:auto;background:#fff;border-right:1px solid var(--slate-200);z-index:100;padding:32px 24px;transition:transform .3s}
-.sidebar-logo{font-family:'Outfit',sans-serif;font-weight:700;font-size:1.25rem;color:var(--slate-900);line-height:1.2;margin-bottom:28px;display:flex;flex-direction:column}
-.sidebar-logo span{background:linear-gradient(135deg, var(--blue-600), var(--purple-600));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.sidebar-logo small{font-family:'Inter',sans-serif;font-size:.7rem;color:var(--slate-500);font-weight:500;margin-top:4px;text-transform:uppercase;letter-spacing:.05em}
-.sidebar nav{font-size:.85rem}
-.sidebar nav a{display:block;color:var(--slate-600);text-decoration:none;padding:6px 0;transition:all .15s;line-height:1.4;border-left:2px solid transparent;padding-left:14px}
-.sidebar nav a:hover,.sidebar nav a.active{color:var(--blue-600);border-left-color:var(--blue-600);font-weight:500}
-.sidebar .toc-l1{font-weight:600;color:var(--slate-800);margin-top:16px;font-size:.88rem}
+.sidebar{position:fixed;top:0;left:0;width:var(--sidebar-w);height:100vh;overflow-y:auto;background:#fff;border-right:1px solid var(--slate-200);z-index:100;padding:24px 20px;transition:transform .3s}
+.sidebar-logo{font-weight:700;font-size:1.05rem;color:var(--slate-900);margin-bottom:20px}
+.sidebar-logo small{font-size:.7rem;color:var(--slate-500);font-weight:400;display:block;margin-top:2px}
+.sidebar nav{font-size:.82rem}
+.sidebar nav a{display:block;color:var(--slate-600);text-decoration:none;padding:4px 0;line-height:1.4;border-left:2px solid transparent;padding-left:12px;transition:color .15s}
+.sidebar nav a:hover,.sidebar nav a.active{color:var(--blue-600);border-left-color:var(--blue-600)}
+.sidebar .toc-l1{font-weight:600;color:var(--slate-800);margin-top:12px;font-size:.85rem}
 .sidebar .toc-l1:first-child{margin-top:0}
-.sidebar .toc-l2{padding-left:24px;font-size:.8rem;font-weight:400}
-.mobile-toggle{display:none;position:fixed;top:16px;left:16px;z-index:200;background:#fff;border:1px solid var(--slate-200);border-radius:10px;width:44px;height:44px;cursor:pointer;font-size:1.3rem;align-items:center;justify-content:center;box-shadow:var(--shadow-sm);color:var(--slate-700);transition:all .2s}
-.mobile-toggle:hover{background:var(--slate-50);transform:scale(1.05)}
-
-/* ── Overlay ── */
-.overlay{display:none;position:fixed;inset:0;background:rgba(15,23,42,.3);backdrop-filter:blur(4px);z-index:99}
-
-/* ── Content ── */
-.content{flex:1;margin-left:var(--sidebar-w);max-width:980px;padding:0 56px 80px}
-
-/* ── Hero ── */
-.hero{padding:56px 0 36px;margin-bottom:40px;border-bottom:1px solid var(--slate-200)}
-.hero h1{font-family:'Outfit',sans-serif;font-size:2.8rem;font-weight:700;color:var(--slate-900);letter-spacing:-.03em;line-height:1.2;margin-bottom:12px}
-.hero h1 span{background:linear-gradient(135deg, var(--blue-600), var(--purple-600));-webkit-background-clip:text;-webkit-text-fill-color:transparent}
-.hero .meta{color:var(--slate-500);font-size:.92rem;display:flex;flex-wrap:wrap;gap:12px;align-items:center}
-.hero .meta span{display:inline-flex;align-items:center;gap:4px}
-.hero .meta .divider{color:var(--slate-300)}
-.hero .emotion-spectrum{margin-top:28px;height:6px;border-radius:4px;background:linear-gradient(90deg,
-  #ef4444 0%,#ef4444 16.6%,
-  #06b6d4 16.6%,#06b6d4 33.3%,
-  #10b981 33.3%,#10b981 50%,
-  #94a3b8 50%,#94a3b8 66.6%,
-  #3b82f6 66.6%,#3b82f6 83.3%,
-  #f59e0b 83.3%,#f59e0b 100%);position:relative}
-.hero .emotion-spectrum::after{content:'6 Target Emotions: Anger / Disgust / Happy / Neutral / Sad / Surprise';position:absolute;right:0;top:12px;font-size:.68rem;color:var(--slate-400);letter-spacing:.05em;text-transform:uppercase;font-weight:600}
-
-/* ── Typography ── */
-article h2{font-family:'Outfit',sans-serif;font-size:1.9rem;font-weight:600;color:var(--slate-900);margin:48px 0 20px;padding-bottom:12px;border-bottom:2px solid var(--slate-200);letter-spacing:-.02em}
-article h2 .section-num{color:var(--blue-600);margin-right:8px;font-weight:700}
-article h3{font-family:'Outfit',sans-serif;font-size:1.35rem;font-weight:600;color:var(--slate-800);margin:36px 0 16px;letter-spacing:-.01em}
-article h3 .section-num{color:var(--slate-400);font-weight:500;margin-right:8px}
-article p{margin-bottom:20px;color:var(--slate-700);font-size:0.98rem}
-article p:last-child{margin-bottom:0}
-article a{color:var(--blue-600);text-decoration:none;border-bottom:1px solid transparent;transition:all .15s}
-article a:hover{color:var(--blue-700);border-bottom-color:var(--blue-700)}
+.sidebar .toc-l2{padding-left:24px;font-size:.78rem}
+.sidebar .toc-l3{padding-left:36px;font-size:.75rem}
+.mobile-toggle{display:none;position:fixed;top:12px;left:12px;z-index:200;background:#fff;border:1px solid var(--slate-200);border-radius:8px;width:40px;height:40px;cursor:pointer;font-size:1.2rem;align-items:center;justify-content:center;box-shadow:var(--shadow-sm)}
+.content{flex:1;margin-left:var(--sidebar-w);max-width:900px;padding:0 48px 80px}
+.hero{padding:48px 0 32px;margin-bottom:32px;border-bottom:1px solid var(--slate-200)}
+.hero h1{font-size:2.2rem;font-weight:700;color:var(--slate-900);letter-spacing:-.02em;line-height:1.2;margin-bottom:8px}
+.hero .meta{color:var(--slate-500);font-size:.9rem;line-height:1.6}
+.hero .meta span{display:inline-block}
+.hero .meta .divider{margin:0 8px;color:var(--slate-300)}
+article h2{font-size:1.6rem;font-weight:700;color:var(--slate-900);margin:40px 0 16px;padding-bottom:8px;border-bottom:2px solid var(--slate-200)}
+article h2 .section-num{color:var(--blue-600);margin-right:8px}
+article h3{font-size:1.15rem;font-weight:600;color:var(--slate-800);margin:28px 0 12px}
+article h4{font-size:1rem;font-weight:600;color:var(--slate-800);margin:20px 0 8px}
+article p{margin-bottom:14px;color:var(--slate-700)}
+article a{color:var(--blue-600);text-decoration:underline;text-underline-offset:2px}
 article strong{color:var(--slate-900);font-weight:600}
-article em{font-style:italic}
-
-/* ── Lists ── */
-article ul,article ol{margin:0 0 20px;padding-left:24px}
-article li{margin-bottom:8px;color:var(--slate-700);font-size:0.98rem}
-article li strong{color:var(--slate-900)}
-
-/* ── Code blocks ── */
-pre{background:var(--slate-900);color:#f1f5f9;border-radius:12px;padding:22px 26px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:.82rem;line-height:1.6;margin:0 0 24px;border:1px solid rgba(255,255,255,0.05);box-shadow:var(--shadow-md)}
+article ul,article ol{margin:0 0 14px;padding-left:24px}
+article li{margin-bottom:6px;color:var(--slate-700)}
+pre{background:var(--slate-800);color:#e2e8f0;border-radius:10px;padding:20px 24px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:.82rem;line-height:1.55;margin:0 0 20px}
 code{font-family:'JetBrains Mono',monospace;font-size:.85em}
-p code,li code{background:var(--slate-100);color:var(--rose-600);padding:2px 6px;border-radius:4px;font-size:.85em;font-weight:500}
+p code,li code{background:var(--slate-100);color:var(--blue-700);padding:2px 6px;border-radius:4px;font-size:.82em}
 pre code{background:transparent;color:inherit;padding:0;font-size:inherit}
-
-/* ── Tables ── */
-.table-wrap{overflow-x:auto;margin:0 0 24px;border-radius:12px;border:1px solid var(--slate-200);box-shadow:var(--shadow-sm)}
-table{width:100%;border-collapse:collapse;font-size:.92rem;background:#fff}
-thead{background:var(--slate-50)}
-th{font-family:'Outfit',sans-serif;font-weight:600;text-align:left;padding:12px 16px;color:var(--slate-800);border-bottom:2px solid var(--slate-200);white-space:nowrap}
-td{padding:12px 16px;border-bottom:1px solid var(--slate-200);color:var(--slate-600)}
-tr:last-child td{border-bottom:none}
+.table-wrap{overflow-x:auto;margin:0 0 20px}
+table{width:100%;border-collapse:collapse;font-size:.9rem}
+thead{background:var(--slate-100)}
+th{font-weight:600;text-align:left;padding:10px 14px;color:var(--slate-800);border-bottom:2px solid var(--slate-200)}
+td{padding:9px 14px;border-bottom:1px solid var(--slate-200);color:var(--slate-700)}
 tbody tr:hover{background:var(--slate-50)}
-
-/* ── Blockquotes / Notes ── */
-blockquote{margin:0 0 24px;padding:16px 20px;border-left:4px solid var(--blue-600);background:var(--blue-50);border-radius:0 12px 12px 0;color:var(--slate-700);font-size:.95rem}
-blockquote strong:first-child{color:var(--blue-700);display:block;margin-bottom:6px;font-size:.82rem;text-transform:uppercase;letter-spacing:.05em;font-weight:700}
+blockquote{margin:0 0 20px;padding:14px 18px;border-left:4px solid var(--blue-600);background:var(--blue-50);border-radius:0 8px 8px 0;color:var(--slate-700);font-size:.92rem}
+blockquote strong:first-child{color:var(--blue-700);display:block;margin-bottom:4px;font-size:.85rem;text-transform:uppercase}
 blockquote.warn{border-left-color:var(--amber-500);background:var(--amber-50)}
 blockquote.warn strong:first-child{color:#d97706}
-blockquote.danger{border-left-color:var(--rose-600);background:var(--rose-50)}
-blockquote.danger strong:first-child{color:var(--rose-600)}
 blockquote.success{border-left-color:var(--emerald-600);background:var(--emerald-50)}
 blockquote.success strong:first-child{color:var(--emerald-600)}
-
-/* ── ASCII art (architecture diagrams) ── */
-.ascii-art{background:#0f172a;border-radius:12px;padding:22px 26px;margin:0 0 24px;white-space:pre;font-family:'JetBrains Mono',monospace;font-size:.78rem;line-height:1.5;overflow-x:auto;color:#38bdf8}
-
-/* ── Func cards ── */
-.func-card{border:1px solid var(--slate-200);border-radius:12px;margin:0 0 24px;background:#fff;overflow:hidden;box-shadow:var(--shadow-sm);transition:all .2s}
-.func-card:hover{box-shadow:var(--shadow-md);transform:translateY(-2px)}
-.func-card-header{padding:16px 24px;background:var(--slate-50);border-bottom:1px solid var(--slate-200);display:flex;align-items:center;gap:10px;flex-wrap:wrap}
-.func-card-header .file-badge{background:var(--blue-600);color:#fff;font-size:.7rem;font-weight:600;padding:3px 12px;border-radius:20px;letter-spacing:.02em;font-family:'JetBrains Mono',monospace}
-.func-card-header .fn-name{font-weight:600;color:var(--slate-900);font-family:'JetBrains Mono',monospace;font-size:.92rem}
-.func-card-body{padding:18px 24px;color:var(--slate-700);font-size:.95rem;line-height:1.6}
+hr{margin:32px 0;border:none;height:1px;background:var(--slate-200)}
+.func-card{border:1px solid var(--slate-200);border-radius:10px;margin:0 0 16px;background:#fff;overflow:hidden}
+.func-card-header{padding:12px 20px;background:var(--slate-50);border-bottom:1px solid var(--slate-200);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.func-card-header .fn-name{font-weight:600;color:var(--slate-900);font-family:'JetBrains Mono',monospace;font-size:.88rem}
+.func-card-header .fn-lines{color:var(--slate-400);font-size:.78rem}
+.func-card-body{padding:12px 20px;color:var(--slate-700);font-size:.9rem;line-height:1.55}
 .func-card-body p:last-child{margin-bottom:0}
-.func-card-body strong{color:var(--slate-900)}
-.func-card-body code{background:var(--slate-100);color:var(--blue-700);padding:2px 5px;border-radius:4px;font-size:.85em;font-weight:500}
-
-/* ── QA cards ── */
-.qa-item{border:1px solid var(--slate-200);border-radius:12px;margin:0 0 16px;background:#fff;overflow:hidden;box-shadow:var(--shadow-sm);transition:all .2s}
-.qa-item:hover{box-shadow:var(--shadow-md)}
-.qa-q{padding:18px 24px;background:var(--slate-50);font-weight:600;color:var(--slate-900);cursor:pointer;display:flex;align-items:center;gap:12px;user-select:none;transition:background .15s;font-family:'Outfit',sans-serif;font-size:1.05rem}
+.func-card-body code{background:var(--slate-100);color:var(--blue-700);padding:1px 5px;border-radius:3px;font-size:.85em}
+.qa-item{border:1px solid var(--slate-200);border-radius:10px;margin:0 0 12px;background:#fff;overflow:hidden}
+.qa-q{padding:14px 20px;background:var(--slate-50);font-weight:600;color:var(--slate-900);cursor:pointer;display:flex;align-items:center;gap:10px;user-select:none}
 .qa-q:hover{background:var(--slate-100)}
-.qa-q .num{display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;border-radius:50%;background:linear-gradient(135deg, var(--blue-600), var(--purple-600));color:#fff;font-size:.75rem;font-weight:600;flex-shrink:0}
+.qa-q .num{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:var(--blue-600);color:#fff;font-size:.72rem;font-weight:600;flex-shrink:0}
 .qa-q .arrow{color:var(--slate-400);margin-left:auto;transition:transform .2s;font-size:.8rem}
 .qa-q.active .arrow{transform:rotate(180deg)}
-.qa-a{padding:0 24px 0 64px;max-height:0;overflow:hidden;transition:all .3s ease-out;color:var(--slate-700);line-height:1.65;font-size:.95rem}
-.qa-a.open{padding:6px 24px 20px 64px;max-height:800px;border-top:1px solid var(--slate-100)}
-
-/* ── Horizontal rules ── */
-hr{margin:40px 0;border:none;height:1px;background:var(--slate-200)}
-
-/* ── Mobile responsive ── */
+.qa-a{padding:0 20px 0 56px;max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s ease;color:var(--slate-700);line-height:1.6;font-size:.9rem}
+.qa-a.open{padding:4px 20px 16px 56px;max-height:600px}
 @media(max-width:900px){
   body{flex-direction:column}
-  .sidebar{transform:translateX(-100%);width:300px;box-shadow:var(--shadow-lg)}
+  .sidebar{transform:translateX(-100%);width:300px}
   .sidebar.open{transform:translateX(0)}
-  .overlay.show{display:block}
   .mobile-toggle{display:flex}
   .content{margin-left:0;padding:0 20px 60px}
-  .hero{padding:64px 0 28px}
-  .hero h1{font-size:2rem}
-  .hero .emotion-spectrum::after{display:none}
-  article h2{font-size:1.5rem}
-  pre{font-size:.78rem;padding:16px 18px}
+  .hero{padding:56px 0 24px}
+  .hero h1{font-size:1.5rem}
+  article h2{font-size:1.3rem}
+  pre{font-size:.75rem;padding:14px 16px}
   .qa-a{padding:0 16px 0 16px}
-  .qa-a.open{padding:10px 16px 18px 16px!important}
-  .qa-q .num{display:none}
+  .qa-a.open{padding:4px 16px 14px 16px}
 }
+</style></head><body>
 
-/* ── Print ── */
-@media print{
-  .sidebar,.mobile-toggle,.overlay{display:none!important}
-  .content{margin-left:0;padding:20px;max-width:none}
-  .hero{padding:20px 0}
-  pre{page-break-inside:avoid;border:1px solid #ddd;background:#f5f5f5!important;color:#333!important}
-  .qa-q{cursor:default;background:#f9f9f9!important}
-  .qa-a{max-height:none!important;padding:10px 20px 18px 56px!important}
-  .func-card{page-break-inside:avoid}
-  .qa-item{page-break-inside:avoid}
-  a{color:inherit!important;text-decoration:none!important}
-  h2,h3{page-break-after:avoid}
-}
-</style>
-</head>
-<body>
+<button class="mobile-toggle" id="menuToggle">☰</button>
 
-<!-- Mobile toggle -->
-<button class="mobile-toggle" id="menuToggle" aria-label="Toggle menu">☰</button>
-<div class="overlay" id="overlay"></div>
-
-<!-- Sidebar navigation -->
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-logo">
-    <span>Nhận Diện Cảm Xúc</span>
-    <small>Tài liệu bảo vệ đồ án</small>
+    Giai Thich Do An
+    <small>Nhan dien cam xuc — Khoa hoc may tinh</small>
   </div>
-  <nav>
-    <a href="#1-tong-quan" class="toc-l1">1. Tổng Quan Hệ Thống</a>
-    <a href="#2-cau-truc" class="toc-l1">2. Cấu Trúc Thư Mục</a>
-    <a href="#3-luong-data" class="toc-l1">3. Sơ Đồ Luồng Dữ Liệu</a>
-    <a href="#4-giai-thich-code" class="toc-l1">4. Giải Thích Từng Hàm</a>
-    <a href="#41-main" class="toc-l2">4.1. main.py</a>
-    <a href="#42-capture" class="toc-l2">4.2. capture.py</a>
-    <a href="#43-engine" class="toc-l2">4.3. emotion_engine.py</a>
-    <a href="#44-tuner" class="toc-l2">4.4. file_tuner.py</a>
-    <a href="#45-evaluator" class="toc-l2">4.5. evaluator.py</a>
-    <a href="#46-stats" class="toc-l2">4.6. emotion_stats.py</a>
-    <a href="#5-khai-niem" class="toc-l1">5. Khái Niệm Chuyên Môn</a>
-    <a href="#6-cau-hoi" class="toc-l1">6. Câu Hỏi Bảo Vệ Hội Đồng</a>
+  <nav id="toc">
+    <a href="#tong-quan" class="toc-l1">1. Tong quan du an</a>
+    <a href="#cau-truc-thu-muc" class="toc-l1">2. Cau truc thu muc</a>
+    <a href="#so-do-luong" class="toc-l1">3. So do luong du lieu</a>
+    <a href="#mainpy" class="toc-l1">4. Giai thich main.py</a>
+    <a href="#41-class-emotionengine" class="toc-l2">4.1 EmotionEngine</a>
+    <a href="#42-class-sessionstats" class="toc-l2">4.2 SessionStats</a>
+    <a href="#43-ham-load-model" class="toc-l2">4.3 load_model()</a>
+    <a href="#44-ham-do-finetune" class="toc-l2">4.4 do_finetune()</a>
+    <a href="#45-ham-do-evaluate" class="toc-l2">4.5 do_evaluate()</a>
+    <a href="#46-cac-mode" class="toc-l2">4.6 Cac mode functions</a>
+    <a href="#giai-thich-khai-niem" class="toc-l1">5. Giai thich khai niem</a>
+    <a href="#cau-hoi-bao-ve" class="toc-l1">6. Cau hoi bao ve</a>
   </nav>
 </aside>
 
-<!-- Main content container -->
-<main class="content">
-  <header class="hero">
-    <h1>Giải Thích Hệ Thống <span>Nhận Diện Cảm Xúc</span></h1>
-    <div class="meta">
-      <span><strong>Môn học:</strong> Khai thác thông tin đa phương tiện</span>
-      <span class="divider">|</span>
-      <span><strong>Mô hình:</strong> EfficientNet-B0 + PyTorch</span>
-    </div>
-    <div class="emotion-spectrum"></div>
-  </header>
+<div class="content">
+<header class="hero">
+  <h1>Nhan Dien Cam Xuc<br>Nguoi Hoc Online</h1>
+  <div class="meta">
+    <span>Mon: Khai thac thong tin da phuong tien</span>
+    <span class="divider">·</span>
+    <span>Python + OpenCV + HSEmotion + PyTorch</span>
+  </div>
+</header>
 
-  <article>
-    <!-- Section 1 -->
-    <section id="1-tong-quan">
-      <h2><span class="section-num">1.</span> Tổng Quan Hệ Thống</h2>
-      <p>Hệ thống hỗ trợ nhận dạng và phân tích biểu cảm khuôn mặt của học sinh trong suốt quá trình tham gia các lớp học trực tuyến (E-learning). Khi người học bật webcam lên, hệ thống sẽ tự động phát hiện khuôn mặt, cân bằng ánh sáng thích nghi bằng <strong>CLAHE</strong>, dự đoán xác suất cảm xúc thô qua mạng nơ-ron học sâu <strong>EfficientNet-B0</strong>, rồi chạy các thuật toán làm mịn thời gian để tránh nháy nhãn. Toàn bộ tiến trình diễn biến cảm xúc sẽ được trực quan hóa thành Dashboard biểu đồ tròn và dòng thời gian khi phiên học kết thúc.</p>
-      <blockquote class="success">
-        <strong>💡 ĐIỂM SÁNG DỰ ÁN</strong>
-        Dự án đạt độ chính xác toàn cục <strong>79.3%</strong> trên tập kiểm thử độc lập gồm 6 lớp cảm xúc mục tiêu, cải tiến <strong>+1.3%</strong> so với mô hình gốc nhờ cấu trúc Fine-tune tinh chỉnh tuyến tính (Linear Probing) và ánh xạ nhãn tương thích.
-      </blockquote>
-    </section>
+<article>
 
-    <!-- Section 2 -->
-    <section id="2-cau-truc">
-      <h2><span class="section-num">2.</span> Cấu Trúc Thư Mục Thực Tế</h2>
-      <p>Sau khi tiến hành thu gọn để lược bỏ hoàn toàn các chế độ phụ (nhận diện qua file ảnh và video tĩnh), cấu trúc dự án đạt độ cô đọng cao nhất:</p>
-      <pre>
-nhandiencxuc/
-├── main.py                     # File điều hướng chính (Entry Point)
-├── requirements.txt            # Danh sách thư viện Python cần cài
-├── dataset/                    # Tập dữ liệu người Đông Nam Á (lọc từ FairFace)
-│   ├── train/                  # Tập huấn luyện & kiểm định (366 ảnh, 6 lớp)
-│   └── test_dung1landuynhat/   # Tập kiểm thử độc lập (150 ảnh, 25 ảnh/lớp)
-├── models/                     # Thư mục chứa trọng số mô hình sau Fine-tune
-│   └── finetuned.pt            # File checkpoint trọng số (.pt)
-├── reports/                    # Thư mục chứa báo cáo đánh giá & Dashboard
-│   ├── confusion_matrix_*.png  # Biểu đồ ma trận nhầm lẫn
-│   ├── training_curve.png      # Biểu đồ đường cong học tập
-│   └── emotion_report.png      # Dashboard thống kê phiên học Webcam
-├── src/                        # Thư mục chứa mã nguồn chính
-│   ├── constants.py            # Hằng số màu sắc, nhãn hiển thị
-│   ├── capture.py              # Xử lý luồng Camera OpenCV
-│   ├── emotion_engine.py       # Bộ xử lý trung tâm (CLAHE, Smoothing, Tracking, Thresholds)
-│   ├── file_tuner.py           # Logic huấn luyện Fine-tuning (Linear Probing)
-│   ├── evaluator.py            # Logic chạy đánh giá & vẽ Confusion Matrix
-│   └── emotion_stats.py        # Logic lưu trữ RAM & vẽ Dashboard Matplotlib</pre>
-    </section>
+<section id="tong-quan">
+<h2><span class="section-num">1</span> Tong quan du an</h2>
 
-    <!-- Section 3 -->
-    <section id="3-luong-data">
-      <h2><span class="section-num">3.</span> Sơ Đồ Luồng Dữ Liệu</h2>
-      <p>Dưới đây là sơ đồ luồng dữ liệu xử lý trực tiếp từ Webcam camera của học sinh:</p>
-      <div class="ascii-art">
-┌──────────────┐      ┌──────────────┐      ┌──────────────┐
-│  Webcam USB  │ ──►  │ Haar Cascade │ ──►  │    CLAHE     │
-│ (640x480 RGB)│      │(Tìm & Cắt Mặt)│      │(Cân Bằng ROI)│
-└──────────────┘      └──────────────┘      └──────┬───────┘
-                                                   │
-┌──────────────┐      ┌──────────────┐             │
-│ Nhãn &       │ ◄──  │  Temporal    │ ◄──  [EfficientNet-B0]
-│ Dashboard    │      │(Làm Mịn O(1))│      (Dự đoán xác suất)
-└──────────────┘      └──────────────┘</div>
-    </section>
+<h3>1.1. Du an nay lam gi?</h3>
+<p>Chuong trinh <strong>nhan dien cam xuc tren khuon mat nguoi</strong> theo thoi gian thuc. Mo webcam len, chuong trinh se:</p>
+<ol>
+  <li><strong>Phat hien khuon mat</strong> trong khung hinh (Haar Cascade).</li>
+  <li><strong>Cat tung khuon mat</strong> ra, xu ly CLAHE can bang sang.</li>
+  <li><strong>Dua qua mo hinh AI</strong> (EfficientNet da duoc huan luyen san) de du doan cam xuc.</li>
+  <li><strong>Hien thi ket qua</strong> ngay tren man hinh: khung mau + ten cam xuc + do tin cay.</li>
+</ol>
+<p>Ngoai webcam, con co che do <strong>anh tinh</strong>, <strong>file video</strong>, <strong>fine-tune</strong> model, va <strong>danh gia</strong> ket qua.</p>
 
-    <!-- Section 4 -->
-    <section id="4-giai-thich-code">
-      <h2><span class="section-num">4.</span> Giải Thích Chi Tiết Từng Tệp Tin & Từng Hàm</h2>
-      <p>Nhóm đã chia rõ khối lượng công việc theo tỷ lệ <strong>40% (Bạn) - 60% (Quang)</strong> để phân định rõ vai trò của từng thành viên:</p>
+<h3>1.2. Kien truc tong the</h3>
+<p>Toan bo he thong nam trong <strong>1 file duy nhat</strong>: <code>main.py</code> (~400 dong), chia lam 4 phan:</p>
 
-      <!-- main.py -->
-      <div id="41-main" class="func-card">
-        <div class="func-card-header">
-          <span class="file-badge">main.py</span>
-          <span class="fn-name">run_webcam(args)</span>
-        </div>
-        <div class="func-card-body">
-          <p>Hàm điều khiển luồng webcam thời gian thực. Cài đặt cơ chế <strong>Bỏ qua khung hình (Frame Skipping)</strong>: Chỉ chạy các thuật toán phát hiện mặt Haar Cascade và phân loại EfficientNet-B0 ở các khung hình chẵn (tần suất AI giảm xuống còn 15 lần/giây để tiết kiệm CPU), còn các khung hình lẻ chỉ vẽ đè lại tọa độ khuôn mặt cũ. Nhờ vậy, FPS thực tế hiển thị đạt mức mượt mà ~30 FPS trên các CPU yếu.</p>
-        </div>
-      </div>
+<pre>main.py
+│
+├── Phan 1: Constants + Imports (~15 dong)
+│   - Dinh nghia 6 emotion labels
+│   - Mau sac hien thi
+│   - Duong dan Haar cascade
+│
+├── Phan 2: EmotionEngine class (~70 dong)
+│   - Khoi tao HSEmotion recognizer
+│   - Load fine-tuned weights
+│   - detect() + predict() + process()
+│   - Temporal Smoothing + Adaptive Threshold
+│
+├── Phan 3: SessionStats class (~40 dong)
+│   - record() — ghi nhan cam xuc
+│   - report() — ve bieu do pie + timeline
+│
+├── Phan 4: load_model() + do_finetune() (~90 dong)
+│   - Load EfficientNet tu .pt cache
+│   - Fine-tune loop (freeze backbone)
+│   - Evaluate + Confusion Matrix
+│
+└── Phan 5: Modes + main() (~180 dong)
+    - mode_webcam, mode_image, mode_video
+    - mode_finetune, mode_evaluate
+    - argparse dispatch</pre>
 
-      <!-- capture.py -->
-      <div id="42-capture" class="func-card">
-        <div class="func-card-header">
-          <span class="file-badge">src/capture.py</span>
-          <span class="fn-name">CameraCapture.open_camera()</span>
-        </div>
-        <div class="func-card-body">
-          <p>Mở kết nối camera OpenCV sử dụng backend <code>cv2.CAP_DSHOW</code> (DirectShow) để tăng tốc độ kết nối và độ ổn định trên Windows. Đặt độ phân giải tiêu chuẩn là 640x480. Lớp này còn chứa hàm <code>release_camera()</code> chạy trong khối <code>finally</code> của main để giải phóng camera an toàn khi tắt ngang, tránh lỗi khóa thiết bị phần cứng.</p>
-        </div>
-      </div>
+<blockquote class="success">
+<strong>Tai sao chi can 1 file?</strong>
+Cac file nhu <code>capture.py</code>, <code>image_predictor.py</code>, <code>evaluator.py</code> truoc day la cac class nho, moi class chi co 1-2 method public. Gom vao 1 file giup giam so luong file tu 8 xuong 1, de quan ly hon, van giu nguyen chuc nang.
+</blockquote>
 
-      <!-- emotion_engine.py -->
-      <div id="43-engine" class="func-card">
-        <div class="func-card-header">
-          <span class="file-badge">src/emotion_engine.py</span>
-          <span class="fn-name">_preprocess_face(face_img) [Bạn làm]</span>
-        </div>
-        <div class="func-card-body">
-          <p>Tiền xử lý ảnh cắt khuôn mặt. Chuyển ảnh màu BGR thành ảnh xám Grayscale để loại bỏ nhiễu màu sắc. Áp dụng bộ lọc <strong>CLAHE</strong> cân bằng tương phản sáng cục bộ trong lưới ô nhỏ $8 \times 8$ và giới hạn tương phản `2.0` để triệt tiêu nhiễu hạt webcam yếu. Sau đó chuyển ngược lại ảnh 3 kênh RGB để đưa vào mạng nơ-ron.</p>
-        </div>
-      </div>
+<h3>1.3. Cong nghe su dung</h3>
+<div class="table-wrap">
+<table>
+<thead><tr><th>Thu vien</th><th>Muc dich</th></tr></thead>
+<tbody>
+  <tr><td><code>opencv-python</code></td><td>Doc camera, xu ly anh, ve hinh</td></tr>
+  <tr><td><code>hsemotion</code></td><td>Model EfficientNet nhan dien cam xuc</td></tr>
+  <tr><td><code>torch</code> + <code>timm</code></td><td>Chay neural network, fine-tune</td></tr>
+  <tr><td><code>torchvision</code></td><td>Bien doi anh, load dataset</td></tr>
+  <tr><td><code>scikit-learn</code></td><td>Confusion matrix, classification report</td></tr>
+  <tr><td><code>matplotlib</code> + <code>seaborn</code></td><td>Ve bieu do</td></tr>
+</tbody>
+</table>
+</div>
+</section>
 
-      <div class="func-card">
-        <div class="func-card-header">
-          <span class="file-badge">src/emotion_engine.py</span>
-          <span class="fn-name">_get_face_key(x, y, w, h) & predict_emotion() [Quang làm]</span>
-        </div>
-        <div class="func-card-body">
-          <p>Cơ chế theo dõi khuôn mặt bằng tâm hình học (Centroid Tracking). Tâm khuôn mặt được lượng tử hóa trên lưới <code>GRID_SIZE = 60</code> pixel. Khi quét webcam, xác suất thô của cảm xúc được đưa vào hàng đợi trượt `deque` (`BUFFER_SIZE = 10`) để lấy trung bình cộng xác suất nhằm triệt tiêu hiện tượng nháy nhãn (**Temporal Smoothing**). Sau đó đối chiếu điểm số với bảng **ngưỡng quyết định thích nghi (Adaptive Thresholding)** để quyết định nhãn cuối cùng hoặc đưa về mặc định `Neutral`.</p>
-        </div>
-      </div>
+<section id="cau-truc-thu-muc">
+<h2><span class="section-num">2</span> Cau truc thu muc</h2>
 
-      <!-- file_tuner.py -->
-      <div id="44-tuner" class="func-card">
-        <div class="func-card-header">
-          <span class="file-badge">src/file_tuner.py</span>
-          <span class="fn-name">EmotionFineTuner.train() [Quang làm]</span>
-        </div>
-        <div class="func-card-body">
-          <p>Hàm huấn luyện Fine-tuning. Cài đặt chiến lược **Linear Probing** bằng cách khóa cứng (đóng băng) toàn bộ Backbone trích chọn đặc trưng cơ mặt đã học từ 450.000 ảnh AffectNet gốc, và chỉ mở khóa duy nhất lớp phân loại Classifier ở cuối để học trên tập dữ liệu mới ($366$ ảnh). Điều này giúp mô hình chống overfitting (quá khớp/học vẹt) cực kỳ hiệu quả.</p>
-        </div>
-      </div>
+<pre>tucode/
+│
+├── main.py                      ← FILE DUY NHAT (~400 dong)
+├── README.md                    ← Tai lieu
+├── GIAI_THICH_DU_AN.html       ← Tai lieu giai thich (file nay)
+├── requirements.txt             ← Thu vien can cai
+│
+├── dataset/                     ← Anh fine-tune
+│   ├── Anger/               61 anh
+│   ├── Disgust/             61 anh
+│   ├── Happiness/           61 anh
+│   ├── Neutral/             61 anh
+│   ├── Sadness/             61 anh
+│   └── Surprise/            61 anh
+│
+├── models/                      ← .pt weights (tu tao khi finetune)
+│   └── finetuned.pt
+│
+└── reports/                     ← Bieu do danh gia (tu tao)
+    ├── confusion_matrix.png
+    ├── training_curve.png
+    └── emotion_report.png</pre>
+</section>
 
-      <!-- evaluator.py -->
-      <div id="45-evaluator" class="func-card">
-        <div class="func-card-header">
-          <span class="file-badge">src/evaluator.py</span>
-          <span class="fn-name">ModelEvaluator.evaluate_and_compare()</span>
-        </div>
-        <div class="func-card-body">
-          <p>Đánh giá và so sánh chất lượng mô hình gốc và tinh chỉnh trên tập test độc lập 150 ảnh (25 ảnh mỗi lớp). Viết thuật toán chiếu không gian con và tái chuẩn hóa Softmax để quy đổi đầu ra mô hình gốc (8 lớp) về đúng hệ quy chiếu 6 lớp cảm xúc mục tiêu để đảm bảo công bằng toán học.</p>
-        </div>
-      </div>
+<section id="so-do-luong">
+<h2><span class="section-num">3</span> So do luong du lieu</h2>
 
-      <!-- emotion_stats.py -->
-      <div id="46-stats" class="func-card">
-        <div class="func-card-header">
-          <span class="file-badge">src/emotion_stats.py</span>
-          <span class="fn-name">SessionStats.record() & generate_report() [Bạn làm]</span>
-        </div>
-        <div class="func-card-body">
-          <p>Thu thập lịch sử cảm xúc của khuôn mặt chính diện (Primary Face) vào RAM sử dụng thuật toán append-only độ phức tạp $O(1)$ để không gây nghẽn đĩa và sụt giảm FPS của webcam. Khi tắt webcam, gọi hàm <code>generate_report()</code> vẽ và lưu Dashboard ảnh PNG gồm biểu đồ tròn (Pie Chart) và biểu đồ diễn biến dòng thời gian (Timeline Scatter + Step Line) có kích cỡ bóng co dãn động theo độ tin cậy của AI.</p>
-        </div>
-      </div>
-    </section>
+<h3>3.1. Webcam / Video mode</h3>
+<pre>Vong lap chinh:
+┌─────────────────────────────────────────────┐
+│ while True:                                 │
+│   frame = cap.read()                        │
+│   if frame_count % 2 == 0:                  │
+│     results = engine.process(frame)         │
+│     stats.record(time, results)             │
+│   display = draw_boxes(frame, results)      │
+│   cv2.imshow(display)                       │
+│   if key == 'q': break                      │
+└─────────────────────────────────────────────┘
 
-    <!-- Section 5 -->
-    <section id="5-khai-niem">
-      <h2><span class="section-num">5.</span> Khái Niệm Chuyên Môn FER</h2>
-      <ul>
-        <li><strong>Haar Cascade:</strong> Thuật toán phát hiện khuôn mặt cổ điển dựa trên sự chênh lệch sáng tối của các vùng hình chữ nhật (như mắt và trán). Quét rất nhanh trên CPU nhưng kém nhạy khi quay nghiêng mặt quá $30^\circ$.</li>
-        <li><strong>CLAHE:</strong> Cân bằng sáng thích nghi giới hạn tương phản. Chia nhỏ ảnh mặt thành lưới $8 \times 8$, giới hạn tương phản 2.0 để tránh phóng đại các hạt nhiễu do webcam chất lượng kém, làm nổi rõ các nếp nhăn và cơ mặt biểu cảm.</li>
-        <li><strong>Linear Probing (Đóng băng Backbone):</strong> Khóa cứng trọng số của bộ trích xuất đặc trưng (Backbone) chiếm 99% bộ não mô hình, chỉ huấn luyện lớp Classifier cuối. Giúp mô hình thích nghi tốt với tập dữ liệu nhỏ 366 ảnh mà không bị hiện tượng học vẹt (Overfitting).</li>
-        <li><strong>Subspace Projection (Phép chiếu không gian con):**</strong> Phương pháp loại bỏ 2 cổng đầu ra không liên quan (Fear, Contempt) của mô hình gốc, tái chuẩn hóa lại tổng xác suất 6 lớp mục tiêu về lại $100\%$ để so sánh hiệu năng khoa học và công bằng với mô hình tinh chỉnh.</li>
-      </ul>
-    </section>
+engine.process():
+┌─────────────────────────────────────────────┐
+│ 1. detect() - Haar Cascade tim mat          │
+│ 2. Voi moi mat ≥48px:                       │
+│    a. predict() - CLAHE → HSEmotion         │
+│    b. Temporal Smoothing - deque trung binh │
+│    c. Adaptive Threshold - so sanh nguong   │
+│ 3. Tra ve list ket qua                      │
+└─────────────────────────────────────────────┘</pre>
 
-    <!-- Section 6 -->
-    <section id="6-cau-hoi">
-      <h2><span class="section-num">6.</span> Bộ Câu Hỏi Bảo Vệ Hội Đồng & Gợi Ý Trả Lời</h2>
-      <p>Các câu hỏi được thiết kế dựa trên thực tế bảo vệ đồ án để giúp bạn tự tin tuyệt đối trước các câu hỏi xoáy của giáo viên:</p>
+<h3>3.2. Fine-tune mode</h3>
+<pre>do_finetune():
+┌─────────────────────────────────────────────┐
+│ 1. Load model EfficientNet (6 classes)      │
+│ 2. Freeze backbone, mo 2 blocks cuoi        │
+│ 3. Doc dataset tu thu muc                   │
+│ 4. Chia 70/15/15 train/val/test             │
+│ 5. Voi moi epoch:                           │
+│    a. Train: forward → loss → backward      │
+│    b. Val: tinh loss + accuracy              │
+│    c. Luu neu val_acc > best                 │
+│ 6. Tra ve model + test_loader + history     │
+└─────────────────────────────────────────────┘</pre>
 
-      <!-- QA Items -->
-      <div class="qa-item">
-        <div class="qa-q"><span class="num">1</span> Tại sao nhóm chỉ train mô hình có 15 Epochs mà không phải 100 Epochs? <span class="arrow">▼</span></div>
-        <div class="qa-a">
-          Dạ thưa thầy/cô, vì dự án của nhóm em áp dụng chiến lược đóng băng toàn bộ backbone (Linear Probing), hệ thống chỉ cần cập nhật duy nhất lớp phân loại tuyến tính Classifier ở cuối với số lượng tham số rất nhỏ ($7.686$ tham số). Lớp phân loại này hội tụ cực kỳ nhanh, thực nghiệm cho thấy sau Epoch thứ 10, hàm mất mát (Loss) đã đi ngang và đạt mức tối ưu. Do đó, việc dừng ở Epoch 15 là lựa chọn tối ưu nhằm bảo toàn khả năng tổng quát hóa của mô hình và ngăn ngừa hiện tượng học vẹt (overfitting) trên tập dữ liệu nhỏ 366 ảnh.
-        </div>
-      </div>
+<h3>3.3. Evaluate mode</h3>
+<pre>do_evaluate():
+┌─────────────────────────────────────────────┐
+│ 1. Load 2 models: base (8 class) + ft       │
+│ 2. Chay ca 2 tren test set                  │
+│ 3. So sanh accuracy + in classification report│
+│ 4. Ve confusion matrix + training curve      │
+└─────────────────────────────────────────────┘</pre>
+</section>
 
-      <div class="qa-item">
-        <div class="qa-q"><span class="num">2</span> Chỉ số của lớp Anger (Tức giận) bị giảm nhẹ từ 0.96 xuống 0.90 sau khi tinh chỉnh. Tại sao lại xảy ra hiện tượng này? <span class="arrow">▼</span></div>
-        <div class="qa-a">
-          Dạ thưa thầy/cô, mô hình gốc ban đầu vốn dĩ đã nhận diện cảm xúc Anger cực kỳ xuất sắc với điểm F1-Score rất cao là $0.96$. Khi tiến hành Fine-tune trên tập dữ liệu nhỏ tự thu thập, thuật toán tối ưu hóa (Adam) phải giải quyết bài toán tối ưu hóa hàm mất mát toàn cục (Global Loss Function) cho cả 6 lớp cảm xúc để kéo tổng hiệu năng trung bình của hệ thống lên. Do đó, mô hình đã điều chỉnh lại các ranh giới phân loại, chấp nhận "san sẻ" độ tập trung của lớp đã quá tốt (Anger giảm từ 0.96 xuống 0.90) để cải thiện đáng kể các lớp khó khác như Disgust (F1-score tăng vượt trội từ 0.63 lên 0.76) và Sadness (tăng từ 0.74 lên 0.78). Đây là hiện tượng đánh đổi (trade-off) rất bình thường và hợp lý trong học máy để đạt được hiệu năng tổng thể tốt nhất.
-        </div>
-      </div>
+<section id="mainpy">
+<h2><span class="section-num">4</span> Giai thich main.py</h2>
+<p>Toan bo code nam trong <code>main.py</code>. Duoi day la giai thich tung thanh phan chinh.</p>
 
-      <div class="qa-item">
-        <div class="qa-q"><span class="num">3</span> Làm thế nào để nhóm em so sánh điểm số giữa Mô hình gốc 8 lớp và Mô hình tinh chỉnh 6 lớp? <span class="arrow">▼</span></div>
-        <div class="qa-a">
-          Dạ thưa thầy/cô, nếu so sánh trực tiếp điểm số xác suất thô sẽ mất công bằng toán học vì tổng xác suất phân phối của mô hình gốc bị phân tán sang cả 2 lớp thừa là Fear và Contempt. Nhóm em đã thiết lập thuật toán Phép chiếu không gian con và Tái chuẩn hóa (Subspace Projection & Re-normalisation). Hệ thống loại bỏ điểm số của 2 cổng thừa này, chỉ lấy logits của 6 cảm xúc mục tiêu giống mô hình tinh chỉnh, rồi chia lại tỷ lệ để tổng xác suất của 6 lớp cảm xúc này quy về lại đúng $100\%$. Nhờ vậy, hai mô hình được so sánh trên cùng một hệ quy chiếu và cùng một tập kiểm thử độc lập 150 ảnh.
-        </div>
-      </div>
+<section id="41-class-emotionengine">
+<h3><span class="section-num">4.1</span> <code>class EmotionEngine</code></h3>
+<p><strong>Day la "trai tim" cua he thong.</strong> Chua toan bo logic phat hien mat va nhan dien cam xuc.</p>
 
-      <div class="qa-item">
-        <div class="qa-q"><span class="num">4</span> Ưu nhược điểm của bộ lọc làm mịn thời gian (Temporal Smoothing) là gì? <span class="arrow">▼</span></div>
-        <div class="qa-a">
-          Dạ thưa thầy/cô, bộ lọc làm mịn thời gian giúp triệt tiêu hiện tượng nháy nhãn (Label Flickering) gây ra bởi các nhiễu động ánh sáng tức thời hoặc cử động chớp mắt của học sinh, giúp hiển thị cảm xúc mượt mà. Tuy nhiên, nhược điểm của nó là gây ra độ trễ phản hồi (Time Lag) khi học sinh chuyển đột ngột từ cảm xúc này sang cảm xúc khác (vì bộ đệm cần thời gian tích lũy khung hình mới). Nhóm em đã cấu hình kích thước bộ đệm tối ưu là `10` khung hình (tương đương khoảng $0.3 - 0.6$ giây ở tốc độ webcam thực tế), đây là khoảng thời gian đủ ngắn để mắt người không cảm nhận được độ trễ, nhưng đủ dài để lọc nhiễu hiệu quả.
-        </div>
-      </div>
+<div class="func-card">
+<div class="func-card-header">
+<span class="fn-name">__init__(model_name, weights_path)</span>
+</div>
+<div class="func-card-body">
+<p>Khi tao EmotionEngine, 4 viec xay ra:</p>
+<ol>
+  <li>Khoi tao <strong>HSEmotionRecognizer</strong> (tai model EfficientNet ~25MB).</li>
+  <li>Tai <strong>Haar Cascade</strong> phat hien khuon mat.</li>
+  <li>Load <strong>fine-tuned weights</strong> neu co.</li>
+  <li>Tao <strong>CLAHE</strong> de can bang anh sang.</li>
+</ol>
+<p>Dong quan trong:</p>
+<pre>self.er = HSEmotionRecognizer(model_name=model_name)
+self.fc = cv2.CascadeClassifier(FACE_CASCADE)
+self.clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))</pre>
+</div>
+</div>
 
-      <div class="qa-item">
-        <div class="qa-q"><span class="num">5</span> Hệ thống hoạt động ra sao nếu trong khung hình Webcam xuất hiện nhiều người? <span class="arrow">▼</span></div>
-        <div class="qa-a">
-          Dạ thưa thầy/cô, nhóm em đã cài đặt thuật toán theo dõi tâm khuôn mặt (Centroid Tracking) kết hợp cơ chế lọc khuôn mặt đại diện (Primary Face). Hệ thống tính toán tâm hình học của các hộp bao khuôn mặt và theo dõi độc lập từng người trên lưới `60` pixel. Trong đó, hệ thống quy ước khuôn mặt đầu tiên phát hiện được (chính diện camera) là Primary Face đại diện cho học sinh học bài. Chỉ có dữ liệu cảm xúc của Primary Face mới được ghi nhận vào RAM phục vụ vẽ Dashboard đồ thị cuối phiên học. Mọi khuôn mặt phụ xuất hiện ở hậu cảnh sẽ tự động bị bộ lọc loại bỏ khỏi biểu đồ, đảm bảo tính tập trung và chính xác của dữ liệu báo cáo.
-        </div>
-      </div>
-    </section>
-  </article>
-</main>
+<div class="func-card">
+<div class="func-card-header">
+<span class="fn-name">detect(frame) / predict(face_img) / process(frame)</span>
+</div>
+<div class="func-card-body">
+<p><strong>detect():</strong> Chuyen anh sang xam → Haar Cascade → tra ve list <code>[(x,y,w,h)]</code>.</p>
+<p><strong>predict():</strong> Chap nhan 1 anh mat da crop:</p>
+<ul>
+  <li>BGR → Gray → CLAHE → RGB (tien xu ly)</li>
+  <li>Goi HSEmotion.predict_emotions() → 8 xac suat</li>
+  <li>Neu model goc: chon 6/8 xac suat tuong ung [0,2,4,5,6,7]</li>
+  <li>Neu fine-tuned: lay 6 xac suat dau tien</li>
+</ul>
+<p><strong>process():</strong> Ham tong hop:</p>
+<ul>
+  <li>Goi detect() → loc mat ≥48px</li>
+  <li>Voi moi mat: predict() → Temporal Smoothing → Adaptive Threshold</li>
+  <li>Tra ve list: <code>[{'bbox','emotion','confidence','probs'}]</code></li>
+</ul>
+</div>
+</div>
+
+<div class="func-card">
+<div class="func-card-header">
+<span class="fn-name">Temporal Smoothing (co che)</span>
+</div>
+<div class="func-card-body">
+<p>Moi khuon mat co 1 buffer rieng (deque maxlen=10). Them ket qua moi vao buffer, tinh trung binh 10 frame gan nhat. Giam nhap nhay do nhieu anh tam thoi.</p>
+<pre>if k not in self.bufs: self.bufs[k] = deque(maxlen=10)
+self.bufs[k].append(scores)
+avg = np.mean(self.bufs[k], axis=0)</pre>
+<p>Key cua buffer duoc tinh tu toa do tam, luong tu hoa 60px → neu mat rung &lt;60px, key khong doi → buffer khong bi reset.</p>
+</div>
+</div>
+
+<div class="func-card">
+<div class="func-card-header">
+<span class="fn-name">Adaptive Threshold (nguong rieng)</span>
+</div>
+<div class="func-card-body">
+<p>Moi emotion co nguong rieng. Neu xac suat cao nhat &lt; nguong → mac dinh Neutral:</p>
+<pre>nguong = {
+    'Happiness': 0.50,  'Sadness': 0.30,  'Surprise': 0.35,
+    'Anger': 0.40,      'Neutral': 0.35
+}</pre>
+</div>
+</div>
+</section>
+
+<section id="42-class-sessionstats">
+<h3><span class="section-num">4.2</span> <code>class SessionStats</code></h3>
+<p>Ghi nhan lich su cam xuc trong 1 phien webcam/video va tao bao cao truc quan (pie chart + timeline) khi ket thuc.</p>
+
+<div class="func-card">
+<div class="func-card-header">
+<span class="fn-name">record(t, results) / report()</span>
+</div>
+<div class="func-card-body">
+<p><strong>record():</strong> Append-only, O(1) — khong anh huong FPS. Chi lay face dau tien lam primary.</p>
+<p><strong>report():</strong> Ve pie chart phan bo + timeline scatter plot → luu vao <code>reports/emotion_report.png</code>.</p>
+</div>
+</div>
+</section>
+
+<section id="43-ham-load-model">
+<h3><span class="section-num">4.3</span> <code>load_model(model_name, num_classes)</code></h3>
+<p>Ham tinh (static) dung de tai model EfficientNet tu cache cua HSEmotion, sua loi tuong thich key cua timm, va tra ve model PyTorch san sang.</p>
+
+<div class="func-card">
+<div class="func-card-header">
+<span class="fn-name">load_model() — chi tiet</span>
+</div>
+<div class="func-card-body">
+<ol>
+  <li>Lay duong dan file .pt tu <code>get_model_path(model_name)</code></li>
+  <li>Load checkpoint bang torch.load()</li>
+  <li>Rename key <code>classifier.0.weight</code> → <code>classifier.weight</code> (tuong thich timm moi)</li>
+  <li>Chon architecture: B0 hoac B2</li>
+  <li>Tao model bang timm, load state_dict (bo qua classifier neu shape khong khop)</li>
+</ol>
+</div>
+</div>
+</section>
+
+<section id="44-ham-do-finetune">
+<h3><span class="section-num">4.4</span> <code>do_finetune(dataset_dir, ...)</code></h3>
+<p>Fine-tune model tren dataset tu thu thap. Chien luoc: dong bang backbone, chi mo 2 blocks cuoi + classifier.</p>
+
+<div class="func-card">
+<div class="func-card-header">
+<span class="fn-name">do_finetune() — cac buoc</span>
+</div>
+<div class="func-card-body">
+<ol>
+  <li><strong>Load model</strong> EfficientNet voi 6 output classes</li>
+  <li><strong>Freeze</strong> toan bo tham so, chi unfreeze 2 blocks cuoi + classifier</li>
+  <li><strong>Doc dataset</strong> tu thu muc, map ten folder → index emotion</li>
+  <li><strong>Chia</strong> 70% train / 15% val / 15% test (seed=42)</li>
+  <li><strong>Training loop:</strong>
+    <ul>
+      <li>Forward → CrossEntropyLoss → Backward → Adam optimizer</li>
+      <li>Validation sau moi epoch (khong backward)</li>
+      <li>Luu checkpoint neu val_acc > best</li>
+    </ul>
+  </li>
+</ol>
+</div>
+</div>
+
+<blockquote class="warn">
+<strong>Tai sao dong bang backbone?</strong>
+Dataset chi ~366 anh. Neu mo toan bo 5.3M tham so → overfit ngay. Chi mo ~0.5M tham so (2 blocks cuoi) thi 366 anh la vua du.
+</blockquote>
+</section>
+
+<section id="45-ham-do-evaluate">
+<h3><span class="section-num">4.5</span> <code>do_evaluate(model_name, weights_path, ...)</code></h3>
+<p>So sanh model goc (8 class) vs model fine-tuned (6 class) tren test set. In accuracy, precision, recall, F1. Ve confusion matrix + training curve.</p>
+
+<div class="func-card">
+<div class="func-card-header">
+<span class="fn-name">do_evaluate() — chi tiet</span>
+</div>
+<div class="func-card-body">
+<ol>
+  <li>Load <strong>2 models</strong>: base (8 classes) + fine-tuned (6 classes)</li>
+  <li>Chay ca 2 tren test set, luu y mapping index:
+    <ul>
+      <li>Base: output[:, [0,2,4,5,6,7]] (bo Contempt index 1, Fear index 3)</li>
+      <li>Fine-tuned: output[:, :6] (6 classes)</li>
+    </ul>
+  </li>
+  <li>In classification report (precision, recall, F1)</li>
+  <li>Ve confusion matrix heatmap</li>
+  <li>Ve training curve (loss + accuracy) neu co history</li>
+</ol>
+</div>
+</div>
+</section>
+
+<section id="46-cac-mode">
+<h3><span class="section-num">4.6</span> Cac mode functions</h3>
+
+<div class="func-card">
+<div class="func-card-header">
+<span class="fn-name">mode_webcam(args)</span>
+</div>
+<div class="func-card-body">
+<p>Mo camera → vong lap while True:</p>
+<ul>
+  <li>Doc frame, skip 2 frame de tang FPS</li>
+  <li>Goi engine.process() → draw_boxes()</li>
+  <li>Ghi nhan SessionStats</li>
+  <li>Phim q/ESC = thoat, s = chup anh</li>
+</ul>
+</div>
+</div>
+
+<div class="func-card">
+<div class="func-card-header">
+<span class="fn-name">mode_image(args)</span>
+</div>
+<div class="func-card-body">
+<p>Doc 1 file anh → engine.process() → draw_boxes() → hien thi + luu neu co --output.</p>
+</div>
+</div>
+
+<div class="func-card">
+<div class="func-card-header">
+<span class="fn-name">mode_video(args)</span>
+</div>
+<div class="func-card-body">
+<p>Mo file video → vong lap giong webcam + thanh tien trinh + phim SPACE de tam dung. Co the luu video output.</p>
+</div>
+</div>
+
+<div class="func-card">
+<div class="func-card-header">
+<span class="fn-name">mode_finetune(args) / mode_evaluate(args)</span>
+</div>
+<div class="func-card-body">
+<p>mode_finetune: Goi do_finetune() voi tham so tu dong lenh.</p>
+<p>mode_evaluate: Load dataset + weights → goi do_evaluate() de so sanh.</p>
+</div>
+</div>
+</section>
+</section>
+
+<section id="giai-thich-khai-niem">
+<h2><span class="section-num">5</span> Giai thich khai niem chuyen mon</h2>
+
+<div class="func-card">
+<div class="func-card-header"><span class="fn-name">Haar Cascade</span></div>
+<div class="func-card-body">Thuat toan phat hien vat the co dien (Viola-Jones 2001). Quet cua so nho qua anh, so sanh tong pixel giua 2 vung. Neu du nhieu dac trung khop → do la khuon mat. Uu: rat nhanh, chay CPU. Nhuoc: kem voi mat nghieng, thieu sang.</div>
+</div>
+
+<div class="func-card">
+<div class="func-card-header"><span class="fn-name">BGR vs RGB</span></div>
+<div class="func-card-body">OpenCV doc anh theo BGR (Blue-Green-Red), khac RGB thong thuong. Can chuyen doi khi dung matplotlib.</div>
+</div>
+
+<div class="func-card">
+<div class="func-card-header"><span class="fn-name">EfficientNet</span></div>
+<div class="func-card-body">Kien truc neural network do Google phat trien (2019). Can bang 3 chieu: do sau, do rong, do phan giai → chinh xac toi da voi it tham so nhat. Code dung phien ban B0 (nhe nhat).</div>
+</div>
+
+<div class="func-card">
+<div class="func-card-header"><span class="fn-name">Softmax &amp; Argmax</span></div>
+<div class="func-card-body">Softmax: Bien mang so thanh xac suat (tong = 1). Argmax: Lay chi so phan tu lon nhat. VD: <code>argmax([0.02, 0.85, 0.03]) = 1</code>.</div>
+</div>
+
+<div class="func-card">
+<div class="func-card-header"><span class="fn-name">Temporal Smoothing</span></div>
+<div class="func-card-body">Dung deque luu 10 ket qua gan nhat, tinh trung binh → giam nhieu, cam xuc thay doi tu tu.</div>
+</div>
+
+<div class="func-card">
+<div class="func-card-header"><span class="fn-name">CLAHE</span></div>
+<div class="func-card-body">Can bang sang cuc bo. Chia anh thanh o 8x8, can bang tung o rieng, co gioi han tuong phan → noi chi tiet, tranh nhieu.</div>
+</div>
+
+<div class="func-card">
+<div class="func-card-header"><span class="fn-name">CrossEntropyLoss</span></div>
+<div class="func-card-body"><code>Loss = -log(p)</code> voi p la xac suat model du doan cho lop dung. Model doan dung 95% → loss~0.05. Sai → loss cao.</div>
+</div>
+
+<div class="func-card">
+<div class="func-card-header"><span class="fn-name">Fine-tuning (Huan luyen them)</span></div>
+<div class="func-card-body">Giu kien thuc tu 450k anh (dong bang backbone), chi day them dac diem rieng tu dataset nho (mo 2 blocks cuoi + classifier). Giong nhu dau bep da gioi, chi can chinh theo khau vi gia dinh.</div>
+</div>
+
+<div class="func-card">
+<div class="func-card-header"><span class="fn-name">Learning Rate &amp; Epoch</span></div>
+<div class="func-card-body">Epoch = 1 lan quet het dataset. Learning Rate = kich thuoc buoc cap nhat trong so. Mac dinh <code>1e-4</code> phu hop fine-tune.</div>
+</div>
+
+<div class="func-card">
+<div class="func-card-header"><span class="fn-name">Overfitting (Qua khop)</span></div>
+<div class="func-card-body">Model "hoc thuoc" du lieu train, khong tong quat hoa duoc. Dau hieu: train acc cao, val acc thap. Code chong bang: freeze backbone, validation moi epoch, chi luu best model.</div>
+</div>
+
+<div class="func-card">
+<div class="func-card-header"><span class="fn-name">Confusion Matrix</span></div>
+<div class="func-card-body">Bang N×N: hang = nhan that, cot = nhan du doan. Duong cheo = dung, ngoai = sai. Giup biet lop nao model yeu.</div>
+</div>
+
+<div class="func-card">
+<div class="func-card-header"><span class="fn-name">Precision, Recall, F1</span></div>
+<div class="func-card-body">Precision = doan dung / tong so lan doan. Recall = tim duoc / tong so that. F1 = trung binh dieu hoa cua Precision va Recall.</div>
+</div>
+
+<div class="func-card">
+<div class="func-card-header"><span class="fn-name">GPU vs CPU</span></div>
+<div class="func-card-body">Code tu dong chon device. GPU (CUDA) nhanh hon CPU 10-50 lan. Khong co GPU thi van chay duoc tren CPU.</div>
+</div>
+</section>
+
+<section id="cau-hoi-bao-ve">
+<h2><span class="section-num">6</span> Cau hoi bao ve</h2>
+
+<div class="qa-item"><div class="qa-q" onclick="toggleQA(this)"><span class="num">1</span> Tai sao dung HSEmotion ma khong tu train tu dau?<span class="arrow">▼</span></div><div class="qa-a">Training EfficientNet tu dau can hang tram nghin anh va nhieu ngay tren GPU manh. HSEmotion da train san tren AffectNet (450,000 anh). Minh chi fine-tune tren dataset nho (366 anh) — vua nhanh (vai phut), vua tan dung duoc kien thuc tu tap du lieu lon (transfer learning).</div></div>
+
+<div class="qa-item"><div class="qa-q" onclick="toggleQA(this)"><span class="num">2</span> Haar Cascade — uu nhuoc diem? Co the thay bang gi?<span class="arrow">▼</span></div><div class="qa-a">Haar Cascade nhanh (real-time tren CPU), nhung kem voi mat nghieng, bi che, thieu sang. Co the thay bang MTCNN (chinh xac hon, cham hon) hoac YOLOv8-face (can GPU).</div></div>
+
+<div class="qa-item"><div class="qa-q" onclick="toggleQA(this)"><span class="num">3</span> Temporal Smoothing hoat dong the nao?<span class="arrow">▼</span></div><div class="qa-a">Moi khuon mat co buffer rieng (deque maxlen=10 frame). Them ket qua moi vao buffer, ket qua cuoi = trung binh 10 frame. Giup tranh nhay loan emotion do anh bi nhieu hoac mat mo tam thoi. Key buffer duoc tinh tu tam mat, luong tu hoa 60px de neu chi rung nhe, key khong bi reset.</div></div>
+
+<div class="qa-item"><div class="qa-q" onclick="toggleQA(this)"><span class="num">4</span> Tai sao moi emotion co nguong rieng?<span class="arrow">▼</span></div><div class="qa-a">Happiness thuong duoc du doan voi do tin cay cao (≥80%), nguong 0.50 an toan. Sadness va Surprise de bi nham, diem thap hon → ha nguong xuong 0.30-0.35 de khong bo sot. Neu khong dat nguong → tra ve Neutral (an toan nhat).</div></div>
+
+<div class="qa-item"><div class="qa-q" onclick="toggleQA(this)"><span class="num">5</span> Dataset gom nhung emotion nao? So luong?<span class="arrow">▼</span></div><div class="qa-a">6 lop: Anger, Disgust, Happiness, Neutral, Sadness, Surprise. Moi lop 61 anh → tong 366 anh. Anh duoc lay tu Kaggle FER2013 + AffectNet subset.</div></div>
+
+<div class="qa-item"><div class="qa-q" onclick="toggleQA(this)"><span class="num">6</span> Qua trinh fine-tune chia du lieu the nao?<span class="arrow">▼</span></div><div class="qa-a">Chia 70% train (~258 anh), 15% val (~54 anh), 15% test (~54 anh). Chia ngau nhien voi seed co dinh 42 de ket qua tai lap duoc.</div></div>
+
+<div class="qa-item"><div class="qa-q" onclick="toggleQA(this)"><span class="num">7</span> Tai sao dong bang backbone, chi mo 2 blocks cuoi?<span class="arrow">▼</span></div><div class="qa-a">Backbone da hoc dac trung tong quat tu 450k anh. Dataset rieng qua nho (258 anh train) — neu mo toan bo se overfit ngay. Chi mo 2 blocks cuoi + classifier (~0.5M tham so) de tinh chinh rieng cho dataset cua minh.</div></div>
+
+<div class="qa-item"><div class="qa-q" onclick="toggleQA(this)"><span class="num">8</span> Dau hieu overfit? Code xu ly gi de chong?<span class="arrow">▼</span></div><div class="qa-a">Dau hieu: train acc cao nhung val acc thap. Code chong bang: (1) dong bang backbone, (2) validation moi epoch, (3) chi luu model khi val accuracy tot nhat (best model), khong luu model cuoi cung.</div></div>
+
+<div class="qa-item"><div class="qa-q" onclick="toggleQA(this)"><span class="num">9</span> Confusion matrix cho biet gi?<span class="arrow">▼</span></div><div class="qa-a">CM la bang N×N: hang = nhan that, cot = nhan du doan. Duong cheo = dung, ngoai = sai. Giup biet lop nao model yeu nhat, va no bi nham voi lop nao. VD: Fear va Surprise hay nham nhau vi deu co mat mo to, mieng ha.</div></div>
+
+<div class="qa-item"><div class="qa-q" onclick="toggleQA(this)"><span class="num">10</span> Muc dich cua CLAHE?<span class="arrow">▼</span></div><div class="qa-a">CLAHE can bang sang cuc bo. Webcam trong phong hoc thuong bi anh sang khong deu — mot ben sang, mot ben toi. CLAHE chia anh thanh o 8x8, can bang tung o rieng → ca khuon mat deu ro net, model nhan dien chinh xac hon.</div></div>
+
+<div class="qa-item"><div class="qa-q" onclick="toggleQA(this)"><span class="num">11</span> <code>skip_frames</code> hoat dong the nao?<span class="arrow">▼</span></div><div class="qa-a"><code>skip_frames = 2</code> → chi xu ly AI tren frame chan. Frame le ve lai ket qua cu. Webcam 30 FPS, AI ~15 FPS → ky thuat nay cho hinh muot (30 FPS) ma AI van kip. FPS hien thi van 30, chi co FPS AI la 15.</div></div>
+
+<div class="qa-item"><div class="qa-q" onclick="toggleQA(this)"><span class="num">12</span> File .pt la gi? Ben trong chua gi?<span class="arrow">▼</span></div><div class="qa-a">.pt la checkpoint PyTorch. Chua: <code>model_state_dict</code> (trong so model), <code>class_names</code> (ten cac lop), <code>model_name</code>, <code>val_acc</code> (accuracy tot nhat), <code>epoch</code>.</div></div>
+
+<div class="qa-item"><div class="qa-q" onclick="toggleQA(this)"><span class="num">13</span> Tai sao chi 6 emotion thay vi 8?<span class="arrow">▼</span></div><div class="qa-a">Model HSEmotion ban dau co 8 class (Anger, Contempt, Disgust, Fear, Happiness, Neutral, Sadness, Surprise). Trong my cho hoc online, Contempt (khinh thuong) va Fear (so hai) rat hiem gap. Bo 2 class nay giup model tap trung vao 6 class con lai, chinh xac hon. Khi dung model goc, code trich xuat 6/8 class bang index [0,2,4,5,6,7].</div></div>
+
+<div class="qa-item"><div class="qa-q" onclick="toggleQA(this)"><span class="num">14</span> Ki truc tong the cua he thong?<span class="arrow">▼</span></div><div class="qa-a">He thong nam trong 1 file main.py, gom: (1) EmotionEngine — phat hien mat + nhan dien cam xuc. (2) SessionStats — ghi nhan va bao cao. (3) load_model + do_finetune — fine-tune. (4) do_evaluate — danh gia. (5) 5 mode functions (webcam, image, video, finetune, evaluate). Nguoi dung chon mode qua tham so --mode.</div></div>
+
+<div class="qa-item"><div class="qa-q" onclick="toggleQA(this)"><span class="num">15</span> Tien trinh xu ly 1 frame nhu the nao?<span class="arrow">▼</span></div><div class="qa-a">(1) Doc frame tu camera/video. (2) Neu frame chan: eng.process() goi detect → tim mat. (3) Voi moi mat ≥48px: predict() → CLAHE → HSEmotion → 6 xac suat. (4) Temporal Smoothing: lay trung binh 10 frame gan nhat. (5) Adaptive Threshold: so sanh xac suat cao nhat voi nguong rieng → emotion cuoi. (6) Ve bounding box + label len frame. (7) Hien thi. (8) Nhan phim q de thoat.</div></div>
+
+</section>
+
+</article>
+
+<hr>
+<footer style="text-align:center;padding:32px 0 16px;color:var(--slate-400);font-size:.82rem">
+  Giai thich do an — Nhan dien cam xuc nguoi hoc online<br>
+  Mon: Khai thac thong tin da phuong tien
+</footer>
+
+</div>
 
 <script>
-// Mobile sidebar toggling logic
-const menuToggle = document.getElementById('menuToggle');
-const sidebar = document.getElementById('sidebar');
-const overlay = document.getElementById('overlay');
-
-function toggleMenu() {
-  sidebar.classList.toggle('open');
-  overlay.classList.toggle('show');
-}
-
-menuToggle.addEventListener('click', toggleMenu);
-overlay.addEventListener('click', toggleMenu);
-
-// Accordion (QA dropdown) logic
-const qaQuestions = document.querySelectorAll('.qa-q');
-qaQuestions.forEach(q => {
-  q.addEventListener('click', () => {
-    q.classList.toggle('active');
-    const answer = q.nextElementSibling;
-    answer.classList.toggle('open');
-  });
-});
+const toggle=document.getElementById('menuToggle');
+const sidebar=document.getElementById('sidebar');
+toggle.addEventListener('click',()=>{sidebar.classList.toggle('open');toggle.textContent=sidebar.classList.contains('open')?'✕':'☰';});
+document.querySelectorAll('section[id]').forEach(s=>{new IntersectionObserver(e=>{e.forEach(e=>{if(e.isIntersecting){document.querySelectorAll('#toc a').forEach(a=>a.classList.remove('active'));const l=document.querySelector('#toc a[href="#'+s.id+'"]');if(l)l.classList.add('active');}});},{rootMargin:'-80px 0 -60% 0'}).observe(s);});
+function toggleQA(el){el.classList.toggle('active');el.nextElementSibling.classList.toggle('open');}
 </script>
-</body>
-</html>
+
+</body></html>
