@@ -35,16 +35,10 @@ class ModelEvaluator:
                 images = images.to(self.device)
                 outputs = model(images)
                 
-                if is_original:
-                    # Slices logits for 0: Anger, 2: Disgust, 4: Happiness, 5: Neutral, 6: Sadness, 7: Surprise
-                    outputs_sliced = outputs[:, [0, 2, 4, 5, 6, 7]]
-                    _, predicted = outputs_sliced.max(1)
-                    all_preds.extend(predicted.cpu().numpy())
-                else:
-                    # Fine-tuned model only trained classes 0-5
-                    outputs_sliced = outputs[:, :6]
-                    _, predicted = outputs_sliced.max(1)
-                    all_preds.extend(predicted.cpu().numpy())
+                # Ca model goc va model fine-tuned sau khi load qua _load_model deu co 6 dau ra
+                outputs_sliced = outputs[:, :6]
+                _, predicted = outputs_sliced.max(1)
+                all_preds.extend(predicted.cpu().numpy())
                     
                 all_labels.extend(labels.cpu().numpy())
         return np.array(all_labels), np.array(all_preds)

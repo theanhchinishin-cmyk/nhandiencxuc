@@ -43,8 +43,9 @@ class EmotionFineTuner:
 
         self.model = model.to(self.device)
 
-        # transform giong HSEmotion
+        # transform giong HSEmotion (them RandomHorizontalFlip de tang cuong du lieu)
         self.transform = transforms.Compose([
+            transforms.RandomHorizontalFlip(p=0.5),
             transforms.Resize((224, 224)),
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.485, 0.456, 0.406],
@@ -55,10 +56,7 @@ class EmotionFineTuner:
         for param in self.model.parameters():
             param.requires_grad = False
 
-        # Buoc 2: Mo dong bang 2 blocks cuoi + classifier
-        for block in list(self.model.blocks)[-2:]:
-            for param in block.parameters():
-                param.requires_grad = True
+        # Buoc 2: Chi mo dong bang duy nhat lop phan loai classifier (Cach 1)
         for param in self.model.classifier.parameters():
             param.requires_grad = True
 
@@ -93,15 +91,35 @@ class EmotionFineTuner:
         else:
             arch_name = 'tf_efficientnet_b0.ns_jft_in1k'
 
-        model = timm.create_model(arch_name, pretrained=False, num_classes=8)
-        missing = model.load_state_dict(sd, strict=False)
+        # Load model 8 classes de lay weights goc
+        model_8 = timm.create_model(arch_name, pretrained=False, num_classes=8)
+        missing = model_8.load_state_dict(sd, strict=False)
         if missing.unexpected_keys:
             print(f"  Unexpected keys: {missing.unexpected_keys}")
         if missing.missing_keys:
             real_missing = [k for k in missing.missing_keys if 'classifier' not in k]
             if real_missing:
                 print(f"  Keys bi thieu: {real_missing}")
-        return model
+
+        # Tao model 6 classes de train phu hop voi dataset 6 labels
+        model_6 = timm.create_model(arch_name, pretrained=False, num_classes=6)
+
+        # Copy backbone weights tu model_8 sang model_6
+        sd_6 = model_6.state_dict()
+        for k, v in model_8.state_dict().items():
+            if 'classifier' not in k:
+                sd_6[k].copy_(v)
+        model_6.load_state_dict(sd_6)
+
+        # Khoi tao weights va bias cho classifier cua model_6 tu model_8 cho dung 6 class
+        # 8 classes goc: Anger(0), Contempt(1), Disgust(2), Fear(3), Happiness(4), Neutral(5), Sadness(6), Surprise(7)
+        # 6 classes dich: Anger(0), Disgust(2), Happiness(4), Neutral(5), Sadness(6), Surprise(7)
+        indices_6 = [0, 2, 4, 5, 6, 7]
+        with torch.no_grad():
+            model_6.classifier.weight.copy_(model_8.classifier.weight[indices_6])
+            model_6.classifier.bias.copy_(model_8.classifier.bias[indices_6])
+
+        return model_6
 
     def load_dataset(self, dataset_dir: str, val_split: float = 0.15,
                      test_split: float = 0.15, batch_size: int = 16):
