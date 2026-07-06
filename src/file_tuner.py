@@ -43,9 +43,17 @@ class EmotionFineTuner:
 
         self.model = model.to(self.device)
 
-        # transform giong HSEmotion (them RandomHorizontalFlip de tang cuong du lieu)
-        self.transform = transforms.Compose([
+        # transform cho train (co RandomHorizontalFlip)
+        self.train_transform = transforms.Compose([
             transforms.RandomHorizontalFlip(p=0.5),
+            transforms.Resize((224, 224)),
+            transforms.ToTensor(),
+            transforms.Normalize(mean=[0.485, 0.456, 0.406],
+                                 std=[0.229, 0.224, 0.225])
+        ])
+
+        # transform cho validation / test (khong co RandomHorizontalFlip)
+        self.val_transform = transforms.Compose([
             transforms.Resize((224, 224)),
             transforms.ToTensor(),
             transforms.Normalize(mean=[0.485, 0.456, 0.406],
@@ -162,9 +170,10 @@ class EmotionFineTuner:
                 )
             return remapped
 
+        current_transform = self.val_transform if is_test_only else self.train_transform
         full_dataset = datasets.ImageFolder(
             dataset_dir,
-            transform=self.transform,
+            transform=current_transform,
             target_transform=_safe_remap,
             is_valid_file=_is_image_file
         )
