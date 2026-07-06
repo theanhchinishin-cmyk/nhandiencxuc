@@ -82,13 +82,22 @@ tucode/
 ├── GIAI_THICH_DU_AN.html    ← Tai lieu giai thich
 ├── requirements.txt          ← Thu vien can cai
 │
-├── dataset/                  ← Anh fine-tune (tu thu thap)
-│   ├── Anger/               61 anh
-│   ├── Disgust/             61 anh
-│   ├── Happiness/           61 anh
-│   ├── Neutral/             61 anh
-│   ├── Sadness/             61 anh
-│   └── Surprise/            61 anh
+├── dataset/                  ← Bo du lieu
+│   ├── train/                ← Tap train & val (366 anh)
+│   │   ├── Anger/           61 anh
+│   │   ├── Disgust/         61 anh
+│   │   ├── Happiness/       61 anh
+│   │   ├── Neutral/         61 anh
+│   │   ├── Sadness/         61 anh
+│   │   └── Surprise/        61 anh
+│   │
+│   └── test_dung1landuynhat/ ← Tap test doc lap (150 anh)
+│       ├── Anger/           25 anh
+│       ├── Disgust/         25 anh
+│       ├── Happiness/       25 anh
+│       ├── Neutral/         25 anh
+│       ├── Sadness/         25 anh
+│       └── Surprise/        25 anh
 │
 ├── models/                   ← .pt weights sau khi fine-tune
 │   └── finetuned.pt          (tu tao ra)
@@ -139,10 +148,10 @@ python main.py --mode video --input video.mp4
 python main.py --mode video --input video.mp4 --output result.mp4
 
 # Fine-tune
-python main.py --mode finetune --dataset dataset/ --epochs 15
+python main.py --mode finetune --dataset dataset/train --epochs 15
 
 # Danh gia
-python main.py --mode evaluate --dataset dataset/ --weights models/finetuned.pt
+python main.py --mode evaluate --dataset dataset/test_dung1landuynhat --weights models/finetuned.pt
 ```
 
 ### 3.4. Phim tat (webcam/video)
@@ -179,7 +188,7 @@ python main.py --mode evaluate --dataset dataset/ --weights models/finetuned.pt
 ### 5.2. Chay
 
 ```bash
-python main.py --mode finetune --dataset dataset/ --epochs 15
+python main.py --mode finetune --dataset dataset/train --epochs 15
 ```
 
 Ket qua luu vao `models/finetuned.pt`.
@@ -187,7 +196,7 @@ Ket qua luu vao `models/finetuned.pt`.
 ### 5.3. Danh gia
 
 ```bash
-python main.py --mode evaluate --dataset dataset/ --weights models/finetuned.pt
+python main.py --mode evaluate --dataset dataset/test_dung1landuynhat --weights models/finetuned.pt
 ```
 
 So sanh accuracy model goc vs fine-tuned, xuat confusion matrix + classification report vao `reports/`.
