@@ -29,8 +29,6 @@ class ModelEvaluator:
         model.eval()
         all_labels, all_preds = [], []
         
-        # Mapping 8 classes model goc -> 6 classes MODEL_CLASSES
-        map_8_to_6 = {0: 0, 1: 1, 2: 1, 3: 1, 4: 2, 5: 3, 6: 4, 7: 5}
 
         with torch.no_grad():
             for images, labels in dataloader:
@@ -38,10 +36,10 @@ class ModelEvaluator:
                 outputs = model(images)
                 
                 if is_original:
-                    _, predicted = outputs.max(1)
-                    pred_np = predicted.cpu().numpy()
-                    mapped_pred = [map_8_to_6.get(p, 3) for p in pred_np]
-                    all_preds.extend(mapped_pred)
+                    # Slices logits for 0: Anger, 2: Disgust, 4: Happiness, 5: Neutral, 6: Sadness, 7: Surprise
+                    outputs_sliced = outputs[:, [0, 2, 4, 5, 6, 7]]
+                    _, predicted = outputs_sliced.max(1)
+                    all_preds.extend(predicted.cpu().numpy())
                 else:
                     # Fine-tuned model only trained classes 0-5
                     outputs_sliced = outputs[:, :6]

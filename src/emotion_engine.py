@@ -139,22 +139,12 @@ class EmotionEngine:
                 processed_face, logits=False
             )
 
-            # Map 8 classes to 6 classes
+            # Map 8 classes to 6 classes (Subspace Extraction & Re-normalization)
             if not self.is_finetuned:
-                # 0: Anger -> 0 (Anger)
-                # 1: Contempt, 2: Disgust, 3: Fear -> 1 (Disgust)
-                # 4: Happiness -> 2 (Happiness)
-                # 5: Neutral -> 3 (Neutral)
-                # 6: Sadness -> 4 (Sadness)
-                # 7: Surprise -> 5 (Surprise)
-                mapped_scores = np.zeros(6)
-                mapped_scores[0] = scores[0]  # Anger
-                mapped_scores[1] = scores[1] + scores[2] + scores[3]  # Contempt + Disgust + Fear
-                mapped_scores[2] = scores[4]  # Happiness
-                mapped_scores[3] = scores[5]  # Neutral
-                mapped_scores[4] = scores[6]  # Sadness
-                mapped_scores[5] = scores[7]  # Surprise
-                scores = mapped_scores
+                # 0: Anger (0), 2: Disgust (2), 4: Happiness (4), 5: Neutral (5), 6: Sadness (6), 7: Surprise (7)
+                raw_6 = np.array([scores[0], scores[2], scores[4], scores[5], scores[6], scores[7]])
+                sum_raw = np.sum(raw_6)
+                scores = raw_6 / sum_raw if sum_raw > 0 else raw_6
             else:
                 # Fine-tuned model only trained classes 0-5
                 scores = scores[:6]
