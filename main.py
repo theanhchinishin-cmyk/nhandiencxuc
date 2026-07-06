@@ -359,7 +359,8 @@ def run_finetune(args):
     tuner = EmotionFineTuner(model_name=args.model)
     tuner.load_dataset(
         dataset_dir=args.dataset,
-        batch_size=args.batch_size
+        batch_size=args.batch_size,
+        test_split=0.0
     )
     history = tuner.train(
         epochs=args.epochs,
@@ -404,7 +405,7 @@ def run_evaluate(args):
     # Load dataset (chi dung test set)
     print(" Dang load dataset...")
     tuner = EmotionFineTuner(model_name=args.model)
-    tuner.load_dataset(dataset_dir=args.dataset, batch_size=args.batch_size)
+    tuner.load_dataset(dataset_dir=args.dataset, batch_size=args.batch_size, is_test_only=True)
     test_loader, class_names = tuner.test_data
 
     device = 'cuda' if torch.cuda.is_available() else 'cpu'

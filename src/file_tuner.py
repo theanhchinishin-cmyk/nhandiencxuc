@@ -122,7 +122,8 @@ class EmotionFineTuner:
         return model_6
 
     def load_dataset(self, dataset_dir: str, val_split: float = 0.15,
-                     test_split: float = 0.15, batch_size: int = 16):
+                     test_split: float = 0.15, batch_size: int = 16,
+                     is_test_only: bool = False):
         """Doc dataset tu cau truc: dataset_dir/ClassName/image.jpg
 
         Ten folder phai khop voi MODEL_CLASSES
@@ -169,21 +170,36 @@ class EmotionFineTuner:
         )
 
         n = len(full_dataset)
-        n_test = max(1, int(n * test_split))
-        n_val = max(1, int(n * val_split))
+        if is_test_only:
+            self.test_loader = DataLoader(full_dataset, batch_size=batch_size, shuffle=False, num_workers=0)
+            self.train_loader = None
+            self.val_loader = None
+            print(f"\n  Test Only Dataset: {n} anh | {len(self.class_names)} classes: {self.class_names}")
+            return None, None, self.test_loader
+
+        n_test = int(n * test_split)
+        n_val = int(n * val_split)
+        if val_split > 0 and n_val == 0:
+            n_val = 1
+        if test_split > 0 and n_test == 0:
+            n_test = 1
         n_train = n - n_val - n_test
 
         if n_train <= 0:
             raise ValueError(f"Dataset qua nho ({n} anh). Can it nhat 10 anh/class.")
 
-        train_ds, val_ds, test_ds = random_split(
-            full_dataset, [n_train, n_val, n_test],
+        lengths = [n_train, n_val, n_test] if n_test > 0 else [n_train, n_val]
+        splits = random_split(
+            full_dataset, lengths,
             generator=torch.Generator().manual_seed(42)
         )
 
-        self.train_loader = DataLoader(train_ds, batch_size=batch_size, shuffle=True, num_workers=0)
-        self.val_loader = DataLoader(val_ds, batch_size=batch_size, shuffle=False, num_workers=0)
-        self.test_loader = DataLoader(test_ds, batch_size=batch_size, shuffle=False, num_workers=0)
+        self.train_loader = DataLoader(splits[0], batch_size=batch_size, shuffle=True, num_workers=0)
+        self.val_loader = DataLoader(splits[1], batch_size=batch_size, shuffle=False, num_workers=0)
+        if n_test > 0:
+            self.test_loader = DataLoader(splits[2], batch_size=batch_size, shuffle=False, num_workers=0)
+        else:
+            self.test_loader = None
 
         print(f"\n  Dataset: {n} anh | {len(self.class_names)} classes: {self.class_names}")
         print(f"  Train: {n_train} anh | Val: {n_val} anh | Test: {n_test} anh")
