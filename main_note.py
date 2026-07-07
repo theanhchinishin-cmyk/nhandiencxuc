@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 """
 main.py - He thong nhan dang cam xuc nguoi hoc online
 Su dung: python main.py [--mode webcam|image|video]
