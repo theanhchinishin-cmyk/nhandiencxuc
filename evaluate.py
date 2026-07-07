@@ -50,10 +50,6 @@ def run_evaluation():
             y_true.append(EMOTIONS.index(folder_name))
             y_pred.append(EMOTIONS.index(pred_emo))
 
-    if not y_true:
-        print("Error: No images were successfully processed!")
-        return
-
     print("\n=== CLASSIFICATION REPORT ===")
     report = classification_report(y_true, y_pred, target_names=EMOTIONS, digits=4)
     print(report)

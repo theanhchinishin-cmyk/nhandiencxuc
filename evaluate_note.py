@@ -50,31 +50,27 @@ def run_evaluation():  # [Dòng 16] Định nghĩa hàm run_evaluation thực hi
             y_true.append(EMOTIONS.index(folder_name))  # [Dòng 50] Lưu nhãn thực tế dạng số (chỉ số của thư mục con) vào mảng y_true.
             y_pred.append(EMOTIONS.index(pred_emo))  # [Dòng 51] Lưu nhãn dự đoán dạng số (chỉ số của cảm xúc AI đoán) vào mảng y_pred.
 
-    if not y_true:  # [Dòng 53] Nếu cả quá trình quét không thu thập được kết quả của ảnh nào (mảng y_true rỗng).
-        print("Error: No images were successfully processed!")  # [Dòng 54] In thông báo lỗi ra màn hình console.
-        return  # [Dòng 55] Thoát chương trình để tránh lỗi tính toán mảng rỗng bên dưới.
+    print("\n=== CLASSIFICATION REPORT ===")  # [Dòng 53] In tiêu đề báo cáo phân loại ra màn hình console.
+    report = classification_report(y_true, y_pred, target_names=EMOTIONS, digits=4)  # [Dòng 54] Gọi hàm classification_report để tự động tính toán Precision, Recall, F1-score của 6 lớp với độ chính xác 4 chữ số thập phân.
+    print(report)  # [Dòng 55] In bảng báo cáo phân loại chi tiết ra màn hình đen console.
 
-    print("\n=== CLASSIFICATION REPORT ===")  # [Dòng 57] In tiêu đề báo cáo phân loại ra màn hình console.
-    report = classification_report(y_true, y_pred, target_names=EMOTIONS, digits=4)  # [Dòng 58] Gọi hàm classification_report để tự động tính toán Precision, Recall, F1-score của 6 lớp với độ chính xác 4 chữ số thập phân.
-    print(report)  # [Dòng 59] In bảng báo cáo phân loại chi tiết ra màn hình đen console.
+    print("=== PLOTTING CONFUSION MATRIX ===")  # [Dòng 57] In thông báo bắt đầu vẽ biểu đồ ma trận nhầm lẫn.
+    cm = confusion_matrix(y_true, y_pred)  # [Dòng 58] Gọi hàm confusion_matrix của sklearn để tính toán ma trận nhầm lẫn giữa nhãn đúng và nhãn đoán.
+    
+    plt.figure(figsize=(8, 6))  # [Dòng 60] Tạo khung vẽ biểu đồ có kích thước rộng 8 inch, cao 6 inch.
+    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',   # [Dòng 61] Dùng Seaborn vẽ biểu đồ nhiệt (Heatmap) của ma trận: annot=True để in số lượng trực tiếp lên ô, cmap='Blues' tô màu xanh dương.
+                xticklabels=EMOTIONS, yticklabels=EMOTIONS)  # [Dòng 62] xticklabels và yticklabels giúp ghi tên các chữ cảm xúc lên hai trục ngang X và dọc Y của ma trận.
+    
+    plt.title('Ma Tran Nham Lan (Confusion Matrix)')  # [Dòng 64] Đặt tiêu đề cho biểu đồ ma trận nhầm lẫn là 'Ma Trận Nhầm Lẫn (Confusion Matrix)'.
+    plt.ylabel('Cam xuc thuc te (True Label)')  # [Dòng 65] Đặt nhãn trục dọc Y biểu thị cảm xúc đúng thực tế (True Label).
+    plt.xlabel('Cam xuc du doan (Predicted Label)')  # [Dòng 66] Đặt nhãn trục ngang X biểu thị cảm xúc do AI dự đoán (Predicted Label).
+    plt.tight_layout()  # [Dòng 67] Tự động căn chỉnh lề biểu đồ để chữ không bị đè lên nhau.
+    
+    os.makedirs("reports", exist_ok=True)  # [Dòng 69] Tạo thư mục reports/ nếu thư mục này chưa có sẵn trên máy tính.
+    out_path = os.path.join("reports", "confusion_matrix.png")  # [Dòng 70] Thiết lập đường dẫn lưu tệp ảnh ma trận nhầm lẫn là reports/confusion_matrix.png.
+    plt.savefig(out_path, dpi=150)  # [Dòng 71] Lưu biểu đồ ma trận nhiệt thành file ảnh chất lượng cao 150 DPI.
+    plt.close()  # [Dòng 72] Đóng hình vẽ matplotlib để giải phóng bộ nhớ RAM.
+    print(f"Saved confusion matrix plot to: {out_path}")  # [Dòng 73] In thông báo đã lưu tệp ảnh ma trận nhầm lẫn thành công ra màn hình console.
 
-    print("=== PLOTTING CONFUSION MATRIX ===")  # [Dòng 61] In thông báo bắt đầu vẽ biểu đồ ma trận nhầm lẫn.
-    cm = confusion_matrix(y_true, y_pred)  # [Dòng 62] Gọi hàm confusion_matrix của sklearn để tính toán ma trận nhầm lẫn giữa nhãn đúng và nhãn đoán.
-    
-    plt.figure(figsize=(8, 6))  # [Dòng 64] Tạo khung vẽ biểu đồ có kích thước rộng 8 inch, cao 6 inch.
-    sns.heatmap(cm, annot=True, fmt='d', cmap='Blues',   # [Dòng 65] Dùng Seaborn vẽ biểu đồ nhiệt (Heatmap) của ma trận: annot=True để in số lượng trực tiếp lên ô, cmap='Blues' tô màu xanh dương.
-                xticklabels=EMOTIONS, yticklabels=EMOTIONS)  # [Dòng 66] xticklabels và yticklabels giúp ghi tên các chữ cảm xúc lên hai trục ngang X và dọc Y của ma trận.
-    
-    plt.title('Ma Tran Nham Lan (Confusion Matrix)')  # [Dòng 68] Đặt tiêu đề cho biểu đồ ma trận nhầm lẫn là 'Ma Trận Nhầm Lẫn (Confusion Matrix)'.
-    plt.ylabel('Cam xuc thuc te (True Label)')  # [Dòng 69] Đặt nhãn trục dọc Y biểu thị cảm xúc đúng thực tế (True Label).
-    plt.xlabel('Cam xuc du doan (Predicted Label)')  # [Dòng 70] Đặt nhãn trục ngang X biểu thị cảm xúc do AI dự đoán (Predicted Label).
-    plt.tight_layout()  # [Dòng 71] Tự động căn chỉnh lề biểu đồ để chữ không bị đè lên nhau.
-    
-    os.makedirs("reports", exist_ok=True)  # [Dòng 73] Tạo thư mục reports/ nếu thư mục này chưa có sẵn trên máy tính.
-    out_path = os.path.join("reports", "confusion_matrix.png")  # [Dòng 74] Thiết lập đường dẫn lưu tệp ảnh ma trận nhầm lẫn là reports/confusion_matrix.png.
-    plt.savefig(out_path, dpi=150)  # [Dòng 75] Lưu biểu đồ ma trận nhiệt thành file ảnh chất lượng cao 150 DPI.
-    plt.close()  # [Dòng 76] Đóng hình vẽ matplotlib để giải phóng bộ nhớ RAM.
-    print(f"Saved confusion matrix plot to: {out_path}")  # [Dòng 77] In thông báo đã lưu tệp ảnh ma trận nhầm lẫn thành công ra màn hình console.
-
-if __name__ == '__main__':  # [Dòng 79] Điểm vào khởi chạy chính thức của chương trình Python khi gõ lệnh chạy từ terminal.
-    run_evaluation()  # [Dòng 80] Gọi hàm run_evaluation để thực hiện quy trình đánh giá.
+if __name__ == '__main__':  # [Dòng 75] Điểm vào khởi chạy chính thức của chương trình Python khi gõ lệnh chạy từ terminal.
+    run_evaluation()  # [Dòng 76] Gọi hàm run_evaluation để thực hiện quy trình đánh giá.
