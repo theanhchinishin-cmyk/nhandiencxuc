@@ -1,370 +1,1250 @@
-<!DOCTYPE html><html lang="vi"><head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Giải Thích Đồ Án — Nhận Diện Cảm Xúc</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
-<style>
-*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
-html{font-size:16px;scroll-behavior:smooth;scroll-padding-top:80px}
-body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:#0f172a;background:#fafbfc;line-height:1.65;display:flex}
-:root{--slate-900:#0f172a;--slate-800:#1e293b;--slate-700:#334155;--slate-600:#475569;--slate-500:#64748b;--slate-400:#94a3b8;--slate-200:#e2e8f0;--slate-100:#f1f5f9;--slate-50:#f8fafc;--blue-700:#1d4ed8;--blue-600:#2563eb;--blue-100:#dbeafe;--blue-50:#eff6ff;--emerald-600:#059669;--emerald-50:#ecfdf5;--amber-500:#f59e0b;--amber-50:#fffbeb;--rose-600:#e11d48;--rose-50:#fff1f2;--sidebar-w:270px;--shadow-sm:0 1px 2px rgba(0,0,0,.04);--shadow-md:0 4px 16px rgba(0,0,0,.06)}
-::-webkit-scrollbar{width:6px}
-::-webkit-scrollbar-track{background:transparent}
-::-webkit-scrollbar-thumb{background:#cbd5e1;border-radius:3px}
-::-webkit-scrollbar-thumb:hover{background:#94a3b8}
-.sidebar{position:fixed;top:0;left:0;width:var(--sidebar-w);height:100vh;overflow-y:auto;background:#fff;border-right:1px solid var(--slate-200);z-index:100;padding:24px 20px;transition:transform .3s}
-.sidebar-logo{font-weight:700;font-size:1.05rem;color:var(--slate-900);margin-bottom:20px}
-.sidebar-logo small{font-size:.7rem;color:var(--slate-500);font-weight:400;display:block;margin-top:2px}
-.sidebar nav{font-size:.82rem}
-.sidebar nav a{display:block;color:var(--slate-600);text-decoration:none;padding:4px 0;line-height:1.4;border-left:2px solid transparent;padding-left:12px;transition:color .15s}
-.sidebar nav a:hover,.sidebar nav a.active{color:var(--blue-600);border-left-color:var(--blue-600)}
-.sidebar .toc-l1{font-weight:600;color:var(--slate-800);margin-top:12px;font-size:.85rem}
-.sidebar .toc-l1:first-child{margin-top:0}
-.sidebar .toc-l2{padding-left:24px;font-size:.78rem}
-.mobile-toggle{display:none;position:fixed;top:12px;left:12px;z-index:200;background:#fff;border:1px solid var(--slate-200);border-radius:8px;width:40px;height:40px;cursor:pointer;font-size:1.2rem;align-items:center;justify-content:center;box-shadow:var(--shadow-sm)}
-.content{flex:1;margin-left:var(--sidebar-w);max-width:900px;padding:0 48px 80px}
-.hero{padding:48px 0 32px;margin-bottom:32px;border-bottom:1px solid var(--slate-200)}
-.hero h1{font-size:2.2rem;font-weight:700;color:var(--slate-900);letter-spacing:-.02em;line-height:1.2;margin-bottom:8px}
-.hero .meta{color:var(--slate-500);font-size:.9rem;line-height:1.6}
-.hero .meta span{display:inline-block}
-.hero .meta .divider{margin:0 8px;color:var(--slate-300)}
-article h2{font-size:1.6rem;font-weight:700;color:var(--slate-900);margin:40px 0 16px;padding-bottom:8px;border-bottom:2px solid var(--slate-200)}
-article h2 .section-num{color:var(--blue-600);margin-right:8px}
-article h3{font-size:1.15rem;font-weight:600;color:var(--slate-800);margin:28px 0 12px}
-article h4{font-size:1rem;font-weight:600;color:var(--slate-800);margin:20px 0 8px}
-article p{margin-bottom:14px;color:var(--slate-700)}
-article a{color:var(--blue-600);text-decoration:underline;text-underline-offset:2px}
-article strong{color:var(--slate-900);font-weight:600}
-article ul,article ol{margin:0 0 14px;padding-left:24px}
-article li{margin-bottom:6px;color:var(--slate-700)}
-pre{background:var(--slate-800);color:#e2e8f0;border-radius:10px;padding:20px 24px;overflow-x:auto;font-family:'JetBrains Mono',monospace;font-size:.82rem;line-height:1.55;margin:0 0 20px}
-code{font-family:'JetBrains Mono',monospace;font-size:.85em}
-p code,li code{background:var(--slate-100);color:var(--blue-700);padding:2px 6px;border-radius:4px;font-size:.82em}
-pre code{background:transparent;color:inherit;padding:0;font-size:inherit}
-.table-wrap{overflow-x:auto;margin:0 0 20px}
-table{width:100%;border-collapse:collapse;font-size:.9rem}
-thead{background:var(--slate-100)}
-th{font-weight:600;text-align:left;padding:10px 14px;color:var(--slate-800);border-bottom:2px solid var(--slate-200)}
-td{padding:9px 14px;border-bottom:1px solid var(--slate-200);color:var(--slate-700)}
-tbody tr:hover{background:var(--slate-50)}
-blockquote{margin:0 0 20px;padding:14px 18px;border-left:4px solid var(--blue-600);background:var(--blue-50);border-radius:0 8px 8px 0;color:var(--slate-700);font-size:.92rem}
-blockquote strong:first-child{color:var(--blue-700);display:block;margin-bottom:4px;font-size:.85rem;text-transform:uppercase}
-blockquote.warn{border-left-color:var(--amber-500);background:var(--amber-50)}
-blockquote.warn strong:first-child{color:#d97706}
-blockquote.success{border-left-color:var(--emerald-600);background:var(--emerald-50)}
-blockquote.success strong:first-child{color:var(--emerald-600)}
-hr{margin:32px 0;border:none;height:1px;background:var(--slate-200)}
-.func-card{border:1px solid var(--slate-200);border-radius:10px;margin:0 0 16px;background:#fff;overflow:hidden}
-.func-card-header{padding:12px 20px;background:var(--slate-50);border-bottom:1px solid var(--slate-200);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
-.func-card-header .fn-name{font-weight:600;color:var(--slate-900);font-family:'JetBrains Mono',monospace;font-size:.88rem}
-.func-card-body{padding:12px 20px;color:var(--slate-700);font-size:.9rem;line-height:1.55}
-.func-card-body p:last-child{margin-bottom:0}
-.func-card-body code{background:var(--slate-100);color:var(--blue-700);padding:1px 5px;border-radius:3px;font-size:.85em}
-.qa-item{border:1px solid var(--slate-200);border-radius:10px;margin:0 0 12px;background:#fff;overflow:hidden}
-.qa-q{padding:14px 20px;background:var(--slate-50);font-weight:600;color:var(--slate-900);cursor:pointer;display:flex;align-items:center;gap:10px;user-select:none}
-.qa-q:hover{background:var(--slate-100)}
-.qa-q .num{display:inline-flex;align-items:center;justify-content:center;width:26px;height:26px;border-radius:50%;background:var(--blue-600);color:#fff;font-size:.72rem;font-weight:600;flex-shrink:0}
-.qa-q .arrow{color:var(--slate-400);margin-left:auto;transition:transform .2s;font-size:.8rem}
-.qa-q.active .arrow{transform:rotate(180deg)}
-.qa-a{padding:0 20px 0 56px;max-height:0;overflow:hidden;transition:max-height .3s ease,padding .3s ease;color:var(--slate-700);line-height:1.6;font-size:.9rem}
-.qa-a.open{padding:4px 20px 16px 56px;max-height:600px}
-@media(max-width:900px){
-  body{flex-direction:column}
-  .sidebar{transform:translateX(-100%);width:300px}
-  .sidebar.open{transform:translateX(0)}
-  .mobile-toggle{display:flex}
-  .content{margin-left:0;padding:0 20px 60px}
-  .hero{padding:56px 0 24px}
-  .hero h1{font-size:1.5rem}
-  article h2{font-size:1.3rem}
-  pre{font-size:.75rem;padding:14px 16px}
-  .qa-a{padding:0 16px 0 16px}
-  .qa-a.open{padding:4px 16px 14px 16px}
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cẩm Nang Giải Thích Chi Tiết Đồ Án Nhận Diện Cảm Xúc</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+    <style>
+        *, *::before, *::after {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+        html {
+            font-size: 16px;
+            scroll-behavior: smooth;
+            scroll-padding-top: 80px;
+        }
+        body {
+            font-family: 'Inter', system-ui, -apple-system, sans-serif;
+            color: #1e293b;
+            background: #f8fafc;
+            line-height: 1.7;
+            display: flex;
+        }
+        :root {
+            --slate-900: #0f172a;
+            --slate-800: #1e293b;
+            --slate-700: #334155;
+            --slate-600: #475569;
+            --slate-500: #64748b;
+            --slate-200: #e2e8f0;
+            --slate-100: #f1f5f9;
+            --slate-50: #f8fafc;
+            --blue-700: #1d4ed8;
+            --blue-600: #2563eb;
+            --blue-50: #eff6ff;
+            --emerald-700: #047857;
+            --emerald-600: #059669;
+            --emerald-50: #ecfdf5;
+            --amber-600: #d97706;
+            --amber-50: #fffbeb;
+            --purple-600: #7c3aed;
+            --sidebar-w: 290px;
+            --shadow-sm: 0 1px 2px 0 rgba(0,0,0,0.05);
+            --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #cbd5e1;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #94a3b8;
+        }
+
+        /* Sidebar Navigation */
+        .sidebar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: var(--sidebar-w);
+            height: 100vh;
+            overflow-y: auto;
+            background: #ffffff;
+            border-right: 1px solid var(--slate-200);
+            z-index: 100;
+            padding: 30px 24px;
+        }
+        .sidebar-logo {
+            font-weight: 700;
+            font-size: 1.15rem;
+            color: var(--slate-900);
+            margin-bottom: 25px;
+            border-bottom: 2px solid var(--slate-100);
+            padding-bottom: 15px;
+        }
+        .sidebar-logo small {
+            font-size: 0.72rem;
+            color: var(--slate-500);
+            font-weight: 400;
+            display: block;
+            margin-top: 4px;
+        }
+        .sidebar nav {
+            font-size: 0.85rem;
+        }
+        .sidebar nav a {
+            display: block;
+            color: var(--slate-600);
+            text-decoration: none;
+            padding: 6px 0;
+            line-height: 1.5;
+            border-left: 2px solid transparent;
+            padding-left: 14px;
+            transition: all 0.15s ease;
+        }
+        .sidebar nav a:hover, .sidebar nav a.active {
+            color: var(--blue-600);
+            border-left-color: var(--blue-600);
+            background: var(--blue-50);
+            font-weight: 500;
+            padding-left: 18px;
+        }
+        .sidebar .toc-l1 {
+            font-weight: 600;
+            color: var(--slate-800);
+            margin-top: 14px;
+            font-size: 0.88rem;
+        }
+        .sidebar .toc-l1:first-child {
+            margin-top: 0;
+        }
+        .sidebar .toc-l2 {
+            padding-left: 24px;
+            font-size: 0.8rem;
+            color: var(--slate-500);
+        }
+
+        /* Content Area */
+        .content {
+            flex: 1;
+            margin-left: var(--sidebar-w);
+            max-width: 960px;
+            padding: 40px 60px 100px;
+        }
+        
+        .hero {
+            padding-bottom: 30px;
+            margin-bottom: 40px;
+            border-bottom: 1px solid var(--slate-200);
+        }
+        .hero h1 {
+            font-size: 2.4rem;
+            font-weight: 800;
+            color: var(--slate-900);
+            letter-spacing: -0.03em;
+            line-height: 1.25;
+            margin-bottom: 12px;
+            background: linear-gradient(135deg, var(--slate-900) 30%, var(--blue-600));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        .hero .meta {
+            color: var(--slate-500);
+            font-size: 0.95rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+        .hero .meta .tag {
+            background: var(--blue-50);
+            color: var(--blue-600);
+            padding: 2px 8px;
+            border-radius: 4px;
+            font-weight: 600;
+            font-size: 0.8rem;
+        }
+        .hero .meta .divider {
+            color: var(--slate-300);
+        }
+
+        /* Core Typography */
+        article h2 {
+            font-size: 1.7rem;
+            font-weight: 700;
+            color: var(--slate-900);
+            margin: 45px 0 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--slate-200);
+        }
+        article h2 .section-num {
+            color: var(--blue-600);
+            margin-right: 10px;
+        }
+        article h3 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--slate-800);
+            margin: 32px 0 16px;
+        }
+        article h4 {
+            font-size: 1.05rem;
+            font-weight: 600;
+            color: var(--slate-800);
+            margin: 24px 0 10px;
+        }
+        article p {
+            margin-bottom: 16px;
+            color: var(--slate-700);
+            text-align: justify;
+        }
+        article strong {
+            color: var(--slate-900);
+            font-weight: 600;
+        }
+        article ul, article ol {
+            margin: 0 0 18px;
+            padding-left: 24px;
+        }
+        article li {
+            margin-bottom: 8px;
+            color: var(--slate-700);
+        }
+
+        /* Code Blocks */
+        pre {
+            background: #1e293b;
+            color: #f8fafc;
+            border-radius: 12px;
+            padding: 20px 24px;
+            overflow-x: auto;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.82rem;
+            line-height: 1.6;
+            margin: 18px 0 24px;
+            border: 1px solid #334155;
+            position: relative;
+        }
+        code {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.88em;
+        }
+        p code, li code, td code {
+            background: var(--slate-100);
+            color: #0f172a;
+            padding: 2px 6px;
+            border-radius: 4px;
+            font-size: 0.85em;
+            font-weight: 500;
+            border: 1px solid var(--slate-200);
+        }
+        pre code {
+            background: transparent;
+            color: inherit;
+            padding: 0;
+            font-size: inherit;
+            border: none;
+        }
+        .code-comment {
+            color: #64748b;
+            font-style: italic;
+        }
+
+        /* Callouts */
+        blockquote {
+            margin: 24px 0;
+            padding: 16px 20px;
+            border-left: 5px solid var(--blue-600);
+            background: var(--blue-50);
+            border-radius: 0 12px 12px 0;
+            color: var(--slate-700);
+        }
+        blockquote strong:first-child {
+            color: var(--blue-700);
+            display: block;
+            margin-bottom: 6px;
+            font-size: 0.88rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        blockquote.warn {
+            border-left-color: var(--amber-600);
+            background: var(--amber-50);
+        }
+        blockquote.warn strong:first-child {
+            color: var(--amber-600);
+        }
+        blockquote.success {
+            border-left-color: var(--emerald-600);
+            background: var(--emerald-50);
+        }
+        blockquote.success strong:first-child {
+            color: var(--emerald-700);
+        }
+
+        /* Tables */
+        .table-wrap {
+            overflow-x: auto;
+            margin: 24px 0;
+            border-radius: 10px;
+            border: 1px solid var(--slate-200);
+        }
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 0.9rem;
+        }
+        thead {
+            background: var(--slate-100);
+        }
+        th {
+            font-weight: 600;
+            text-align: left;
+            padding: 12px 16px;
+            color: var(--slate-800);
+            border-bottom: 2px solid var(--slate-200);
+        }
+        td {
+            padding: 12px 16px;
+            border-bottom: 1px solid var(--slate-200);
+            color: var(--slate-700);
+        }
+        tbody tr:hover {
+            background: var(--slate-50);
+        }
+
+        /* Custom Cards */
+        .func-card {
+            border: 1px solid var(--slate-200);
+            border-radius: 12px;
+            margin: 20px 0;
+            background: #ffffff;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+        }
+        .func-card-header {
+            padding: 14px 20px;
+            background: var(--slate-50);
+            border-bottom: 1px solid var(--slate-200);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+        .func-card-header .fn-name {
+            font-weight: 600;
+            color: var(--slate-900);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.9rem;
+        }
+        .func-card-header .fn-type {
+            font-size: 0.75rem;
+            font-weight: 600;
+            background: var(--slate-200);
+            color: var(--slate-700);
+            padding: 2px 8px;
+            border-radius: 12px;
+        }
+        .func-card-body {
+            padding: 18px 20px;
+            color: var(--slate-700);
+            font-size: 0.92rem;
+        }
+        .func-card-body p:last-child {
+            margin-bottom: 0;
+        }
+
+        /* Interactive QA Section */
+        .qa-item {
+            border: 1px solid var(--slate-200);
+            border-radius: 12px;
+            margin-bottom: 16px;
+            background: #ffffff;
+            overflow: hidden;
+            box-shadow: var(--shadow-sm);
+            transition: all 0.2s ease;
+        }
+        .qa-item:hover {
+            border-color: var(--blue-600);
+        }
+        .qa-q {
+            padding: 16px 20px;
+            background: var(--slate-50);
+            font-weight: 600;
+            color: var(--slate-900);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            user-select: none;
+            transition: background 0.15s ease;
+        }
+        .qa-q:hover {
+            background: var(--slate-100);
+        }
+        .qa-q .num {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            width: 28px;
+            height: 28px;
+            border-radius: 50%;
+            background: var(--blue-600);
+            color: #ffffff;
+            font-size: 0.78rem;
+            font-weight: 700;
+            flex-shrink: 0;
+        }
+        .qa-q .arrow {
+            color: var(--slate-400);
+            margin-left: auto;
+            transition: transform 0.2s ease;
+            font-size: 0.8rem;
+        }
+        .qa-q.active {
+            background: var(--blue-50);
+            color: var(--blue-700);
+            border-bottom: 1px solid var(--slate-200);
+        }
+        .qa-q.active .arrow {
+            transform: rotate(180deg);
+            color: var(--blue-600);
+        }
+        .qa-a {
+            padding: 0 20px;
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out, padding 0.3s ease-out;
+            color: var(--slate-700);
+            font-size: 0.92rem;
+            background: #ffffff;
+        }
+        .qa-a.open {
+            padding: 20px;
+            max-height: 2000px; /* Large value to allow overflow content */
+            transition: max-height 0.5s ease-in, padding 0.5s ease-in;
+        }
+
+        .mobile-toggle {
+            display: none;
+            position: fixed;
+            top: 15px;
+            left: 15px;
+            z-index: 200;
+            background: #ffffff;
+            border: 1px solid var(--slate-200);
+            border-radius: 8px;
+            width: 44px;
+            height: 44px;
+            cursor: pointer;
+            font-size: 1.3rem;
+            align-items: center;
+            justify-content: center;
+            box-shadow: var(--shadow-md);
+        }
+
+        @media(max-width: 900px){
+            body {
+                flex-direction: column;
+            }
+            .sidebar {
+                transform: translateX(-100%);
+                width: 290px;
+                transition: transform 0.3s ease;
+            }
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            .mobile-toggle {
+                display: flex;
+            }
+            .content {
+                margin-left: 0;
+                padding: 70px 20px 60px;
+            }
+            .hero h1 {
+                font-size: 1.8rem;
+            }
+            article h2 {
+                font-size: 1.4rem;
+            }
+            pre {
+                font-size: 0.78rem;
+                padding: 14px 16px;
+            }
+            .qa-a {
+                padding: 0 16px;
+            }
+            .qa-a.open {
+                padding: 16px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <button class="mobile-toggle" id="menuToggle">☰</button>
+
+    <aside class="sidebar" id="sidebar">
+        <div class="sidebar-logo">
+            Cẩm Nang Bảo Vệ Đồ Án
+            <small>Hệ Thống Nhận Diện Cảm Xúc E-learning</small>
+        </div>
+        <nav id="toc">
+            <a href="#tong-quan" class="toc-l1">1. Tổng quan dự án</a>
+            <a href="#cau-truc-thu-muc" class="toc-l1">2. Cấu trúc thư mục</a>
+            <a href="#pipeline" class="toc-l1">3. Sơ đồ luồng xử lý</a>
+            <a href="#thu-vien" class="toc-l1">4. Các thư viện cốt lõi</a>
+            <a href="#giai-thich-code" class="toc-l1">5. Giải thích chi tiết mã nguồn</a>
+            <a href="#51-constants" class="toc-l2">5.1 Hằng số & Cấu hình</a>
+            <a href="#52-engine" class="toc-l2">5.2 EmotionEngine</a>
+            <a href="#53-stats" class="toc-l2">5.3 SessionStats</a>
+            <a href="#54-helpers" class="toc-l2">5.4 Hàm bổ trợ vẽ giao diện</a>
+            <a href="#55-modes" class="toc-l2">5.5 Các chế độ chạy (Modes)</a>
+            <a href="#56-entry" class="toc-l2">5.6 Hàm main khởi chạy</a>
+            <a href="#thuat-ngu" class="toc-l1">6. Giải thích thuật ngữ chuyên ngành</a>
+            <a href="#thuc-nghiem" class="toc-l1">7. Kết quả thực nghiệm định lượng</a>
+            <a href="#cau-hoi-bao-ve" class="toc-l1">8. 20+ Câu hỏi bảo vệ chống bí</a>
+        </nav>
+    </aside>
+
+    <div class="content">
+        <header class="hero">
+            <h1>Cẩm Nang Giải Thích Chi Tiết<br>Hệ Thống Nhận Diện Cảm Xúc</h1>
+            <div class="meta">
+                <span class="tag">Học phần: AC2030 - HUST</span>
+                <span class="divider">·</span>
+                <span>Python + PyTorch + OpenCV</span>
+            </div>
+        </header>
+
+        <article>
+            <!-- 1. TỔNG QUAN DỰ ÁN -->
+            <section id="tong-quan">
+                <h2><span class="section-num">1</span> Tổng quan dự án</h2>
+                <p>Hệ thống nhận dạng cảm xúc người học thời gian thực (Real-time Facial Emotion Recognition - FER) được thiết kế đặc thù dành cho các kịch bản học tập trực tuyến (E-learning). Mục đích cốt lõi của đề tài là giúp giáo viên thu thập, lượng hóa và theo dõi diễn biến tâm lý, mức độ tương tác và độ tập trung của người học thông qua webcam cá nhân mà không gây ảnh hưởng đến sự riêng tư hay làm chậm hiệu năng máy tính.</p>
+                
+                <p>Hệ thống nhận dạng <strong>6 lớp cảm xúc cơ bản</strong> được lọc chọn khoa học: <strong>Anger</strong> (Tức giận), <strong>Disgust</strong> (Ghê tởm), <strong>Happiness</strong> (Vui vẻ), <strong>Neutral</strong> (Bình thường / Trung tính), <strong>Sadness</strong> (Buồn bã), và <strong>Surprise</strong> (Ngạc nhiên).</p>
+
+                <blockquote>
+                    <strong>Ví dụ trực quan về luồng hoạt động:</strong>
+                    Tưởng tượng hệ thống như một người gác cổng chuyên nghiệp làm việc liên tục trước Webcam: 
+                    Đầu tiên người gác cổng tìm xem có mặt ai trong hình không (Face Detection). Khi thấy mặt, người này chụp lại và mang vào một phòng tối để chiếu đèn cân bằng lại vùng tối/vùng sáng (Tiền xử lý CLAHE). Tiếp theo, vùng mặt này được gửi đến một bộ não thông minh đã học hàng vạn khuôn mặt (Mạng học sâu EfficientNet-B0) để phán đoán xác suất các biểu cảm. Kết quả phán đoán của 10 khung hình gần nhất được gom lại lấy trung bình (Làm mịn thời gian) và đối chiếu với các ngưỡng nhạy khác nhau (Adaptive Thresholds) để đưa ra nhãn biểu cảm ổn định nhất, rồi vẽ trực tiếp lên màn hình.
+                </blockquote>
+            </section>
+
+            <!-- 2. CẤU TRÚC THƯ MỤC -->
+            <section id="cau-truc-thu-muc">
+                <h2><span class="section-num">2</span> Cấu trúc thư mục dự án</h2>
+                <p>Dự án được tinh gọn tối đa để vận hành độc lập, dễ dàng phân phối và cài đặt chỉ với một tệp mã nguồn cốt lõi duy nhất:</p>
+                <pre>nhandiencxuc/
+│
+├── main.py                   <span class="code-comment">← File mã nguồn duy nhất chứa toàn bộ logic xử lý</span>
+├── requirements.txt          <span class="code-comment">← Danh sách các thư viện Python bắt buộc phải cài đặt</span>
+├── README.md                 <span class="code-comment">← Hướng dẫn sử dụng nhanh cách cài đặt và câu lệnh chạy</span>
+├── GIAI_THICH_DU_AN.html    <span class="code-comment">← Tài liệu cẩm nang giảng giải chi tiết đồ án (file này)</span>
+│
+├── BaoCao/                   <span class="code-comment">← Thư mục lưu trữ tài liệu báo cáo và slide thuyết trình</span>
+│   ├── Báo cáo .pdf          <span class="code-comment">← Bản báo cáo bài tập lớn hoàn thiện</span>
+│   └── slide_outline.md      <span class="code-comment">← Đề cương kịch bản thuyết trình slide</span>
+│
+└── reports/                  <span class="code-comment">← Thư mục tự động tạo để lưu trữ kết quả thống kê</span>
+    └── emotion_report.png    <span class="code-comment">← Biểu đồ Dashboard (tròn & timeline) xuất ra sau phiên học</span></pre>
+            </section>
+
+            <!-- 3. PIPELINE LUỒNG XỬ LÝ -->
+            <section id="pipeline">
+                <h2><span class="section-num">3</span> Sơ đồ luồng dữ liệu (Data Pipeline)</h2>
+                <p>Quy trình biến đổi dữ liệu từ khung hình camera thô thành biểu đồ báo cáo được mô tả qua sơ đồ luồng tuần tự bên dưới:</p>
+                <pre>Luồng hình ảnh đầu vào (Webcam / File Video)
+         │
+         ▼
+[Giai đoạn 1: Phát hiện khuôn mặt] ────> Chuyển ảnh xám ──> Haar Cascade (Tốc độ ~1-2ms trên CPU)
+         │
+         ▼
+[Giai đoạn 2: Cắt & Tiền xử lý] ───────> Crop vùng mặt ≥ 48x48px ──> Lọc CLAHE (Cân bằng sáng thích nghi 8x8 ô)
+         │
+         ▼
+[Giai đoạn 3: Dự đoán & Ánh xạ] ───────> Chuyển RGB ──> EfficientNet-B0 (enet_b0_8_best_afew)
+         │                                   │
+         │                                   ▼
+         │                              Trích xuất 8 lớp xác suất ──> Ánh xạ loại 2 lớp thừa (Fear, Contempt)
+         │                                   │
+         │                                   ▼
+         │                              Tái cấu trúc xác suất bằng phép Softmax chuẩn hóa 6 lớp đích
+         │
+         ▼
+[Giai đoạn 4: Lọc mịn & Ngưỡng] ───────> Hàng đợi Deque 10 khung hình (Khử nháy nhãn) ──> Lọc qua bộ ngưỡng thích nghi
+         │
+         ▼
+[Giai đoạn 5: Định danh & Vẽ khung] ───> Định vị Primary Face (Lưới 60px Centroid Tracking) ──> Vẽ Bounding Box màu
+         │
+         ▼
+Luồng hiển thị thời gian thực + Ghi lịch sử RAM (O(1) ghi nhận) ──> Thoát ──> Xuất Dashboard báo cáo PNG</pre>
+            </section>
+
+            <!-- 4. THƯ VIỆN CỐT LÕI -->
+            <section id="thu-vien">
+                <h2><span class="section-num">4</span> Các thư viện cốt lõi và mục đích sử dụng</h2>
+                <p>Hệ thống được phát triển trên ngôn ngữ lập trình Python 3.8+ kết hợp 5 thư viện khoa học máy tính chuẩn:</p>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tên thư viện</th>
+                                <th>Mục đích sử dụng cụ thể trong dự án</th>
+                                <th>Hệ quả nếu thiếu thư viện này</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><code>opencv-python (cv2)</code></td>
+                                <td>Điều khiển luồng webcam, đọc/ghi tệp video, phát hiện mặt Haar Cascade, vẽ khung đồ họa bounding box và bắt phím bấm thời gian thực.</td>
+                                <td>Không thể thu nhận hình ảnh từ webcam, không thể phát hiện vị trí khuôn mặt và không hiển thị được giao diện người dùng.</td>
+                            </tr>
+                            <tr>
+                                <td><code>torch (PyTorch)</code></td>
+                                <td>Chạy mô hình học sâu (Inference engine). PyTorch chịu trách nhiệm nạp các trọng số và thực hiện các phép toán nhân ma trận khổng lồ của mạng EfficientNet-B0.</td>
+                                <td>Không thể chạy mô hình mạng nơ-ron học sâu để dự đoán cảm xúc.</td>
+                            </tr>
+                            <tr>
+                                <td><code>hsemotion</code></td>
+                                <td>Thư viện bọc chứa mô hình EfficientNet-B0 đã được huấn luyện sẵn (Pretrained) trên tập dữ liệu AffectNet gồm 450.000 ảnh khuôn mặt thực tế.</td>
+                                <td>Nhóm sẽ phải tự thiết kế cấu trúc mạng và tự huấn luyện từ đầu, đòi hỏi chi phí tính toán khổng lồ và mất hàng tuần trên siêu máy tính.</td>
+                            </tr>
+                            <tr>
+                                <td><code>numpy (np)</code></td>
+                                <td>Xử lý mảng ma trận điểm ảnh và thực hiện các phép toán đại số tuyến tính: tính giá trị trung bình trượt xác suất, tái chuẩn hóa softmax, cắt lát ảnh.</td>
+                                <td>Tốc độ xử lý ma trận ảnh sẽ cực kỳ chậm chạp do Python thuần không tối ưu hóa các phép toán trên mảng lớn.</td>
+                            </tr>
+                            <tr>
+                                <td><code>matplotlib.pyplot</code></td>
+                                <td>Vẽ biểu đồ phân bố cảm xúc hình tròn (Pie chart) và dòng thời gian thay đổi trạng thái biểu cảm (Timeline chart) lưu thành tệp báo cáo PNG.</td>
+                                <td>Không thể tạo ra các Dashboard đồ họa thống kê trực quan cho giáo viên phân tích sau giờ học.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+
+            <!-- 5. GIẢI THÍCH CHI TIẾT MÃ NGUỒN -->
+            <section id="giai-thich-code">
+                <h2><span class="section-num">5</span> Giải thích chi tiết mã nguồn main.py</h2>
+                <p>Dưới đây là phần phân tích cặn kẽ từng khối lệnh trong tệp <code>main.py</code> để bất kỳ ai cũng có thể nắm rõ vai trò của từng dòng mã.</p>
+
+                <!-- 5.1 CONSTANTS -->
+                <h3 id="51-constants">5.1 Khối khai báo thư viện & Hằng số (Dòng 1 đến 18)</h3>
+                <pre><code><span class="code-comment"># Định nghĩa danh sách 6 lớp cảm xúc đích mà hệ thống nhận diện</span>
+EMOTIONS = [<span class="style-string">'Anger'</span>, <span class="style-string">'Disgust'</span>, <span class="style-string">'Happiness'</span>, <span class="style-string">'Neutral'</span>, <span class="style-string">'Sadness'</span>, <span class="style-string">'Surprise'</span>]
+
+<span class="code-comment"># Bảng màu sắc tương ứng cho từng nhãn cảm xúc dạng BGR (Blue, Green, Red)</span>
+EMO_COLORS = {
+    <span class="style-string">'Happy'</span>: (0, 255, 0),       <span class="code-comment"># Màu Xanh lá</span>
+    <span class="style-string">'Sad'</span>: (255, 80, 80),        <span class="code-comment"># Màu Xanh dương nhạt</span>
+    <span class="style-string">'Angry'</span>: (0, 0, 255),        <span class="code-comment"># Màu Đỏ</span>
+    <span class="style-string">'Surprise'</span>: (0, 165, 255),   <span class="code-comment"># Màu Cam</span>
+    <span class="style-string">'Neutral'</span>: (180, 180, 180),  <span class="code-comment"># Màu Xám</span>
+    <span class="style-string">'Disgust'</span>: (0, 160, 160)     <span class="code-comment"># Màu Vàng đất</span>
 }
-</style></head><body>
 
-<button class="mobile-toggle" id="menuToggle">☰</button>
+<span class="code-comment"># Bảng đối chiếu để đổi tên nhãn nội bộ sang nhãn hiển thị thân thiện trên UI</span>
+DISPLAY = {<span class="style-string">'Anger'</span>: <span class="style-string">'Angry'</span>, <span class="style-string">'Happiness'</span>: <span class="style-string">'Happy'</span>, <span class="style-string">'Sadness'</span>: <span class="style-string">'Sad'</span>, <span class="style-string">'Contempt'</span>: <span class="style-string">'Disgust'</span>}
 
-<aside class="sidebar" id="sidebar">
-  <div class="sidebar-logo">
-    Giải Thích Đồ Án
-    <small>Nhận diện cảm xúc — Khoa học máy tính</small>
-  </div>
-  <nav id="toc">
-    <a href="#tong-quan" class="toc-l1">1. Tổng quan dự án</a>
-    <a href="#cau-truc-thu-muc" class="toc-l1">2. Cấu trúc thư mục</a>
-    <a href="#so-do-luong" class="toc-l1">3. Sơ đồ luồng dữ liệu</a>
-    <a href="#mainpy" class="toc-l1">4. Giải thích main.py</a>
-    <a href="#41-class-emotionengine" class="toc-l2">4.1 EmotionEngine</a>
-    <a href="#42-class-sessionstats" class="toc-l2">4.2 SessionStats</a>
-    <a href="#43-cac-mode" class="toc-l2">4.3 Các chế độ chạy</a>
-    <a href="#giai-thich-khai-niem" class="toc-l1">5. Giải thích khái niệm chuyên môn</a>
-    <a href="#cau-hoi-bao-ve" class="toc-l1">6. Câu hỏi bảo vệ</a>
-  </nav>
-</aside>
+<span class="code-comment"># Đường dẫn tuyệt đối đến tệp cấu hình phát hiện mặt Haar Cascade tích hợp sẵn trong thư viện OpenCV</span>
+FACE_CASCADE = cv2.data.haarcascades + <span class="style-string">'haacascade_frontalface_default.xml'</span></code></pre>
+                <blockquote class="warn">
+                    <strong>Lưu ý về định dạng màu OpenCV BGR:</strong>
+                    Khác với chuẩn RGB thông thường, thư viện OpenCV mặc định đọc ảnh và vẽ màu sắc theo thứ tự BGR (Xanh dương, Xanh lá, Đỏ). Do đó, màu Đỏ sẽ là <code>(0, 0, 255)</code> và màu Xanh lá là <code>(0, 255, 0)</code>.
+                </blockquote>
 
-<div class="content">
-<header class="hero">
-  <h1>Nhận Diện Cảm Xúc<br>Người Học Online</h1>
-  <div class="meta">
-    <span>Môn: Khai thác thông tin đa phương tiện</span>
-    <span class="divider">·</span>
-    <span>Python + OpenCV + HSEmotion + PyTorch</span>
-  </div>
-</header>
+                <!-- 5.2 EMOTION ENGINE -->
+                <h3 id="52-engine">5.2 Lớp EmotionEngine (Dòng 20 đến 76)</h3>
+                <p>Đây là trái tim xử lý kỹ thuật của cả hệ thống, bao gồm các hàm phát hiện mặt, tiền xử lý và dự đoán cảm xúc.</p>
+                
+                <div class="func-card">
+                    <div class="func-card-header">
+                        <span class="fn-name">__init__(self, model_name='enet_b0_8_best_afew')</span>
+                        <span class="fn-type">Khởi tạo</span>
+                    </div>
+                    <div class="func-card-body">
+                        <p>Hàm khởi tạo thực hiện các nhiệm vụ sau:</p>
+                        <ol>
+                            <li><strong>Bypass Warning:</strong> Lưu tạm hàm <code>torch.load</code> gốc và định nghĩa đè một hàm tạm thời nhằm ép tham số <code>weights_only=False</code>. Điều này giúp loại bỏ hoàn toàn các dòng cảnh báo bảo mật phiền phức của PyTorch khi nạp mô hình HSEmotion.</li>
+                            <li><strong>Khởi tạo HSEmotionRecognizer:</strong> Gọi bộ nạp mô hình EfficientNet-B0 pretrained từ thư viện HSEmotion.</li>
+                            <li><strong>Khởi tạo Haar Cascade:</strong> Nạp bộ phân loại khuôn mặt bằng lệnh <code>cv2.CascadeClassifier(FACE_CASCADE)</code>.</li>
+                            <li><strong>Khởi tạo cấu hình lọc mịn và định danh:</strong> Tạo từ điển <code>self.bufs</code> để lưu lịch sử xác suất, cài đặt kích thước hàng đợi trượt <code>self.BSZ = 10</code>, và lưới tọa độ định danh khuôn mặt <code>self.GRID = 60</code>.</li>
+                            <li><strong>Cài đặt bộ ngưỡng thích nghi:</strong> Định nghĩa bộ ngưỡng thực nghiệm tối ưu tại <code>self.THRESH</code> (Happiness: 0.3, Sadness: 0.2, Neutral: 0.35...).</li>
+                            <li><strong>Khởi tạo CLAHE:</strong> Cài đặt giới hạn tương phản <code>clipLimit=2.0</code> và kích thước ô chia nhỏ <code>tileGridSize=(8,8)</code>.</li>
+                        </ol>
+                    </div>
+                </div>
 
-<article>
+                <div class="func-card">
+                    <div class="func-card-header">
+                        <span class="fn-name">detect(self, frame)</span>
+                        <span class="fn-type">Phát hiện mặt</span>
+                    </div>
+                    <div class="func-card-body">
+                        <pre><code>def detect(self, frame):
+    gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)  <span class="code-comment"># Chuyển ảnh màu sang ảnh xám</span>
+    return self.fc.detectMultiScale(gray, 1.1, 5, minSize=(30,30))</code></pre>
+                        <p>Hàm này chuyển khung hình sang dạng ảnh xám (vì Haar Cascade chỉ cần thông tin về cường độ sáng, không cần màu sắc) và gọi hàm quét đa tỷ lệ <code>detectMultiScale</code>. Tham số <code>1.1</code> chỉ định ảnh bị thu nhỏ 10% sau mỗi lượt quét để bắt được khuôn mặt ở xa/gần. Tham số <code>5</code> yêu cầu tối thiểu 5 ô quét lân cận cùng phát hiện ra mặt để tránh nhận nhầm hậu cảnh.</p>
+                    </div>
+                </div>
 
-<section id="tong-quan">
-<h2><span class="section-num">1</span> Tổng quan dự án</h2>
+                <div class="func-card">
+                    <div class="func-card-header">
+                        <span class="fn-name">predict(self, face_img)</span>
+                        <span class="fn-type">Dự đoán & Ánh xạ</span>
+                    </div>
+                    <div class="func-card-body">
+                        <pre><code>def predict(self, face_img):
+    gray = cv2.cvtColor(face_img, cv2.COLOR_BGR2GRAY)
+    eq = self.clahe.apply(gray)                     <span class="code-comment"># Cân bằng sáng thích nghi CLAHE</span>
+    rgb = cv2.cvtColor(eq, cv2.COLOR_GRAY2RGB)       <span class="code-comment"># Chuyển về RGB làm đầu vào mô hình</span>
+    name, scores = self.er.predict_emotions(rgb, logits=False)
+    <span class="code-comment"># Ánh xạ lấy xác suất của 6 lớp cảm xúc tương ứng trong mảng 8 lớp</span>
+    raw6 = np.array([scores[0], scores[2], scores[4], scores[5], scores[6], scores[7]])
+    <span class="code-comment"># Tái chuẩn hóa Softmax: đưa tổng xác suất của 6 lớp quay về đúng 1.0 (100%)</span>
+    scores = raw6 / raw6.sum() if raw6.sum() > 0 else raw6
+    return scores</code></pre>
+                    </div>
+                </div>
 
-<h3>1.1. Dự án này làm gì?</h3>
-<p>Chương trình <strong>nhận diện cảm xúc trên khuôn mặt người học</strong> theo thời gian thực trực tiếp từ Webcam, Ảnh tĩnh hoặc Video ngoại tuyến. Chương trình thực hiện:</p>
-<ol>
-  <li><strong>Phát hiện khuôn mặt</strong> trong khung hình (Haar Cascade).</li>
-  <li><strong>Cắt vùng khuôn mặt</strong> và cân bằng sáng thích nghi (CLAHE).</li>
-  <li><strong>Dự đoán cảm xúc</strong> bằng mô hình học sâu CNN (EfficientNet-B0) với cơ chế ánh xạ 8 sang 6 lớp.</li>
-  <li><strong>Làm mịn và lọc nhiễu</strong> (Temporal Smoothing & Centroid Tracking) để tránh hiện tượng nháy nhãn hiển thị.</li>
-  <li><strong>Xuất biểu đồ Dashboard báo cáo</strong> thống kê sự phân bổ cảm xúc sau phiên học.</li>
-</ol>
+                <div class="func-card">
+                    <div class="func-card-header">
+                        <span class="fn-name">process(self, frame)</span>
+                        <span class="fn-type">Pipeline xử lý tổng hợp</span>
+                    </div>
+                    <div class="func-card-body">
+                        <p>Hàm này liên kết toàn bộ quy trình xử lý trên một khung hình:</p>
+                        <ol>
+                            <li>Quét tìm tất cả các khuôn mặt. Nếu có nhiều khuôn mặt, tiến hành sắp xếp theo diện tích giảm dần để khuôn mặt to nhất (Primary Face của học sinh ngồi trước camera) nằm ở đầu danh sách.</li>
+                            <li><strong>Centroid Tracking (Theo dõi tâm):</strong> Tính tọa độ tâm của khuôn mặt và lượng tử hóa về lưới 60px: <code>(x+w//2)//60*60</code>. Nếu tâm khuôn mặt di chuyển trong phạm vi 60px, hệ thống xác định đó là cùng một người và tiếp tục duy trì hàng đợi lưu lịch sử xác suất.</li>
+                            <li><strong>Dọn dẹp hàng đợi cũ:</strong> Xóa các hàng đợi của khuôn mặt đã rời khỏi khung hình để giải phóng tài nguyên bộ nhớ.</li>
+                            <li><strong>Tính trung bình trượt (Temporal Smoothing):</strong> Đẩy xác suất 6 cảm xúc mới vào hàng đợi (BUFFER_SIZE=10) và lấy trung bình cộng để triệt tiêu hiện tượng đổi nhãn liên tục do nhiễu tức thời.</li>
+                            <li><strong>Kiểm tra Ngưỡng thích nghi (Adaptive Threshold):</strong> Nếu xác suất của cảm xúc cao nhất thấp hơn ngưỡng thích nghi tương ứng (ví dụ: Anger &lt; 0.3), hệ thống tự động trả cảm xúc đó về nhãn mặc định là <code>Neutral</code> (Bình thường).</li>
+                        </ol>
+                    </div>
+                </div>
 
-<h3>1.2. Kiến trúc tệp tin main.py</h3>
-<p>Toàn bộ chương trình được đóng gói trong <strong>1 file duy nhất</strong>: <code>main.py</code> (~300 dòng), chia làm 5 phần:</p>
+                <!-- 5.3 SESSION STATS -->
+                <h3 id="53-stats">5.3 Lớp SessionStats (Dòng 79 đến 118)</h3>
+                <p>Lớp này phụ trách ghi nhận lịch sử cảm xúc theo thời gian thực vào RAM với độ phức tạp $O(1)$ và tự động xuất biểu đồ Dashboard kết thúc giờ học.</p>
+                
+                <div class="func-card">
+                    <div class="func-card-header">
+                        <span class="fn-name">record(self, t, results)</span>
+                        <span class="fn-type">Ghi nhận dữ liệu</span>
+                    </div>
+                    <div class="func-card-body">
+                        <p>Hàm này nhận thời gian trôi qua <code>t</code> (giây) và danh sách kết quả <code>results</code>. Nếu phát hiện ra khuôn mặt, hàm chỉ lấy khuôn mặt đầu tiên (Primary Face) để lưu thông tin nhãn cảm xúc và độ tin cậy vào danh sách <code>self.history</code>. Mọi khuôn mặt phụ phía sau sẽ bị bỏ qua để tránh nhiễu dữ liệu báo cáo.</p>
+                    </div>
+                </div>
 
-<pre>main.py
-│
-├── Phần 1: Hằng số & Thư viện (~15 dòng)
-│   - Định nghĩa 6 cảm xúc đích
-│   - Bảng màu sắc bounding box
-│   - Đường dẫn bộ phát hiện mặt Haar cascade
-│
-├── Phần 2: Class EmotionEngine (~70 dòng)
-│   - Khởi tạo HSEmotion recognizer
-│   - detect() + predict() + process()
-│   - Lọc sáng CLAHE + Remap 8 sang 6 lớp
-│
-├── Phần 3: Class SessionStats (~45 dòng)
-│   - record() — ghi nhận cảm xúc thời gian thực
-│   - report() — vẽ biểu đồ tròn & timeline cảm xúc lưu vào reports/
-│
-├── Phần 4: Trợ giúp vẽ khung (~15 dòng)
-│   - draw_boxes() — vẽ bounding box màu sắc và nhãn cảm xúc lên ảnh
-│
-└── Phần 5: Chế độ chạy & argparse (~60 dòng)
-    - mode_webcam, mode_image, mode_video
-    - main() phân phối tham số dòng lệnh</pre>
+                <div class="func-card">
+                    <div class="func-card-header">
+                        <span class="fn-name">report(self, out_dir='reports')</span>
+                        <span class="fn-type">Xuất Dashboard báo cáo</span>
+                    </div>
+                    <div class="func-card-body">
+                        <p>Khi thoát chương trình, hàm này sử dụng thư viện <code>matplotlib</code> để tạo một biểu đồ tổng hợp kích thước 12x10 inch gồm hai phần:</p>
+                        <ul>
+                            <li><strong>Biểu đồ tròn (Pie Chart - phía trên):</strong> Thống kê phần trăm thời gian xuất hiện của từng cảm xúc. Màu sắc các miếng bánh được tô khớp chuẩn với mã màu <code>EMO_COLORS</code>.</li>
+                            <li><strong>Biểu đồ dòng thời gian (Timeline Scatter & Step Line - phía dưới):</strong> Vẽ một đường đứt nét biểu thị diễn tiến cảm xúc qua thời gian. Đồng thời vẽ các chấm tròn màu, trong đó kích thước chấm tròn được co giãn động theo công thức <code>size = max(40, confidence * 250)</code>. Chấm tròn càng to nghĩa là học sinh biểu lộ cảm xúc đó càng mạnh và AI nhận diện càng tự tin.</li>
+                        </ul>
+                    </div>
+                </div>
 
-<blockquote class="success">
-<strong>Tại sao hệ thống chỉ cần 1 file?</strong>
-Chương trình được cô đọng tối đa bằng cách loại bỏ các tính năng huấn luyện thừa, gộp các module nhỏ trước đây thành các class trong một file thực thi duy nhất để học sinh dễ dàng sử dụng và chạy trên mọi máy tính cá nhân.
-</blockquote>
+                <!-- 5.4 HELPERS -->
+                <h3 id="54-helpers">5.4 Hàm bổ trợ vẽ giao diện draw_boxes (Dòng 120 đến 130)</h3>
+                <p>Hàm này tạo một bản sao của khung hình và dùng các hàm vẽ đồ họa của OpenCV để render giao diện:</p>
+                <ul>
+                    <li><code>cv2.rectangle</code>: Vẽ khung hộp chữ nhật bao quanh khuôn mặt.</li>
+                    <li><code>cv2.getTextSize</code> & <code>cv2.rectangle</code>: Tính toán kích thước chữ và vẽ một hình chữ nhật đặc làm nền nhãn nằm ngay trên đỉnh khung mặt. Việc vẽ nền đặc giúp chữ nhãn hiển thị cực kỳ rõ ràng, không bị chìm vào màu sắc của hậu cảnh.</li>
+                    <li><code>cv2.putText</code>: Viết chữ nhãn và phần trăm độ tin cậy (ví dụ: <code>Happy: 98%</code>).</li>
+                </ul>
 
-<h3>1.3. Thư viện sử dụng</h3>
-<div class="table-wrap">
-<table>
-<thead><tr><th>Thư viện</th><th>Mục đích sử dụng</th></tr></thead>
-<tbody>
-  <tr><td><code>opencv-python</code></td><td>Đọc luồng camera, phát hiện mặt Haar Cascade, vẽ khung đồ họa</td></tr>
-  <tr><td><code>hsemotion</code></td><td>Cung cấp mô hình mạng CNN EfficientNet-B0 pretrained</td></tr>
-  <tr><td><code>torch</code></td><td>Môi trường chạy mô hình học sâu (Inference)</td></tr>
-  <tr><td><code>matplotlib</code></td><td>Vẽ biểu đồ Dashboard báo cáo phiên học</td></tr>
-</tbody>
-</table>
-</div>
-</section>
+                <!-- 5.5 RUNTIME MODES -->
+                <h3 id="55-modes">5.5 Các chế độ chạy (Modes - Dòng 133 đến 207)</h3>
+                <p>Hệ thống hỗ trợ 3 chế độ chạy độc lập thông qua cấu hình đầu vào:</p>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tên chế độ</th>
+                                <th>Hàm xử lý chính</th>
+                                <th>Cách thức vận hành và tính năng</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Webcam</strong></td>
+                                <td><code>mode_webcam(args)</code></td>
+                                <td>Khởi tạo camera thông qua <code>cv2.VideoCapture</code>. Hệ thống chạy một vòng lặp đọc khung hình liên tục. Để tiết kiệm CPU, hệ thống sử dụng tham số nhảy khung hình <code>skip=2</code> (chỉ chạy AI xử lý ở các khung hình chẵn, các khung hình lẻ giữ nguyên kết quả trước). Nhấn phím <code>s</code> để chụp màn hình giao diện lưu vào thư mục <code>data/</code>. Nhấn phím <code>q</code> hoặc <code>ESC</code> để thoát và xuất Dashboard.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Video</strong></td>
+                                <td><code>mode_video(args)</code></td>
+                                <td>Đọc tệp video từ đường dẫn cấu hình. Hệ thống tự động lấy chỉ số khung hình để render một thanh tiến trình (Progress Bar) màu vàng chạy dọc đáy màn hình. Nhấn phím <code>SPACE</code> (Dấu cách) để tạm dừng video khi cần quan sát và bấm lại <code>SPACE</code> để chạy tiếp. Nếu truyền tham số đầu ra, luồng video nhận diện sẽ được ghi lại thành file MP4.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Ảnh tĩnh</strong></td>
+                                <td><code>mode_image(args)</code></td>
+                                <td>Đọc duy nhất một ảnh đầu vào, chạy toàn bộ quy trình phát hiện mặt và dự đoán, vẽ khung kết quả hiển thị lên màn hình và đợi người dùng bấm một phím bất kỳ để tắt. Hỗ trợ ghi đè ảnh kết quả ra file nếu có tham số đầu ra. Chế độ này được sử dụng để chạy thử nghiệm đánh giá độ chính xác (Evaluation) trên tập dữ liệu kiểm thử.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
-<section id="cau-truc-thu-muc">
-<h2><span class="section-num">2</span> Cấu trúc thư mục</h2>
+                <!-- 5.6 MAIN ENTRYPOINT -->
+                <h3 id="56-entry">5.6 Hàm main & Khởi chạy hệ thống (Dòng 209 đến 218)</h3>
+                <pre><code>if __name__ == '__main__':
+    p = argparse.ArgumentParser(description='Nhan dang cam xuc')
+    p.add_argument('--mode', default='webcam', choices=['webcam','image','video'])
+    p.add_argument('--model', default='enet_b0_8_best_afew')
+    p.add_argument('--camera', type=int, default=0)
+    p.add_argument('--input', default=None)
+    p.add_argument('--output', default=None)
+    args = p.parse_args()
+    # Sử dụng kỹ thuật Ánh xạ Từ điển (Dictionary Mapping) để gọi hàm tương ứng với chế độ chạy
+    {'webcam':mode_webcam,'image':mode_image,'video':mode_video}[args.mode](args)</code></pre>
+                <p>Khối lệnh này thiết lập các tham số dòng lệnh (Command Line Arguments). Thay vì viết nhiều câu lệnh <code>if/elif</code> dài dòng, nhóm đã áp dụng kỹ thuật ánh xạ từ điển để gọi hàm cực kỳ ngắn gọn và chuyên nghiệp.</p>
+            </section>
 
-<pre>tucode/
-│
-├── main.py                      ← FILE DUY NHẤT chứa toàn bộ mã nguồn
-├── README.md                    ← Hướng dẫn sử dụng dự án
-├── GIAI_THICH_DU_AN.html       ← Tài liệu giải thích chi tiết đồ án (file này)
-├── requirements.txt             ← Danh sách thư viện cần cài đặt
-│
-└── reports/                     ← Thư mục lưu Dashboard báo cáo (tự tạo)
-    └── emotion_report.png       ← Biểu đồ tròn và timeline phân bổ cảm xúc</pre>
-</section>
+            <!-- 6. GIẢI THÍCH THUẬT NGỮ CHUYÊN NGÀNH -->
+            <section id="thuat-ngu">
+                <h2><span class="section-num">6</span> Giải thích thuật ngữ chuyên ngành</h2>
+                <p>Phần này giải thích chi tiết ý nghĩa khoa học của các công nghệ được tích hợp trong hệ thống theo cách bình dân, dễ hiểu nhất:</p>
+                
+                <div class="func-card">
+                    <div class="func-card-header"><span class="fn-name">Haar Cascade (Viola-Jones)</span></div>
+                    <div class="func-card-body">
+                        <p>Là một thuật toán phát hiện đối tượng dựa trên các đặc trưng Haar-like (các hình chữ nhật đen-trắng nằm kề nhau). Bản chất của nó là tính toán sự chênh lệch độ sáng giữa các vùng da mặt (ví dụ: vùng sống mũi thường sáng hơn vùng hốc mắt hai bên). Bằng cách quét các hình chữ nhật này khắp ảnh, thuật toán nhanh chóng định vị được vùng có cấu trúc giống khuôn mặt. 
+                        <br><strong>Điểm mạnh:</strong> Cực kỳ nhẹ, tốc độ xử lý siêu nhanh (~1-2ms), chạy mượt trên CPU máy tính đời cũ mà không cần card màn hình (GPU) đắt tiền.</p>
+                    </div>
+                </div>
 
-<section id="so-do-luong">
-<h2><span class="section-num">3</span> Sơ đồ luồng dữ liệu</h2>
+                <div class="func-card">
+                    <div class="func-card-header"><span class="fn-name">CLAHE (Cân bằng tương phản thích nghi cục bộ)</span></div>
+                    <div class="func-card-body">
+                        <p>Cân bằng sáng lược đồ thông thường sẽ làm sáng toàn bộ bức ảnh, dễ gây ra hiện tượng cháy sáng ở những vùng vốn đã sáng. CLAHE khắc phục bằng cách chia bức ảnh khuôn mặt thành một lưới 8x8 ô nhỏ độc lập và thực hiện cân bằng sáng riêng cho từng ô. Đồng thời, nó áp dụng cơ chế giới hạn tương phản (clipLimit=2.0) để loại bỏ nhiễu hạt ở vùng quá tối, và dùng phép nội suy song tuyến tính để làm mịn các ranh giới giữa các ô. 
+                        <br><strong>Ý nghĩa:</strong> Giúp các thớ cơ mặt biểu cảm rõ nét kể cả khi học sinh học trong điều kiện ngược sáng hoặc thiếu sáng.</p>
+                    </div>
+                </div>
 
-<h3>3.1. Luồng chạy Webcam / Video</h3>
-<pre>Vòng lặp chính:
-┌─────────────────────────────────────────────┐
-│ while True:                                 │
-│   frame = cap.read()                        │
-│   if frame_count % 2 == 0:                  │
-│     results = engine.process(frame)         │
-│     stats.record(time, results)             │
-│   display = draw_boxes(frame, results)      │
-│   cv2.imshow(display)                       │
-│   if key == 'q': break                      │
-└─────────────────────────────────────────────┘
+                <div class="func-card">
+                    <div class="func-card-header"><span class="fn-name">EfficientNet-B0 & Compound Scaling</span></div>
+                    <div class="func-card-body">
+                        <p>Mạng CNN học sâu phân loại ảnh đột phá của Google. Trước đây, để mạng chính xác hơn, người ta thường tăng độ sâu (nhiều lớp), tăng độ rộng (nhiều kênh) hoặc tăng độ phân giải ảnh một cách riêng lẻ. EfficientNet đề xuất kỹ thuật Compound Scaling: mở rộng đồng bộ cả 3 chiều theo một tỷ lệ cố định tối ưu bằng toán học. 
+                        <br><strong>Ý nghĩa:</strong> Giúp mô hình có dung lượng siêu nhẹ (~25MB) với chỉ 5.3 triệu tham số nhưng đạt độ chính xác tương đương hoặc vượt trội các mạng khổng lồ nặng hàng trăm MB khác, rất phù hợp để chạy thời gian thực trên CPU máy tính học sinh.</p>
+                    </div>
+                </div>
 
-engine.process():
-┌─────────────────────────────────────────────┐
-│ 1. detect() - Tìm khuôn mặt bằng Haar Cascade│
-│ 2. Với mỗi khuôn mặt ≥ 48x48 pixel:         │
-│    a. predict() - CLAHE -> HSEmotion        │
-│    b. Temporal Smoothing - Lọc trung bình   │
-│    c. Adaptive Threshold - Ngưỡng thích nghi│
-│ 3. Trả về danh sách kết quả                 │
-└─────────────────────────────────────────────┘</pre>
-</section>
+                <div class="func-card">
+                    <div class="func-card-header"><span class="fn-name">Softmax Normalization (Tái chuẩn hóa Softmax)</span></div>
+                    <div class="func-card-body">
+                        <p>Hàm toán học chuyển đổi một mảng các điểm số thô (logits) thành một phân phối xác suất hợp lệ có tổng bằng 1.0 (100%). Lệnh <code>raw6 / raw6.sum()</code> trong mã nguồn là một phép Softmax rút gọn: sau khi loại bỏ 2 lớp cảm xúc không liên quan, ta chia xác suất của từng lớp cho tổng 6 lớp còn lại để kéo tổng thang đo về đúng 100%, đảm bảo tính công bằng toán học cho việc tính toán độ tin cậy.</p>
+                    </div>
+                </div>
 
-<section id="mainpy">
-<h2><span class="section-num">4</span> Giải thích chi tiết main.py</h2>
+                <div class="func-card">
+                    <div class="func-card-header"><span class="fn-name">Temporal Smoothing (Làm mịn thời gian)</span></div>
+                    <div class="func-card-body">
+                        <p>Bộ lọc làm mượt dữ liệu chuỗi thời gian bằng cách tính trung bình cộng xác suất của 10 khung hình gần nhất. Hàng đợi <code>deque(maxlen=10)</code> hoạt động giống như một đoàn tàu chỉ chứa tối đa 10 toa: khi toa thứ 11 đi vào ở đuôi thì toa thứ 1 ở đầu tàu sẽ tự động bị đẩy ra ngoài. 
+                        <br><strong>Ý nghĩa:</strong> Loại bỏ hoàn toàn hiện tượng nháy nhãn hiển thị giật cục trên UI khi học sinh chớp mắt hoặc camera bị nhiễu sáng tức thời.</p>
+                    </div>
+                </div>
 
-<section id="41-class-emotionengine">
-<h3><span class="section-num">4.1</span> <code>class EmotionEngine</code></h3>
-<p>Chứa toàn bộ logic phát hiện khuôn mặt, tiền xử lý và dự đoán cảm xúc.</p>
+                <div class="func-card">
+                    <div class="func-card-header"><span class="fn-name">Centroid Tracking (Bám vết theo tâm)</span></div>
+                    <div class="func-card-body">
+                        <p>Định vị và định danh khuôn mặt dựa trên khoảng cách giữa các tọa độ tâm của khung mặt ở các khung hình liên tiếp. Nhóm chia màn hình thành một lưới ảo kích thước 60x60px. Nếu tâm khuôn mặt di chuyển trong cùng một ô lưới 60px, hệ thống hiểu đây là cùng một khuôn mặt và gán đúng hàng đợi lịch sử cho người đó. 
+                        <br><strong>Ý nghĩa:</strong> Định vị chính xác học sinh đang học chính diện và loại bỏ nhiễu từ những người đi lại phía sau hậu cảnh.</p>
+                    </div>
+                </div>
+            </section>
 
-<div class="func-card">
-<div class="func-card-header">
-<span class="fn-name">__init__(model_name)</span>
-</div>
-<div class="func-card-body">
-<p>Khởi tạo các thành phần cốt lõi:</p>
-<ol>
-  <li>Khởi tạo bộ nhận diện <strong>HSEmotionRecognizer</strong> (tự động tải mô hình B0 pretrained ~25MB).</li>
-  <li>Nạp bộ phân loại khuôn mặt <strong>Haar Cascade</strong> mặc định của OpenCV.</li>
-  <li>Cấu hình bộ lọc cân bằng sáng thích nghi <strong>CLAHE</strong>.</li>
-</ol>
-</div>
-</div>
+            <!-- 7. KẾT QUẢ THỰC NGHIỆM ĐỊNH LƯỢNG -->
+            <section id="thuc-nghiem">
+                <h2><span class="section-num">7</span> Kết quả thực nghiệm định lượng</h2>
+                <p>Để đánh giá năng lực thực tế của hệ thống đối với đặc trưng nhân trắc học của học sinh Việt Nam và khu vực Đông Nam Á, nhóm đã tiến hành kiểm thử độc lập trên tập dữ liệu kiểm thử Đông Nam Á gồm 150 ảnh (25 ảnh mỗi lớp cảm xúc, được trích chọn từ tập FairFace chủng tộc Southeast Asian, nhóm tuổi 10-29 và dán nhãn thủ công).</p>
+                
+                <p>Hệ thống đạt được các chỉ số hiệu năng cực kỳ ấn tượng và đồng bộ:</p>
+                <ul>
+                    <li><strong>Độ chính xác toàn cục (Global Accuracy):</strong> <strong style="color: var(--blue-600); font-size: 1.1rem;">81.33%</strong></li>
+                    <li><strong>Macro F1-Score:</strong> <strong style="color: var(--blue-600); font-size: 1.1rem;">0.81</strong></li>
+                </ul>
 
-<div class="func-card">
-<div class="func-card-header">
-<span class="fn-name">predict(face_img)</span>
-</div>
-<div class="func-card-body">
-<p>Tiền xử lý và dự đoán trên ảnh khuôn mặt đã cắt:</p>
-<ul>
-  <li>Chuyển ảnh sang thang độ xám (Gray) -> Cân bằng sáng CLAHE -> Đổi sang RGB làm đầu vào cho mô hình.</li>
-  <li>Mô hình HSEmotion dự đoán ra phân phối 8 cảm xúc.</li>
-  <li><strong>Remap 8 sang 6 lớp:</strong> Trích xuất xác suất tương ứng 6 lớp mục tiêu: [Anger, Disgust, Happiness, Neutral, Sadness, Surprise].</li>
-  <li><strong>Chuẩn hóa Softmax mới:</strong> Chia xác suất từng lớp cho tổng 6 lớp để tổng thang đo quay về đúng 100%.</li>
-</ul>
-</div>
-</div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Lớp cảm xúc</th>
+                                <th>Precision (Độ chính xác)</th>
+                                <th>Recall (Độ nhạy)</th>
+                                <th>F1-Score (Cân bằng)</th>
+                                <th>Số lượng ảnh kiểm thử</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr style="font-weight: 600; background: var(--emerald-50);">
+                                <td>Happiness (Vui vẻ)</td>
+                                <td>1.00</td>
+                                <td>1.00</td>
+                                <td>1.00</td>
+                                <td>25</td>
+                            </tr>
+                            <tr>
+                                <td>Anger (Tức giận)</td>
+                                <td>0.92</td>
+                                <td>0.96</td>
+                                <td>0.94</td>
+                                <td>25</td>
+                            </tr>
+                            <tr style="font-weight: 600; background: var(--blue-50);">
+                                <td>Sadness (Buồn bã)</td>
+                                <td>0.64</td>
+                                <td>1.00</td>
+                                <td>0.78</td>
+                                <td>25</td>
+                            </tr>
+                            <tr>
+                                <td>Surprise (Ngạc nhiên)</td>
+                                <td>0.90</td>
+                                <td>0.72</td>
+                                <td>0.80</td>
+                                <td>25</td>
+                            </tr>
+                            <tr>
+                                <td>Disgust (Ghê tởm)</td>
+                                <td>0.88</td>
+                                <td>0.56</td>
+                                <td>0.68</td>
+                                <td>25</td>
+                            </tr>
+                            <tr style="color: var(--slate-500);">
+                                <td>Neutral (Bình thường)</td>
+                                <td>0.67</td>
+                                <td>0.64</td>
+                                <td>0.65</td>
+                                <td>25</td>
+                            </tr>
+                            <tr style="font-weight: 700; border-top: 2px solid var(--slate-300);">
+                                <td>Accuracy (Toàn cục)</td>
+                                <td>-</td>
+                                <td>-</td>
+                                <td>0.81 (81.33%)</td>
+                                <td>150</td>
+                            </tr>
+                            <tr style="font-weight: 700; color: var(--blue-700);">
+                                <td>Macro Avg (Trung bình)</td>
+                                <td>0.83</td>
+                                <td>0.81</td>
+                                <td>0.81</td>
+                                <td>150</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
 
-<div class="func-card">
-<div class="func-card-header">
-<span class="fn-name">Temporal Smoothing (Làm mịn thời gian)</span>
-</div>
-<div class="func-card-body">
-<p>Mỗi khuôn mặt được lưu trữ lịch sử cảm xúc bằng hàng đợi <code>collections.deque(maxlen=10)</code>. Xác suất hiển thị là trung bình cộng xác suất của 10 khung hình liên tiếp để triệt tiêu lỗi nháy nhãn hiển thị (Flickering) do học sinh chớp mắt.</p>
-</div>
-</div>
+                <blockquote>
+                    <strong>Phân tích chuyên sâu về kết quả:</strong>
+                    <ul>
+                        <li><strong>Happiness (F1-score = 1.00):</strong> Đạt kết quả tuyệt đối nhờ đặc trưng miệng cười nâng cơ gò má cực kỳ điển hình, kết hợp với việc hạ ngưỡng Happiness xuống 0.30 đã loại bỏ hoàn toàn việc bỏ sót biểu cảm tích cực của học sinh.</li>
+                        <li><strong>Sadness (Recall = 1.00):</strong> Độ nhạy đạt tuyệt đối 100% nhờ việc hạ ngưỡng Sadness xuống 0.20 trong cấu hình thích nghi. Điều này đảm bảo hệ thống không bỏ sót bất kỳ nét mặt buồn ngủ, đăm chiêu hay ủ rũ nào của học sinh trong giờ học, dù Precision bị đánh đổi xuống 0.64 (do mô hình đôi khi nhận nhầm trạng thái Neutral sang Sadness).</li>
+                        <li><strong>Neutral (F1-score = 0.65):</strong> Đạt chỉ số thấp nhất do trạng thái bình thường dễ bị nhầm lẫn nhất với các biểu cảm nhẹ của Sadness (buồn bã) hoặc Anger (tức giận tập trung) tùy thuộc vào cơ địa tự nhiên của từng khuôn mặt.</li>
+                    </ul>
+                </blockquote>
+            </section>
 
-<div class="func-card">
-<div class="func-card-header">
-<span class="fn-name">Centroid Tracking (Theo dõi khuôn mặt)</span>
-</div>
-<div class="func-card-body">
-<p>Định danh khuôn mặt học sinh dựa trên tọa độ tâm lượng tử hóa trên lưới 60px. Giúp hệ thống bám vết đúng học sinh chính diện (Primary Face) để ghi nhận báo cáo và tự động bỏ qua người đi lại phía sau hậu cảnh.</p>
-</div>
-</div>
-</section>
+            <!-- 8. 20+ CÂU HỎI BẢO VỆ CHỐNG BÍ -->
+            <section id="cau-hoi-bao-ve">
+                <h2><span class="section-num">8</span> 20+ Câu hỏi bảo vệ đồ án chống bí</h2>
+                <p>Đây là tập hợp các câu hỏi chất vấn thực tế mà Hội đồng giảng viên thường hỏi và các câu trả lời ngắn gọn, đắt giá, khoa học giúp bạn ghi điểm tuyệt đối:</p>
 
-<section id="42-class-sessionstats">
-<h3><span class="section-num">4.2</span> <code>class SessionStats</code></h3>
-<p>Ghi nhận lịch sử cảm xúc với độ phức tạp ghi O(1) trên RAM và tự động xuất ra Dashboard báo cáo cuối buổi học.</p>
+                <!-- Q1 -->
+                <div class="qa-item">
+                    <div class="qa-q" onclick="toggleQA(this)">
+                        <span class="num">1</span> Tại sao dùng mô hình pretrained HSEmotion thay vì tự huấn luyện từ đầu?
+                        <span class="arrow">▼</span>
+                    </div>
+                    <div class="qa-a">
+                        Mô hình HSEmotion đã được các tác giả huấn luyện sẵn trên bộ dữ liệu khổng lồ AffectNet gồm hơn 450.000 ảnh khuôn mặt thực tế phong phú. Việc tự huấn luyện một mạng nơ-ron tích chập lớn từ đầu đòi hỏi tài nguyên máy tính cực kỳ mạnh (hệ thống GPU hiệu năng cao) và mất hàng tuần, đồng thời rất dễ bị quá khớp (overfitting) do tập dữ liệu tự thu thập của nhóm không đủ lớn. Sử dụng mô hình pretrained giúp tận dụng năng lực tổng quát hóa tuyệt vời của nó ngay lập tức.
+                    </div>
+                </div>
 
-<div class="func-card">
-<div class="func-card-header">
-<span class="fn-name">report(out_dir)</span>
-</div>
-<div class="func-card-body">
-<p>Vẽ biểu đồ phân bố tròn (Pie Chart) và biểu đồ diễn biến thời gian (Timeline Scatter & Step Line) có chấm tròn co dãn kích cỡ theo độ tin cậy để lưu thành file ảnh <code>reports/emotion_report.png</code>.</p>
-</div>
-</div>
-</section>
+                <!-- Q2 -->
+                <div class="qa-item">
+                    <div class="qa-q" onclick="toggleQA(this)">
+                        <span class="num">2</span> Tại sao nhóm không Fine-tuning (huấn luyện thêm) mô hình trên tập dữ liệu Đông Nam Á?
+                        <span class="arrow">▼</span>
+                    </div>
+                    <div class="qa-a">
+                        Nhóm quyết định không chạy Fine-tuning trọng số mô hình vì hai nguyên nhân chính:
+                        <br>1. <strong>Tránh Quá Khớp (Overfitting):</strong> Tập dữ liệu kiểm thử Đông Nam Á của nhóm chỉ có 150 ảnh. Huấn luyện một mạng nơ-ron lớn như EfficientNet-B0 (5.3 triệu tham số) trên lượng ảnh quá ít chắc chắn sẽ làm hỏng cấu trúc trọng số đã học, khiến mô hình bị quá khớp và mất đi tính tổng quát.
+                        <br>2. <strong>Giải pháp thay thế thông minh:</strong> Nhóm đã áp dụng kỹ thuật <strong>Tinh chỉnh ngưỡng quyết định thích nghi (Decision Threshold Tuning)</strong> và bộ lọc <strong>CLAHE</strong> ở pha chạy thực tế (Inference). Giải pháp này giúp cải thiện trực tiếp hiệu năng hệ thống lên 81.33% và đảm bảo thời gian chạy mượt mà ổn định trên CPU mà không cần thay đổi trọng số mô hình gốc.
+                    </div>
+                </div>
 
-<section id="43-cac-mode">
-<h3><span class="section-num">4.3</span> Các chế độ chạy</h3>
-<p>Chương trình cung cấp 3 chế độ chạy chính thông qua tham số <code>--mode</code>:</p>
-<ul>
-  <li><strong>mode_webcam:</strong> Nhận dạng webcam thực tế, nhấn <code>q</code> để thoát và xuất Dashboard.</li>
-  <li><strong>mode_image:</strong> Nhận dạng cảm xúc trên một tệp ảnh tĩnh.</li>
-  <li><strong>mode_video:</strong> Nhận dạng cảm xúc trên tệp video, nhấn <code>SPACE</code> để tạm dừng.</li>
-</ul>
-</section>
-</section>
+                <!-- Q3 -->
+                <div class="qa-item">
+                    <div class="qa-q" onclick="toggleQA(this)">
+                        <span class="num">3</span> Tại sao nhóm chọn bộ phát hiện mặt Haar Cascade thay vì các mô hình Deep Learning hiện đại như YOLOv8-Face hay MediaPipe?
+                        <span class="arrow">▼</span>
+                    </div>
+                    <div class="qa-a">
+                        Đây là sự lựa chọn thiết kế có chủ đích nhằm đạt được <strong>sự cân bằng giữa tốc độ và độ chính xác</strong> khi chạy trên thiết bị cá nhân của học sinh (thường không có GPU mạnh). Haar Cascade cực kỳ nhẹ, chạy chỉ mất ~1-2ms trên CPU. Nhóm đã áp dụng mô hình lai (Hybrid): Dùng thuật toán truyền thống nhẹ Haar Cascade để cắt khuôn mặt thật nhanh, sau đó chỉ chạy mạng học sâu EfficientNet trên vùng ảnh nhỏ đã cắt đó. Điều này giúp hệ thống hoạt động mượt mà thời gian thực (FPS cao) trên CPU máy tính cá nhân.
+                    </div>
+                </div>
 
-<section id="giai-thich-khai-niem">
-<h2><span class="section-num">5</span> Giải thích khái niệm chuyên môn</h2>
+                <!-- Q4 -->
+                <div class="qa-item">
+                    <div class="qa-q" onclick="toggleQA(this)">
+                        <span class="num">4</span> Tham số scaleFactor = 1.1 và minNeighbors = 5 trong hàm detectMultiScale có ý nghĩa gì?
+                        <span class="arrow">▼</span>
+                    </div>
+                    <div class="qa-a">
+                        - <code>scaleFactor = 1.1</code> nghĩa là ảnh đầu vào sẽ được thu nhỏ đi 10% sau mỗi chu kỳ tìm kiếm của cửa sổ quét Haar. Điều này giúp thuật toán phát hiện được khuôn mặt ở các kích thước và khoảng cách xa gần khác nhau so với camera.
+                        <br>- <code>minNeighbors = 5</code> quy định một vùng ảnh phải được phát hiện tối thiểu 5 lần bởi các cửa sổ quét lân cận trùng lên nhau thì mới được công nhận là khuôn mặt hợp lệ. Tham số này càng cao thì bộ phát hiện càng khắt khe, giúp loại bỏ các vật thể ở hậu cảnh bị nhận nhầm là mặt.
+                    </div>
+                </div>
 
-<div class="func-card">
-<div class="func-card-header"><span class="fn-name">Haar Cascade</span></div>
-<div class="func-card-body">Thuật toán phát hiện đối tượng truyền thống (Viola-Jones 2001). Cực kỳ nhẹ, chạy nhanh trên CPU mà không cần card đồ họa đắt tiền.</div>
-</div>
+                <!-- Q5 -->
+                <div class="qa-item">
+                    <div class="qa-q" onclick="toggleQA(this)">
+                        <span class="num">5</span> Tại sao cần chuyển ảnh sang dạng ảnh xám (Grayscale) trước khi đưa vào Haar Cascade?
+                        <span class="arrow">▼</span>
+                    </div>
+                    <div class="qa-a">
+                        Thuật toán Haar Cascade hoạt động dựa trên các đặc trưng Haar-like - tức là tính toán sự chênh lệch độ sáng tối giữa các khối hình chữ nhật trên khuôn mặt (ví dụ: vùng mắt thường tối hơn vùng trán và sống mũi). Việc tính toán này chỉ cần thông tin về cường độ sáng (luminance). Do đó, chuyển ảnh sang dạng xám giúp giảm số lượng kênh màu từ 3 (BGR) xuống 1 (Gray), giảm dung lượng dữ liệu đi 3 lần, giúp thuật toán chạy nhanh hơn rất nhiều.
+                    </div>
+                </div>
 
-<div class="func-card">
-<div class="func-card-header"><span class="fn-name">CLAHE</span></div>
-<div class="func-card-body">Cân bằng sáng thích nghi cục bộ. Chia khuôn mặt thành lưới 8x8 ô để xử lý tương tương phản độc lập, giúp thớ cơ biểu cảm rõ nét kể cả khi học sinh bị ngược sáng.</div>
-</div>
+                <!-- Q6 -->
+                <div class="qa-item">
+                    <div class="qa-q" onclick="toggleQA(this)">
+                        <span class="num">6</span> Tại sao lại chuyển từ ảnh xám sang RGB trước khi đưa vào mô hình EfficientNet-B0?
+                        <span class="arrow">▼</span>
+                    </div>
+                    <div class="qa-a">
+                        Mô hình EfficientNet-B0 pretrained của thư viện HSEmotion được huấn luyện ban đầu trên bộ dữ liệu ảnh màu ImageNet và AffectNet (gồm các ảnh màu có đầy đủ 3 kênh màu RGB). Cấu trúc của lớp tích chập đầu tiên trong mạng nơ-ron được thiết kế cứng để nhận đầu vào là ma trận 3 kênh. Do đó, sau khi cân bằng sáng CLAHE trên ảnh xám, ta bắt buộc phải nhân bản kênh xám đó thành 3 kênh màu RGB tương đương để khớp chuẩn đầu vào của mô hình, nếu không chương trình sẽ báo lỗi không tương thích số kênh dữ liệu.
+                    </div>
+                </div>
 
-<div class="func-card">
-<div class="func-card-header"><span class="fn-name">EfficientNet-B0</span></div>
-<div class="func-card-body">Mạng nơ-ron học sâu tích chập (CNN) tối ưu hóa của Google (2019) với 5.3 triệu tham số, dung lượng siêu nhẹ ~25MB nên chạy rất mượt trên CPU máy tính học sinh.</div>
-</div>
+                <!-- Q7 -->
+                <div class="qa-item">
+                    <div class="qa-q" onclick="toggleQA(this)">
+                        <span class="num">7</span> Bộ lọc CLAHE hoạt động thế nào và tại sao nó tốt hơn cân bằng sáng lược đồ toàn cục (Global Histogram Equalization)?
+                        <span class="arrow">▼</span>
+                    </div>
+                    <div class="qa-a">
+                        Cân bằng sáng lược đồ toàn cục sẽ tính toán độ sáng trên toàn bộ bức ảnh, dễ dẫn đến hiện tượng cháy sáng ở những vùng vốn đã đủ sáng và làm mất chi tiết. CLAHE khắc phục bằng cách chia nhỏ khuôn mặt thành lưới 8x8 ô (tổng cộng 64 ô nhỏ) và cân bằng sáng độc lập trong mỗi ô. Nó áp dụng giới hạn tương phản <code>clipLimit=2.0</code> để cắt bớt các đỉnh quá cao trong lược đồ, ngăn việc khuếch đại các hạt nhiễu sáng ở vùng tối. Cuối cùng, nó dùng phép nội suy song tuyến tính để làm mịn các ranh giới giữa các ô, giúp ảnh có độ tương phản tự nhiên, làm nổi bật rõ các thớ cơ biểu cảm.
+                    </div>
+                </div>
 
-<div class="func-card">
-<div class="func-card-header"><span class="fn-name">Temporal Smoothing</span></div>
-<div class="func-card-body">Bộ lọc trung bình trượt qua hàng đợi deque trượt 10 khung hình để ổn định nhãn cảm xúc hiển thị, không bị đổi nhãn nhấp nháy liên tục khi người học chớp mắt.</div>
-</div>
+                <!-- Q8 -->
+                <div class="qa-item">
+                    <div class="qa-q" onclick="toggleQA(this)">
+                        <span class="num">8</span> Cơ chế ánh xạ từ 8 lớp sang 6 lớp cảm xúc hoạt động ra sao?
+                        <span class="arrow">▼</span>
+                    </div>
+                    <div class="qa-a">
+                        Mô hình gốc HSEmotion xuất ra xác suất của 8 lớp cảm xúc: <code>[Anger, Contempt, Disgust, Fear, Happiness, Neutral, Sadness, Surprise]</code>. Trong ngữ cảnh lớp học trực tuyến, nhãn <code>Fear</code> (sợ hãi) và <code>Contempt</code> (khinh bỉ) cực kỳ hiếm gặp và ít mang giá trị đo lường giáo dục, nên nhóm quyết định loại bỏ. Hệ thống trích chọn điểm số thô của 6 lớp cảm xúc còn lại, tạo thành một vector mới và thực hiện phép tái chuẩn hóa Softmax: chia điểm của mỗi lớp cho tổng điểm 6 lớp để kéo tổng xác suất về đúng 100%, đảm bảo tính nhất quán toán học.
+                    </div>
+                </div>
 
-<div class="func-card">
-<div class="func-card-header"><span class="fn-name">Centroid Tracking</span></div>
-<div class="func-card-body">Thuật toán bám vết khuôn mặt dựa trên khoảng cách tọa độ tâm hình học để định danh chính xác học sinh đang học chính diện và loại bỏ nhiễu người ở hậu cảnh.</div>
-</div>
-</section>
+                <!-- Q9 -->
+                <div class="qa-item">
+                    <div class="qa-q" onclick="toggleQA(this)">
+                        <span class="num">9</span> Làm mịn thời gian (Temporal Smoothing) hoạt động thế nào trong code? Nó có nhược điểm gì không?
+                        <span class="arrow">▼</span>
+                    </div>
+                    <div class="qa-a">
+                        Trong code, mỗi khuôn mặt được gán một hàng đợi <code>collections.deque(maxlen=10)</code> lưu trữ xác suất của 10 khung hình gần nhất. Nhãn cảm xúc hiển thị cuối cùng là nhãn có xác suất trung bình cao nhất trong hàng đợi này. 
+                        <br><strong>Nhược điểm:</strong> Nó gây ra một độ trễ nhỏ (Latency) khoảng 10 khung hình. Với tốc độ camera trung bình 30 FPS và xử lý nhảy khung hình (skip=2), độ trễ này tương đương khoảng 0.6 giây. Tuy nhiên, độ trễ nhỏ này hoàn toàn chấp nhận được trong ứng dụng E-learning để đổi lấy sự ổn định vượt trội của giao diện hiển thị, tránh hiện tượng nháy nhãn gây mỏi mắt người dùng.
+                    </div>
+                </div>
 
-<section id="cau-hoi-bao-ve">
-<h2><span class="section-num">6</span> Câu hỏi bảo vệ đồ án thường gặp</h2>
+                <!-- Q10 -->
+                <div class="qa-item">
+                    <div class="qa-q" onclick="toggleQA(this)">
+                        <span class="num">10</span> Thuật toán Centroid Tracking của nhóm hoạt động thế nào và vai trò của GRID = 60 là gì?
+                        <span class="arrow">▼</span>
+                    </div>
+                    <div class="qa-a">
+                        Hệ thống tính toán tọa độ tâm của bounding box khuôn mặt: <code>cx = x + w//2</code> và <code>cy = y + h//2</code>. Trình theo dõi sẽ làm tròn tọa độ này về bội số của 60 (lượng tử hóa trên lưới 60px): <code>k = (cx//60*60, cy//60*60)</code> và dùng giá trị <code>k</code> làm định danh (Key) duy nhất cho khuôn mặt đó trong Dict bộ đệm. Nếu khuôn mặt dịch chuyển nhẹ trong phạm vi ô lưới 60px, Key này giữ nguyên, giúp hệ thống tiếp tục ghi nhận lịch sử cho đúng người đó. Nếu lệch quá 60px hoặc xuất hiện mặt mới, hệ thống tự động tạo một Key mới và bộ đệm trống mới.
+                    </div>
+                </div>
 
-<div class="qa-item"><div class="qa-q" onclick="toggleQA(this)"><span class="num">1</span> Tại sao dùng mô hình pretrained HSEmotion?<span class="arrow">▼</span></div><div class="qa-a">Mô hình HSEmotion đã được huấn luyện sẵn trên bộ dữ liệu khổng lồ AffectNet (450.000 ảnh). Việc sử dụng mô hình pretrained giúp hệ thống đạt độ chính xác cao ngay lập tức mà không cần tốn hàng tuần huấn luyện từ đầu trên siêu máy tính.</div></div>
+                <!-- Q11 -->
+                <div class="qa-item">
+                    <div class="qa-q" onclick="toggleQA(this)">
+                        <span class="num">11</span> Tại sao chỉ ghi nhận cảm xúc của Primary Face vào SessionStats?
+                        <span class="arrow">▼</span>
+                    </div>
+                    <div class="qa-a">
+                        Trong môi trường học trực tuyến tại nhà, camera thường chỉ hướng vào một học sinh duy nhất ngồi trực diện. Tuy nhiên, thi thoảng có thể xuất hiện người thân đi qua ở hậu cảnh phía sau. Nếu hệ thống ghi nhận cảm xúc của tất cả mọi người xuất hiện, dữ liệu thống kê độ tập trung cuối giờ học của học sinh sẽ bị sai lệch hoàn toàn bởi các biểu cảm của người đi sau. Do đó, hệ thống sắp xếp diện tích khuôn mặt và quy ước khuôn mặt to nhất, gần nhất là Primary Face để ghi nhận dữ liệu, tự động loại bỏ nhiễu hậu cảnh.
+                    </div>
+                </div>
 
-<div class="qa-item"><div class="qa-q" onclick="toggleQA(this)"><span class="num">2</span> Tại sao nhóm chọn Haar Cascade làm bộ phát hiện mặt?<span class="arrow">▼</span></div><div class="qa-a">Haar Cascade được tích hợp sẵn trong OpenCV, chỉ cần 2 dòng code chạy cực kỳ nhẹ trên CPU máy tính học sinh. Nhóm áp dụng giải pháp lai (Hybrid): Dùng Haar Cascade để cắt mặt nhanh, sau đó dùng mạng học sâu CNN EfficientNet để phân tích cảm xúc, đạt sự cân bằng tuyệt đối giữa tốc độ hiển thị và độ chính xác.</div></div>
+                <!-- Q12 -->
+                <div class="qa-item">
+                    <div class="qa-q" onclick="toggleQA(this)">
+                        <span class="num">12</span> Tại sao nhóm lại đặt các ngưỡng quyết định thích nghi (Adaptive Thresholds) khác nhau cho từng cảm xúc?
+                        <span class="arrow">▼</span>
+                    </div>
+                    <div class="qa-a">
+                        Đây là điểm cải tiến thực nghiệm quan trọng của nhóm. Tần suất xuất hiện tự nhiên và cường độ biểu hiện cơ mặt của các cảm xúc rất khác nhau. Ví dụ: biểu cảm <code>Happiness</code> (vui vẻ) cơ miệng mở rộng rất rõ nét nên mô hình nhận diện cực kỳ nhạy, dễ bị kích hoạt nhầm khi học sinh nói chuyện hoặc há miệng, nên đặt ngưỡng 0.3. Biểu cảm <code>Sadness</code> (buồn bã) khi học tập chỉ thể hiện qua nét đăm chiêu, cúi đầu nhẹ, thớ cơ mặt di chuyển cực kỳ ít nên mô hình thường cho xác suất thấp, nhóm phải hạ ngưỡng xuống 0.2 để tăng độ nhạy (Recall), tránh bỏ sót. Ngược lại, trạng thái <code>Neutral</code> (bình thường) chiếm đa số thời gian nên đặt ngưỡng cao 0.35 để làm mốc nền ổn định.
+                    </div>
+                </div>
 
-<div class="qa-item"><div class="qa-q" onclick="toggleQA(this)"><span class="num">3</span> Cách giải quyết hiện tượng nháy nhãn (Flickering)?<span class="arrow">▼</span></div><div class="qa-a">Nhóm sử dụng bộ lọc trung bình trượt Temporal Smoothing lưu xác suất 10 khung hình liên tiếp. Nhãn cảm xúc hiển thị là nhãn có xác suất trung bình cao nhất, giúp giao diện hiển thị ổn định, mượt mà.</div></div>
+                <!-- Q13 -->
+                <div class="qa-item">
+                    <div class="qa-q" onclick="toggleQA(this)">
+                        <span class="num">13</span> Tại sao lớp Sadness có Recall đạt tuyệt đối 1.00 nhưng Precision lại chỉ đạt 0.64 trên tập kiểm thử?
+                        <span class="arrow">▼</span>
+                    </div>
+                    <div class="qa-a">
+                        Đây là sự đánh đổi có chủ đích trong thiết kế hệ thống. Nhóm đã chủ động hạ ngưỡng nhạy của lớp Sadness xuống mức rất thấp là 0.20. Điều này giúp hệ thống đạt độ nhạy tuyệt đối (Recall = 1.00) - tức là **không bỏ sót bất kỳ hình ảnh buồn bã hay mệt mỏi nào** của học sinh. Tuy nhiên, hệ quả là mô hình sẽ khắt khe hơn và đôi khi đoán nhầm một số ảnh có nét mặt bình thường (Neutral) hơi đăm chiêu thành Sadness, dẫn đến chỉ số Precision (độ xác thực) giảm xuống còn 0.64. Trong ứng dụng giáo dục, việc phát hiện nhầm để nhắc nhở vẫn tốt hơn là bỏ sót hoàn toàn sự mệt mỏi của học sinh.
+                    </div>
+                </div>
 
-<div class="qa-item"><div class="qa-q" onclick="toggleQA(this)"><span class="num">4</span> Cơ chế chuyển đổi 8 cảm xúc sang 6 cảm xúc là gì?<span class="arrow">▼</span></div><div class="qa-a">Mô hình gốc HSEmotion dự đoán ra 8 cảm xúc. Nhóm lọc lấy điểm số của 6 cảm xúc đích (bỏ qua Fear và Contempt do hiếm gặp trong học trực tuyến), sau đó thực hiện tái chuẩn hóa Softmax (chia xác suất từng lớp cho tổng 6 lớp còn lại) để kéo tổng xác suất về đúng 100% nhằm đảm bảo tính công bằng toán học.</div></div>
+                <!-- Q14 -->
+                <div class="qa-item">
+                    <div class="qa-q" onclick="toggleQA(this)">
+                        <span class="num">14</span> Tại sao cảm xúc Disgust (Ghê tởm) lại có F1-Score thấp nhất (0.68) và Recall chỉ đạt 0.56?
+                        <span class="arrow">▼</span>
+                    </div>
+                    <div class="qa-a">
+                        Lớp Disgust (ghê tởm) thường có các đặc trưng co cơ mũi và nhíu mày rất tương đồng và chồng chéo với cảm xúc tức giận (Anger). Đồng thời, trong quá trình lọc ảnh thủ công từ tập dữ liệu FairFace chủng tộc Đông Nam Á, việc gắn nhãn cảm xúc Disgust đôi khi mang tính cảm quan chủ quan của người gắn nhãn (dễ bị nhầm lẫn giữa nét mặt nhăn nhó do ghê tởm với nét mặt tức giận). Sự chồng chéo đặc trưng và nhiễu nhãn gán này khiến mô hình dễ dự đoán sai lệch giữa hai lớp này, làm giảm độ nhạy Recall của lớp Disgust.
+                    </div>
+                </div>
 
-<div class="qa-item"><div class="qa-q" onclick="toggleQA(this)"><span class="num">5</span> Bộ lọc CLAHE đóng vai trò gì?<span class="arrow">▼</span></div><div class="qa-a">Webcam người học thường bị bóng đổ hoặc ngược sáng cửa sổ. Bộ lọc CLAHE cân bằng độ tương phản cục bộ trên lưới 8x8 ô giúp khuôn mặt hiển thị tự nhiên, rõ nét thớ cơ mặt để mô hình học sâu dự đoán chính xác hơn.</div></div>
+                <!-- Q15 -->
+                <div class="qa-item">
+                    <div class="qa-q" onclick="toggleQA(this)">
+                        <span class="num">15</span> Hệ thống lưu trữ dữ liệu lịch sử như thế nào để vẽ Dashboard và độ phức tạp tính toán là bao nhiêu?
+                        <span class="arrow">▼</span>
+                    </div>
+                    <div class="qa-a">
+                        Hệ thống ghi nhận lịch sử trực tiếp trên bộ nhớ RAM bằng cách chèn phần tử vào một danh sách (List): <code>self.history.append(...)</code>. Độ phức tạp tính toán của phép toán này là $O(1)$ - tức là diễn ra tức thời và không tốn tài nguyên xử lý của CPU. Biểu đồ Dashboard chỉ được vẽ một lần duy nhất bằng thư viện Matplotlib khi người học nhấn phím thoát (q) để đóng chương trình, giúp hệ thống không bị chậm trễ trong quá trình nhận diện thời gian thực.
+                    </div>
+                </div>
 
-<div class="qa-item"><div class="qa-q" onclick="toggleQA(this)"><span class="num">6</span> Hệ thống này có sử dụng AI để xây dựng không?<span class="arrow">▼</span></div><div class="qa-a">Có. Do thời gian tìm hiểu đề tài ngắn và đi lên từ con số 0, nhóm đã trung thực sử dụng các trợ lý trí tuệ nhân tạo (AI) làm công cụ học tập hỗ trợ tóm tắt lý thuyết, giải thích các thuật toán toán học phức tạp, tối ưu hóa code Python và hỗ trợ gỡ các lỗi tương thích thư viện trong quá trình phát triển dự án.</div><div class="qa-item"><div class="qa-q" onclick="toggleQA(this)"><span class="num">7</span> Tại sao nhóm đặt các ngưỡng cảm xúc khác nhau (Happiness: 0.3, Sadness: 0.2,...)?<span class="arrow">▼</span></div><div class="qa-a">Mỗi biểu cảm có cường độ vận động cơ mặt và tần suất xuất hiện tự nhiên rất khác nhau. Happiness (vui vẻ) rất dễ kích hoạt nên đặt ngưỡng 0.3 để tránh nhiễu miệng khi học sinh nói chuyện. Sadness (buồn bã) biểu hiện rất mờ nhạt và thớ cơ dịch chuyển rất ít khi học tập, nên đặt ngưỡng thấp 0.2 để tăng độ nhạy (Recall), tránh bỏ sót. Việc tinh chỉnh thực nghiệm bộ ngưỡng này giúp hệ thống đạt độ ổn định và chính xác tối ưu.</div></div>
+                <!-- Q16 -->
+                <div class="qa-item">
+                    <div class="qa-q" onclick="toggleQA(this)">
+                        <span class="num">16</span> Tại sao kích thước chấm tròn trên biểu đồ dòng thời gian (Timeline) lại to nhỏ khác nhau?
+                        <span class="arrow">▼</span>
+                    </div>
+                    <div class="qa-a">
+                        Kích thước của các điểm chấm tròn màu đại diện cho độ tự tin (Confidence/Probability) của mô hình AI tại mốc thời gian đó, được tính bằng công thức: <code>size = max(40, confidence * 250)</code>. Những mốc thời gian học sinh biểu lộ cảm xúc rõ nét (ví dụ: cười tươi, ngạc nhiên há miệng to), điểm tin cậy của AI đạt gần 100%, chấm tròn sẽ hiển thị to nhất. Những mốc thời gian biểu cảm mập mờ, điểm tin cậy thấp, chấm tròn sẽ thu nhỏ lại. Điều này giúp giáo viên nhìn vào là biết mốc nào AI đoán chắc chắn, mốc nào đoán mập mờ.
+                    </div>
+                </div>
 
-<div class="qa-item"><div class="qa-q" onclick="toggleQA(this)"><span class="num">8</span> Độ chính xác thực nghiệm của hệ thống đạt bao nhiêu và đánh giá thế nào?<span class="arrow">▼</span></div><div class="qa-a">Hệ thống được đánh giá định lượng trên Tập kiểm thử Đông Nam Á độc lập gồm 150 ảnh (25 ảnh cho mỗi lớp chủng tộc Southeast Asian, nhóm tuổi 10-29) và đạt độ chính xác toàn cục <strong>81.33%</strong> (Macro F1-Score đạt 0.81). Trong đó, lớp Happiness đạt độ chính xác F1-Score 1.00 tuyệt đối và Sadness đạt Recall 1.00 tuyệt đối.</div></div>
+                <!-- Q17 -->
+                <div class="qa-item">
+                    <div class="qa-q" onclick="toggleQA(this)">
+                        <span class="num">17</span> Tham số chuẩn hóa ImageNet mean=[0.485, 0.456, 0.406] và std=[0.229, 0.224, 0.225] đóng vai trò gì?
+                        <span class="arrow">▼</span>
+                    </div>
+                    <div class="qa-a">
+                        Đây là bước tiền xử lý toán học bắt buộc đối với các mô hình PyTorch đã được huấn luyện sẵn trên bộ dữ liệu ImageNet. Phép toán này trừ đi giá trị trung bình (mean) và chia cho độ lệch chuẩn (std) của từng kênh màu RGB trên toàn bộ dữ liệu huấn luyện gốc. Việc này giúp đưa phân phối giá trị điểm ảnh của ảnh đầu vào về cùng một dải phân phối chuẩn (Standard Normal Distribution) giống như dữ liệu mà mô hình đã học, giúp quá trình lan truyền tiến trong mạng nơ-ron tính toán chính xác và ổn định.
+                    </div>
+                </div>
 
-<div class="qa-item"><div class="qa-q" onclick="toggleQA(this)"><span class="num">9</span> Tại sao nhóm không Fine-tuning (huấn luyện thêm) mô hình trên tập dữ liệu Đông Nam Á?<span class="arrow">▼</span></div><div class="qa-a">Nhóm quyết định không Fine-tuning trọng số mạng nơ-ron vì hai lý do chính: 
-1. <strong>Nguy cơ Quá khớp (Overfitting):</strong> Huấn luyện một mạng nơ-ron lớn như EfficientNet-B0 (5.3 triệu tham số) trên một tập dữ liệu nhỏ (150 ảnh) chắc chắn sẽ làm mô hình bị quá khớp, mất khả năng tổng quát hóa trên các khuôn mặt khác.
-2. <strong>Giải pháp thay thế hiệu quả hơn:</strong> Thay vì thay đổi trọng số mô hình, nhóm đã thực hiện <strong>Tinh chỉnh ngưỡng quyết định thích nghi (Decision Threshold Tuning)</strong> kết hợp tiền xử lý ảnh CLAHE. Giải pháp này giúp tối ưu hóa trực tiếp điểm số phân loại, tăng độ chính xác lên 81.33% và đảm bảo thời gian chạy mượt mà ổn định trên CPU mà không làm hỏng mô hình gốc.</div></div>
+                <!-- Q18 -->
+                <div class="qa-item">
+                    <div class="qa-q" onclick="toggleQA(this)">
+                        <span class="num">18</span> Nếu muốn chạy chương trình này trên card đồ họa (GPU) để nhanh hơn thì cần sửa đổi gì trong code?
+                        <span class="arrow">▼</span>
+                    </div>
+                    <div class="qa-a">
+                        Mặc dù hệ thống hiện tại đã tối ưu hóa để chạy rất nhanh trên CPU, nếu máy tính có card đồ họa hỗ trợ CUDA, ta có thể dễ dàng chuyển sang chạy GPU bằng cách truyền tham số thiết bị khi khởi tạo. Thư viện <code>hsemotion</code> hỗ trợ tự động phát hiện GPU: ta chỉ cần truyền thêm tham số <code>device='cuda'</code> vào hàm khởi tạo <code>HSEmotionRecognizer</code> trong class <code>EmotionEngine</code>, đồng thời chuyển ma trận ảnh đầu vào sang thiết bị cuda bằng lệnh <code>.to('cuda')</code> trước khi dự đoán.
+                    </div>
+                </div>
 
-</div>
+                <!-- Q19 -->
+                <div class="qa-item">
+                    <div class="qa-q" onclick="toggleQA(this)">
+                        <span class="num">19</span> Hãy giải thích ý nghĩa khoa học của kỹ thuật Compound Scaling trong kiến trúc EfficientNet?
+                        <span class="arrow">▼</span>
+                    </div>
+                    <div class="qa-a">
+                        Compound Scaling (Mở rộng hỗn hợp) là phương pháp mở rộng quy mô mạng nơ-ron một cách đồng bộ theo cả 3 chiều: độ sâu mạng (số lớp), độ rộng mạng (số kênh đặc trưng) và độ phân giải ảnh đầu vào theo một tỷ lệ cố định được tối ưu hóa bằng thực nghiệm. Google chỉ ra rằng việc mở rộng lệch lệch (ví dụ mạng quá sâu nhưng ảnh quá mờ) sẽ gây lãng phí năng lực tính toán. Compound Scaling giúp EfficientNet-B0 đạt độ chính xác cực cao nhưng lượng tham số chỉ bằng 1/5 các mạng truyền thống, chạy cực kỳ hiệu quả trên thiết bị phần cứng giới hạn.
+                    </div>
+                </div>
 
-</section>
+                <!-- Q20 -->
+                <div class="qa-item">
+                    <div class="qa-q" onclick="toggleQA(this)">
+                        <span class="num">20</span> Hướng phát triển tiếp theo của đề tài để khắc phục các hạn chế hiện tại là gì?
+                        <span class="arrow">▼</span>
+                    </div>
+                    <div class="qa-a">
+                        Nhóm đề xuất 3 hướng phát triển khoa học cốt lõi:
+                        <br>1. <strong>Tự động hóa tối ưu ngưỡng quyết định:</strong> Thay vì tinh chỉnh bộ ngưỡng thích nghi thủ công bằng tay (thử và sai), nhóm sẽ áp dụng các thuật toán tối ưu hóa tự động (như Bayesian Optimization hoặc Thuật toán di truyền) để tự động tìm ra bộ ngưỡng tối ưu nhất trên một tập validation độc lập.
+                        <br>2. <strong>Khử nhiễu gán nhãn dữ liệu:</strong> Áp dụng cơ chế gán nhãn đồng thuận đa chuyên gia (Multi-expert consensus) chéo và các hàm mất mát chống nhiễu nhãn (Label noise-tolerant loss) để xây dựng tập dữ liệu Ground Truth khách quan hơn.
+                        <br>3. <strong>Tích hợp các mô hình hiện đại hơn:</strong> Nâng cấp bộ phát hiện mặt lên YOLOv8-Face hoặc MediaPipe Face Mesh để bám vết khuôn mặt chính xác ở các góc nghiêng lớn, và tích hợp thêm mô hình Gaze Tracking (ước lượng hướng nhìn) để đánh giá độ tập trung chuyên sâu.
+                    </div>
+                </div>
+            </section>
+        </article>
 
-</article>
+        <hr>
+        <footer style="text-align: center; padding: 40px 0 20px; color: var(--slate-400); font-size: 0.85rem; border-top: 1px solid var(--slate-200);">
+            Cẩm nang giải thích chi tiết đồ án nhận diện cảm xúc người học trực tuyến<br>
+            Môn học: Khai thác thông tin đa phương tiện (AC2030) — Đại học Bách khoa Hà Nội
+        </footer>
+    </div>
 
-<hr>
-<footer style="text-align:center;padding:32px 0 16px;color:var(--slate-400);font-size:.82rem">
-  Giải thích đồ án — Nhận diện cảm xúc người học online<br>
-  Môn: Khai thác thông tin đa phương tiện
-</footer>
+    <script>
+        const toggle = document.getElementById('menuToggle');
+        const sidebar = document.getElementById('sidebar');
+        
+        toggle.addEventListener('click', () => {
+            sidebar.classList.toggle('open');
+            toggle.textContent = sidebar.classList.contains('open') ? '✕' : '☰';
+        });
 
-</div>
+        // Close sidebar on link click in mobile view
+        document.querySelectorAll('#toc a').forEach(link => {
+            link.addEventListener('click', () => {
+                if (window.innerWidth <= 900) {
+                    sidebar.classList.remove('open');
+                    toggle.textContent = '☰';
+                }
+            });
+        });
 
-<script>
-const toggle=document.getElementById('menuToggle');
-const sidebar=document.getElementById('sidebar');
-toggle.addEventListener('click',()=>{sidebar.classList.toggle('open');toggle.textContent=sidebar.classList.contains('open')?'✕':'☰';});
-document.querySelectorAll('section[id]').forEach(s=>{new IntersectionObserver(e=>{e.forEach(e=>{if(e.isIntersecting){document.querySelectorAll('#toc a').forEach(a=>a.classList.remove('active'));const l=document.querySelector('#toc a[href="#'+s.id+'"]');if(l)l.classList.add('active');}});},{rootMargin:'-80px 0 -60% 0'}).observe(s);});
-function toggleQA(el){el.classList.toggle('active');el.nextElementSibling.classList.toggle('open');}
-</script>
+        // Active link highlighting on scroll
+        document.querySelectorAll('section[id]').forEach(section => {
+            new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        document.querySelectorAll('#toc a').forEach(a => a.classList.remove('active'));
+                        const activeLink = document.querySelector('#toc a[href="#' + section.id + '"]');
+                        if (activeLink) activeLink.classList.add('active');
+                    }
+                });
+            }, {
+                rootMargin: '-100px 0px -60% 0px'
+            }).observe(section);
+        });
 
-</body></html>
+        // Interactive QA accordion toggle function
+        function toggleQA(el) {
+            el.classList.toggle('active');
+            const answer = el.nextElementSibling;
+            if (answer.classList.contains('open')) {
+                answer.classList.remove('open');
+            } else {
+                answer.classList.add('open');
+            }
+        }
+    </script>
+</body>
+</html>
