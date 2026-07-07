@@ -22,7 +22,6 @@ body{font-family:'Inter',system-ui,-apple-system,sans-serif;color:#0f172a;backgr
 .sidebar .toc-l1{font-weight:600;color:var(--slate-800);margin-top:12px;font-size:.85rem}
 .sidebar .toc-l1:first-child{margin-top:0}
 .sidebar .toc-l2{padding-left:24px;font-size:.78rem}
-.sidebar .toc-l3{padding-left:36px;font-size:.75rem}
 .mobile-toggle{display:none;position:fixed;top:12px;left:12px;z-index:200;background:#fff;border:1px solid var(--slate-200);border-radius:8px;width:40px;height:40px;cursor:pointer;font-size:1.2rem;align-items:center;justify-content:center;box-shadow:var(--shadow-sm)}
 .content{flex:1;margin-left:var(--sidebar-w);max-width:900px;padding:0 48px 80px}
 .hero{padding:48px 0 32px;margin-bottom:32px;border-bottom:1px solid var(--slate-200)}
@@ -59,7 +58,6 @@ hr{margin:32px 0;border:none;height:1px;background:var(--slate-200)}
 .func-card{border:1px solid var(--slate-200);border-radius:10px;margin:0 0 16px;background:#fff;overflow:hidden}
 .func-card-header{padding:12px 20px;background:var(--slate-50);border-bottom:1px solid var(--slate-200);display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .func-card-header .fn-name{font-weight:600;color:var(--slate-900);font-family:'JetBrains Mono',monospace;font-size:.88rem}
-.func-card-header .fn-lines{color:var(--slate-400);font-size:.78rem}
 .func-card-body{padding:12px 20px;color:var(--slate-700);font-size:.9rem;line-height:1.55}
 .func-card-body p:last-child{margin-bottom:0}
 .func-card-body code{background:var(--slate-100);color:var(--blue-700);padding:1px 5px;border-radius:3px;font-size:.85em}
@@ -90,30 +88,27 @@ hr{margin:32px 0;border:none;height:1px;background:var(--slate-200)}
 
 <aside class="sidebar" id="sidebar">
   <div class="sidebar-logo">
-    Giai Thich Do An
-    <small>Nhan dien cam xuc — Khoa hoc may tinh</small>
+    Giải Thích Đồ Án
+    <small>Nhận diện cảm xúc — Khoa học máy tính</small>
   </div>
   <nav id="toc">
-    <a href="#tong-quan" class="toc-l1">1. Tong quan du an</a>
-    <a href="#cau-truc-thu-muc" class="toc-l1">2. Cau truc thu muc</a>
-    <a href="#so-do-luong" class="toc-l1">3. So do luong du lieu</a>
-    <a href="#mainpy" class="toc-l1">4. Giai thich main.py</a>
+    <a href="#tong-quan" class="toc-l1">1. Tổng quan dự án</a>
+    <a href="#cau-truc-thu-muc" class="toc-l1">2. Cấu trúc thư mục</a>
+    <a href="#so-do-luong" class="toc-l1">3. Sơ đồ luồng dữ liệu</a>
+    <a href="#mainpy" class="toc-l1">4. Giải thích main.py</a>
     <a href="#41-class-emotionengine" class="toc-l2">4.1 EmotionEngine</a>
     <a href="#42-class-sessionstats" class="toc-l2">4.2 SessionStats</a>
-    <a href="#43-ham-load-model" class="toc-l2">4.3 load_model()</a>
-    <a href="#44-ham-do-finetune" class="toc-l2">4.4 do_finetune()</a>
-    <a href="#45-ham-do-evaluate" class="toc-l2">4.5 do_evaluate()</a>
-    <a href="#46-cac-mode" class="toc-l2">4.6 Cac mode functions</a>
-    <a href="#giai-thich-khai-niem" class="toc-l1">5. Giai thich khai niem</a>
-    <a href="#cau-hoi-bao-ve" class="toc-l1">6. Cau hoi bao ve</a>
+    <a href="#43-cac-mode" class="toc-l2">4.3 Các chế độ chạy</a>
+    <a href="#giai-thich-khai-niem" class="toc-l1">5. Giải thích khái niệm chuyên môn</a>
+    <a href="#cau-hoi-bao-ve" class="toc-l1">6. Câu hỏi bảo vệ</a>
   </nav>
 </aside>
 
 <div class="content">
 <header class="hero">
-  <h1>Nhan Dien Cam Xuc<br>Nguoi Hoc Online</h1>
+  <h1>Nhận Diện Cảm Xúc<br>Người Học Online</h1>
   <div class="meta">
-    <span>Mon: Khai thac thong tin da phuong tien</span>
+    <span>Môn: Khai thác thông tin đa phương tiện</span>
     <span class="divider">·</span>
     <span>Python + OpenCV + HSEmotion + PyTorch</span>
   </div>
@@ -122,101 +117,82 @@ hr{margin:32px 0;border:none;height:1px;background:var(--slate-200)}
 <article>
 
 <section id="tong-quan">
-<h2><span class="section-num">1</span> Tong quan du an</h2>
+<h2><span class="section-num">1</span> Tổng quan dự án</h2>
 
-<h3>1.1. Du an nay lam gi?</h3>
-<p>Chuong trinh <strong>nhan dien cam xuc tren khuon mat nguoi</strong> theo thoi gian thuc. Mo webcam len, chuong trinh se:</p>
+<h3>1.1. Dự án này làm gì?</h3>
+<p>Chương trình <strong>nhận diện cảm xúc trên khuôn mặt người học</strong> theo thời gian thực trực tiếp từ Webcam, Ảnh tĩnh hoặc Video ngoại tuyến. Chương trình thực hiện:</p>
 <ol>
-  <li><strong>Phat hien khuon mat</strong> trong khung hinh (Haar Cascade).</li>
-  <li><strong>Cat tung khuon mat</strong> ra, xu ly CLAHE can bang sang.</li>
-  <li><strong>Dua qua mo hinh AI</strong> (EfficientNet da duoc huan luyen san) de du doan cam xuc.</li>
-  <li><strong>Hien thi ket qua</strong> ngay tren man hinh: khung mau + ten cam xuc + do tin cay.</li>
+  <li><strong>Phát hiện khuôn mặt</strong> trong khung hình (Haar Cascade).</li>
+  <li><strong>Cắt vùng khuôn mặt</strong> và cân bằng sáng thích nghi (CLAHE).</li>
+  <li><strong>Dự đoán cảm xúc</strong> bằng mô hình học sâu CNN (EfficientNet-B0) với cơ chế ánh xạ 8 sang 6 lớp.</li>
+  <li><strong>Làm mịn và lọc nhiễu</strong> (Temporal Smoothing & Centroid Tracking) để tránh hiện tượng nháy nhãn hiển thị.</li>
+  <li><strong>Xuất biểu đồ Dashboard báo cáo</strong> thống kê sự phân bổ cảm xúc sau phiên học.</li>
 </ol>
-<p>Ngoai webcam, con co che do <strong>anh tinh</strong>, <strong>file video</strong>, <strong>fine-tune</strong> model, va <strong>danh gia</strong> ket qua.</p>
 
-<h3>1.2. Kien truc tong the</h3>
-<p>Toan bo he thong nam trong <strong>1 file duy nhat</strong>: <code>main.py</code> (~400 dong), chia lam 4 phan:</p>
+<h3>1.2. Kiến trúc tệp tin main.py</h3>
+<p>Toàn bộ chương trình được đóng gói trong <strong>1 file duy nhất</strong>: <code>main.py</code> (~300 dòng), chia làm 5 phần:</p>
 
 <pre>main.py
 │
-├── Phan 1: Constants + Imports (~15 dong)
-│   - Dinh nghia 6 emotion labels
-│   - Mau sac hien thi
-│   - Duong dan Haar cascade
+├── Phần 1: Hằng số & Thư viện (~15 dòng)
+│   - Định nghĩa 6 cảm xúc đích
+│   - Bảng màu sắc bounding box
+│   - Đường dẫn bộ phát hiện mặt Haar cascade
 │
-├── Phan 2: EmotionEngine class (~70 dong)
-│   - Khoi tao HSEmotion recognizer
-│   - Load fine-tuned weights
+├── Phần 2: Class EmotionEngine (~70 dòng)
+│   - Khởi tạo HSEmotion recognizer
 │   - detect() + predict() + process()
-│   - Temporal Smoothing + Adaptive Threshold
+│   - Lọc sáng CLAHE + Remap 8 sang 6 lớp
 │
-├── Phan 3: SessionStats class (~40 dong)
-│   - record() — ghi nhan cam xuc
-│   - report() — ve bieu do pie + timeline
+├── Phần 3: Class SessionStats (~45 dòng)
+│   - record() — ghi nhận cảm xúc thời gian thực
+│   - report() — vẽ biểu đồ tròn & timeline cảm xúc lưu vào reports/
 │
-├── Phan 4: load_model() + do_finetune() (~90 dong)
-│   - Load EfficientNet tu .pt cache
-│   - Fine-tune loop (freeze backbone)
-│   - Evaluate + Confusion Matrix
+├── Phần 4: Trợ giúp vẽ khung (~15 dòng)
+│   - draw_boxes() — vẽ bounding box màu sắc và nhãn cảm xúc lên ảnh
 │
-└── Phan 5: Modes + main() (~180 dong)
+└── Phần 5: Chế độ chạy & argparse (~60 dòng)
     - mode_webcam, mode_image, mode_video
-    - mode_finetune, mode_evaluate
-    - argparse dispatch</pre>
+    - main() phân phối tham số dòng lệnh</pre>
 
 <blockquote class="success">
-<strong>Tai sao chi can 1 file?</strong>
-Cac file nhu <code>capture.py</code>, <code>image_predictor.py</code>, <code>evaluator.py</code> truoc day la cac class nho, moi class chi co 1-2 method public. Gom vao 1 file giup giam so luong file tu 8 xuong 1, de quan ly hon, van giu nguyen chuc nang.
+<strong>Tại sao hệ thống chỉ cần 1 file?</strong>
+Chương trình được cô đọng tối đa bằng cách loại bỏ các tính năng huấn luyện thừa, gộp các module nhỏ trước đây thành các class trong một file thực thi duy nhất để học sinh dễ dàng sử dụng và chạy trên mọi máy tính cá nhân.
 </blockquote>
 
-<h3>1.3. Cong nghe su dung</h3>
+<h3>1.3. Thư viện sử dụng</h3>
 <div class="table-wrap">
 <table>
-<thead><tr><th>Thu vien</th><th>Muc dich</th></tr></thead>
+<thead><tr><th>Thư viện</th><th>Mục đích sử dụng</th></tr></thead>
 <tbody>
-  <tr><td><code>opencv-python</code></td><td>Doc camera, xu ly anh, ve hinh</td></tr>
-  <tr><td><code>hsemotion</code></td><td>Model EfficientNet nhan dien cam xuc</td></tr>
-  <tr><td><code>torch</code> + <code>timm</code></td><td>Chay neural network, fine-tune</td></tr>
-  <tr><td><code>torchvision</code></td><td>Bien doi anh, load dataset</td></tr>
-  <tr><td><code>scikit-learn</code></td><td>Confusion matrix, classification report</td></tr>
-  <tr><td><code>matplotlib</code> + <code>seaborn</code></td><td>Ve bieu do</td></tr>
+  <tr><td><code>opencv-python</code></td><td>Đọc luồng camera, phát hiện mặt Haar Cascade, vẽ khung đồ họa</td></tr>
+  <tr><td><code>hsemotion</code></td><td>Cung cấp mô hình mạng CNN EfficientNet-B0 pretrained</td></tr>
+  <tr><td><code>torch</code></td><td>Môi trường chạy mô hình học sâu (Inference)</td></tr>
+  <tr><td><code>matplotlib</code></td><td>Vẽ biểu đồ Dashboard báo cáo phiên học</td></tr>
 </tbody>
 </table>
 </div>
 </section>
 
 <section id="cau-truc-thu-muc">
-<h2><span class="section-num">2</span> Cau truc thu muc</h2>
+<h2><span class="section-num">2</span> Cấu trúc thư mục</h2>
 
 <pre>tucode/
 │
-├── main.py                      ← FILE DUY NHAT (~400 dong)
-├── README.md                    ← Tai lieu
-├── GIAI_THICH_DU_AN.html       ← Tai lieu giai thich (file nay)
-├── requirements.txt             ← Thu vien can cai
+├── main.py                      ← FILE DUY NHẤT chứa toàn bộ mã nguồn
+├── README.md                    ← Hướng dẫn sử dụng dự án
+├── GIAI_THICH_DU_AN.html       ← Tài liệu giải thích chi tiết đồ án (file này)
+├── requirements.txt             ← Danh sách thư viện cần cài đặt
 │
-├── dataset/                     ← Anh fine-tune
-│   ├── Anger/               61 anh
-│   ├── Disgust/             61 anh
-│   ├── Happiness/           61 anh
-│   ├── Neutral/             61 anh
-│   ├── Sadness/             61 anh
-│   └── Surprise/            61 anh
-│
-├── models/                      ← .pt weights (tu tao khi finetune)
-│   └── finetuned.pt
-│
-└── reports/                     ← Bieu do danh gia (tu tao)
-    ├── confusion_matrix.png
-    ├── training_curve.png
-    └── emotion_report.png</pre>
+└── reports/                     ← Thư mục lưu Dashboard báo cáo (tự tạo)
+    └── emotion_report.png       ← Biểu đồ tròn và timeline phân bổ cảm xúc</pre>
 </section>
 
 <section id="so-do-luong">
-<h2><span class="section-num">3</span> So do luong du lieu</h2>
+<h2><span class="section-num">3</span> Sơ đồ luồng dữ liệu</h2>
 
-<h3>3.1. Webcam / Video mode</h3>
-<pre>Vong lap chinh:
+<h3>3.1. Luồng chạy Webcam / Video</h3>
+<pre>Vòng lặp chính:
 ┌─────────────────────────────────────────────┐
 │ while True:                                 │
 │   frame = cap.read()                        │
@@ -230,354 +206,142 @@ Cac file nhu <code>capture.py</code>, <code>image_predictor.py</code>, <code>eva
 
 engine.process():
 ┌─────────────────────────────────────────────┐
-│ 1. detect() - Haar Cascade tim mat          │
-│ 2. Voi moi mat ≥48px:                       │
-│    a. predict() - CLAHE → HSEmotion         │
-│    b. Temporal Smoothing - deque trung binh │
-│    c. Adaptive Threshold - so sanh nguong   │
-│ 3. Tra ve list ket qua                      │
-└─────────────────────────────────────────────┘</pre>
-
-<h3>3.2. Fine-tune mode</h3>
-<pre>do_finetune():
-┌─────────────────────────────────────────────┐
-│ 1. Load model EfficientNet (6 classes)      │
-│ 2. Freeze backbone, mo 2 blocks cuoi        │
-│ 3. Doc dataset tu thu muc                   │
-│ 4. Chia 70/15/15 train/val/test             │
-│ 5. Voi moi epoch:                           │
-│    a. Train: forward → loss → backward      │
-│    b. Val: tinh loss + accuracy              │
-│    c. Luu neu val_acc > best                 │
-│ 6. Tra ve model + test_loader + history     │
-└─────────────────────────────────────────────┘</pre>
-
-<h3>3.3. Evaluate mode</h3>
-<pre>do_evaluate():
-┌─────────────────────────────────────────────┐
-│ 1. Load 2 models: base (8 class) + ft       │
-│ 2. Chay ca 2 tren test set                  │
-│ 3. So sanh accuracy + in classification report│
-│ 4. Ve confusion matrix + training curve      │
+│ 1. detect() - Tìm khuôn mặt bằng Haar Cascade│
+│ 2. Với mỗi khuôn mặt ≥ 48x48 pixel:         │
+│    a. predict() - CLAHE -> HSEmotion        │
+│    b. Temporal Smoothing - Lọc trung bình   │
+│    c. Adaptive Threshold - Ngưỡng thích nghi│
+│ 3. Trả về danh sách kết quả                 │
 └─────────────────────────────────────────────┘</pre>
 </section>
 
 <section id="mainpy">
-<h2><span class="section-num">4</span> Giai thich main.py</h2>
-<p>Toan bo code nam trong <code>main.py</code>. Duoi day la giai thich tung thanh phan chinh.</p>
+<h2><span class="section-num">4</span> Giải thích chi tiết main.py</h2>
 
 <section id="41-class-emotionengine">
 <h3><span class="section-num">4.1</span> <code>class EmotionEngine</code></h3>
-<p><strong>Day la "trai tim" cua he thong.</strong> Chua toan bo logic phat hien mat va nhan dien cam xuc.</p>
+<p>Chứa toàn bộ logic phát hiện khuôn mặt, tiền xử lý và dự đoán cảm xúc.</p>
 
 <div class="func-card">
 <div class="func-card-header">
-<span class="fn-name">__init__(model_name, weights_path)</span>
+<span class="fn-name">__init__(model_name)</span>
 </div>
 <div class="func-card-body">
-<p>Khi tao EmotionEngine, 4 viec xay ra:</p>
+<p>Khởi tạo các thành phần cốt lõi:</p>
 <ol>
-  <li>Khoi tao <strong>HSEmotionRecognizer</strong> (tai model EfficientNet ~25MB).</li>
-  <li>Tai <strong>Haar Cascade</strong> phat hien khuon mat.</li>
-  <li>Load <strong>fine-tuned weights</strong> neu co.</li>
-  <li>Tao <strong>CLAHE</strong> de can bang anh sang.</li>
+  <li>Khởi tạo bộ nhận diện <strong>HSEmotionRecognizer</strong> (tự động tải mô hình B0 pretrained ~25MB).</li>
+  <li>Nạp bộ phân loại khuôn mặt <strong>Haar Cascade</strong> mặc định của OpenCV.</li>
+  <li>Cấu hình bộ lọc cân bằng sáng thích nghi <strong>CLAHE</strong>.</li>
 </ol>
-<p>Dong quan trong:</p>
-<pre>self.er = HSEmotionRecognizer(model_name=model_name)
-self.fc = cv2.CascadeClassifier(FACE_CASCADE)
-self.clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))</pre>
 </div>
 </div>
 
 <div class="func-card">
 <div class="func-card-header">
-<span class="fn-name">detect(frame) / predict(face_img) / process(frame)</span>
+<span class="fn-name">predict(face_img)</span>
 </div>
 <div class="func-card-body">
-<p><strong>detect():</strong> Chuyen anh sang xam → Haar Cascade → tra ve list <code>[(x,y,w,h)]</code>.</p>
-<p><strong>predict():</strong> Chap nhan 1 anh mat da crop:</p>
+<p>Tiền xử lý và dự đoán trên ảnh khuôn mặt đã cắt:</p>
 <ul>
-  <li>BGR → Gray → CLAHE → RGB (tien xu ly)</li>
-  <li>Goi HSEmotion.predict_emotions() → 8 xac suat</li>
-  <li>Neu model goc: chon 6/8 xac suat tuong ung [0,2,4,5,6,7]</li>
-  <li>Neu fine-tuned: lay 6 xac suat dau tien</li>
-</ul>
-<p><strong>process():</strong> Ham tong hop:</p>
-<ul>
-  <li>Goi detect() → loc mat ≥48px</li>
-  <li>Voi moi mat: predict() → Temporal Smoothing → Adaptive Threshold</li>
-  <li>Tra ve list: <code>[{'bbox','emotion','confidence','probs'}]</code></li>
+  <li>Chuyển ảnh sang thang độ xám (Gray) -> Cân bằng sáng CLAHE -> Đổi sang RGB làm đầu vào cho mô hình.</li>
+  <li>Mô hình HSEmotion dự đoán ra phân phối 8 cảm xúc.</li>
+  <li><strong>Remap 8 sang 6 lớp:</strong> Trích xuất xác suất tương ứng 6 lớp mục tiêu: [Anger, Disgust, Happiness, Neutral, Sadness, Surprise].</li>
+  <li><strong>Chuẩn hóa Softmax mới:</strong> Chia xác suất từng lớp cho tổng 6 lớp để tổng thang đo quay về đúng 100%.</li>
 </ul>
 </div>
 </div>
 
 <div class="func-card">
 <div class="func-card-header">
-<span class="fn-name">Temporal Smoothing (co che)</span>
+<span class="fn-name">Temporal Smoothing (Làm mịn thời gian)</span>
 </div>
 <div class="func-card-body">
-<p>Moi khuon mat co 1 buffer rieng (deque maxlen=10). Them ket qua moi vao buffer, tinh trung binh 10 frame gan nhat. Giam nhap nhay do nhieu anh tam thoi.</p>
-<pre>if k not in self.bufs: self.bufs[k] = deque(maxlen=10)
-self.bufs[k].append(scores)
-avg = np.mean(self.bufs[k], axis=0)</pre>
-<p>Key cua buffer duoc tinh tu toa do tam, luong tu hoa 60px → neu mat rung &lt;60px, key khong doi → buffer khong bi reset.</p>
+<p>Mỗi khuôn mặt được lưu trữ lịch sử cảm xúc bằng hàng đợi <code>collections.deque(maxlen=10)</code>. Xác suất hiển thị là trung bình cộng xác suất của 10 khung hình liên tiếp để triệt tiêu lỗi nháy nhãn hiển thị (Flickering) do học sinh chớp mắt.</p>
 </div>
 </div>
 
 <div class="func-card">
 <div class="func-card-header">
-<span class="fn-name">Adaptive Threshold (nguong rieng)</span>
+<span class="fn-name">Centroid Tracking (Theo dõi khuôn mặt)</span>
 </div>
 <div class="func-card-body">
-<p>Moi emotion co nguong rieng. Neu xac suat cao nhat &lt; nguong → mac dinh Neutral:</p>
-<pre>nguong = {
-    'Happiness': 0.50,  'Sadness': 0.30,  'Surprise': 0.35,
-    'Anger': 0.40,      'Neutral': 0.35
-}</pre>
+<p>Định danh khuôn mặt học sinh dựa trên tọa độ tâm lượng tử hóa trên lưới 60px. Giúp hệ thống bám vết đúng học sinh chính diện (Primary Face) để ghi nhận báo cáo và tự động bỏ qua người đi lại phía sau hậu cảnh.</p>
 </div>
 </div>
 </section>
 
 <section id="42-class-sessionstats">
 <h3><span class="section-num">4.2</span> <code>class SessionStats</code></h3>
-<p>Ghi nhan lich su cam xuc trong 1 phien webcam/video va tao bao cao truc quan (pie chart + timeline) khi ket thuc.</p>
+<p>Ghi nhận lịch sử cảm xúc với độ phức tạp ghi O(1) trên RAM và tự động xuất ra Dashboard báo cáo cuối buổi học.</p>
 
 <div class="func-card">
 <div class="func-card-header">
-<span class="fn-name">record(t, results) / report()</span>
+<span class="fn-name">report(out_dir)</span>
 </div>
 <div class="func-card-body">
-<p><strong>record():</strong> Append-only, O(1) — khong anh huong FPS. Chi lay face dau tien lam primary.</p>
-<p><strong>report():</strong> Ve pie chart phan bo + timeline scatter plot → luu vao <code>reports/emotion_report.png</code>.</p>
+<p>Vẽ biểu đồ phân bố tròn (Pie Chart) và biểu đồ diễn biến thời gian (Timeline Scatter & Step Line) có chấm tròn co dãn kích cỡ theo độ tin cậy để lưu thành file ảnh <code>reports/emotion_report.png</code>.</p>
 </div>
 </div>
 </section>
 
-<section id="43-ham-load-model">
-<h3><span class="section-num">4.3</span> <code>load_model(model_name, num_classes)</code></h3>
-<p>Ham tinh (static) dung de tai model EfficientNet tu cache cua HSEmotion, sua loi tuong thich key cua timm, va tra ve model PyTorch san sang.</p>
-
-<div class="func-card">
-<div class="func-card-header">
-<span class="fn-name">load_model() — chi tiet</span>
-</div>
-<div class="func-card-body">
-<ol>
-  <li>Lay duong dan file .pt tu <code>get_model_path(model_name)</code></li>
-  <li>Load checkpoint bang torch.load()</li>
-  <li>Rename key <code>classifier.0.weight</code> → <code>classifier.weight</code> (tuong thich timm moi)</li>
-  <li>Chon architecture: B0 hoac B2</li>
-  <li>Tao model bang timm, load state_dict (bo qua classifier neu shape khong khop)</li>
-</ol>
-</div>
-</div>
-</section>
-
-<section id="44-ham-do-finetune">
-<h3><span class="section-num">4.4</span> <code>do_finetune(dataset_dir, ...)</code></h3>
-<p>Fine-tune model tren dataset tu thu thap. Chien luoc: dong bang backbone, chi mo 2 blocks cuoi + classifier.</p>
-
-<div class="func-card">
-<div class="func-card-header">
-<span class="fn-name">do_finetune() — cac buoc</span>
-</div>
-<div class="func-card-body">
-<ol>
-  <li><strong>Load model</strong> EfficientNet voi 6 output classes</li>
-  <li><strong>Freeze</strong> toan bo tham so, chi unfreeze 2 blocks cuoi + classifier</li>
-  <li><strong>Doc dataset</strong> tu thu muc, map ten folder → index emotion</li>
-  <li><strong>Chia</strong> 70% train / 15% val / 15% test (seed=42)</li>
-  <li><strong>Training loop:</strong>
-    <ul>
-      <li>Forward → CrossEntropyLoss → Backward → Adam optimizer</li>
-      <li>Validation sau moi epoch (khong backward)</li>
-      <li>Luu checkpoint neu val_acc > best</li>
-    </ul>
-  </li>
-</ol>
-</div>
-</div>
-
-<blockquote class="warn">
-<strong>Tai sao dong bang backbone?</strong>
-Dataset chi ~366 anh. Neu mo toan bo 5.3M tham so → overfit ngay. Chi mo ~0.5M tham so (2 blocks cuoi) thi 366 anh la vua du.
-</blockquote>
-</section>
-
-<section id="45-ham-do-evaluate">
-<h3><span class="section-num">4.5</span> <code>do_evaluate(model_name, weights_path, ...)</code></h3>
-<p>So sanh model goc (8 class) vs model fine-tuned (6 class) tren test set. In accuracy, precision, recall, F1. Ve confusion matrix + training curve.</p>
-
-<div class="func-card">
-<div class="func-card-header">
-<span class="fn-name">do_evaluate() — chi tiet</span>
-</div>
-<div class="func-card-body">
-<ol>
-  <li>Load <strong>2 models</strong>: base (8 classes) + fine-tuned (6 classes)</li>
-  <li>Chay ca 2 tren test set, luu y mapping index:
-    <ul>
-      <li>Base: output[:, [0,2,4,5,6,7]] (bo Contempt index 1, Fear index 3)</li>
-      <li>Fine-tuned: output[:, :6] (6 classes)</li>
-    </ul>
-  </li>
-  <li>In classification report (precision, recall, F1)</li>
-  <li>Ve confusion matrix heatmap</li>
-  <li>Ve training curve (loss + accuracy) neu co history</li>
-</ol>
-</div>
-</div>
-</section>
-
-<section id="46-cac-mode">
-<h3><span class="section-num">4.6</span> Cac mode functions</h3>
-
-<div class="func-card">
-<div class="func-card-header">
-<span class="fn-name">mode_webcam(args)</span>
-</div>
-<div class="func-card-body">
-<p>Mo camera → vong lap while True:</p>
+<section id="43-cac-mode">
+<h3><span class="section-num">4.3</span> Các chế độ chạy</h3>
+<p>Chương trình cung cấp 3 chế độ chạy chính thông qua tham số <code>--mode</code>:</p>
 <ul>
-  <li>Doc frame, skip 2 frame de tang FPS</li>
-  <li>Goi engine.process() → draw_boxes()</li>
-  <li>Ghi nhan SessionStats</li>
-  <li>Phim q/ESC = thoat, s = chup anh</li>
+  <li><strong>mode_webcam:</strong> Nhận dạng webcam thực tế, nhấn <code>q</code> để thoát và xuất Dashboard.</li>
+  <li><strong>mode_image:</strong> Nhận dạng cảm xúc trên một tệp ảnh tĩnh.</li>
+  <li><strong>mode_video:</strong> Nhận dạng cảm xúc trên tệp video, nhấn <code>SPACE</code> để tạm dừng.</li>
 </ul>
-</div>
-</div>
-
-<div class="func-card">
-<div class="func-card-header">
-<span class="fn-name">mode_image(args)</span>
-</div>
-<div class="func-card-body">
-<p>Doc 1 file anh → engine.process() → draw_boxes() → hien thi + luu neu co --output.</p>
-</div>
-</div>
-
-<div class="func-card">
-<div class="func-card-header">
-<span class="fn-name">mode_video(args)</span>
-</div>
-<div class="func-card-body">
-<p>Mo file video → vong lap giong webcam + thanh tien trinh + phim SPACE de tam dung. Co the luu video output.</p>
-</div>
-</div>
-
-<div class="func-card">
-<div class="func-card-header">
-<span class="fn-name">mode_finetune(args) / mode_evaluate(args)</span>
-</div>
-<div class="func-card-body">
-<p>mode_finetune: Goi do_finetune() voi tham so tu dong lenh.</p>
-<p>mode_evaluate: Load dataset + weights → goi do_evaluate() de so sanh.</p>
-</div>
-</div>
 </section>
 </section>
 
 <section id="giai-thich-khai-niem">
-<h2><span class="section-num">5</span> Giai thich khai niem chuyen mon</h2>
+<h2><span class="section-num">5</span> Giải thích khái niệm chuyên môn</h2>
 
 <div class="func-card">
 <div class="func-card-header"><span class="fn-name">Haar Cascade</span></div>
-<div class="func-card-body">Thuat toan phat hien vat the co dien (Viola-Jones 2001). Quet cua so nho qua anh, so sanh tong pixel giua 2 vung. Neu du nhieu dac trung khop → do la khuon mat. Uu: rat nhanh, chay CPU. Nhuoc: kem voi mat nghieng, thieu sang.</div>
-</div>
-
-<div class="func-card">
-<div class="func-card-header"><span class="fn-name">BGR vs RGB</span></div>
-<div class="func-card-body">OpenCV doc anh theo BGR (Blue-Green-Red), khac RGB thong thuong. Can chuyen doi khi dung matplotlib.</div>
-</div>
-
-<div class="func-card">
-<div class="func-card-header"><span class="fn-name">EfficientNet</span></div>
-<div class="func-card-body">Kien truc neural network do Google phat trien (2019). Can bang 3 chieu: do sau, do rong, do phan giai → chinh xac toi da voi it tham so nhat. Code dung phien ban B0 (nhe nhat).</div>
-</div>
-
-<div class="func-card">
-<div class="func-card-header"><span class="fn-name">Softmax &amp; Argmax</span></div>
-<div class="func-card-body">Softmax: Bien mang so thanh xac suat (tong = 1). Argmax: Lay chi so phan tu lon nhat. VD: <code>argmax([0.02, 0.85, 0.03]) = 1</code>.</div>
-</div>
-
-<div class="func-card">
-<div class="func-card-header"><span class="fn-name">Temporal Smoothing</span></div>
-<div class="func-card-body">Dung deque luu 10 ket qua gan nhat, tinh trung binh → giam nhieu, cam xuc thay doi tu tu.</div>
+<div class="func-card-body">Thuật toán phát hiện đối tượng truyền thống (Viola-Jones 2001). Cực kỳ nhẹ, chạy nhanh trên CPU mà không cần card đồ họa đắt tiền.</div>
 </div>
 
 <div class="func-card">
 <div class="func-card-header"><span class="fn-name">CLAHE</span></div>
-<div class="func-card-body">Can bang sang cuc bo. Chia anh thanh o 8x8, can bang tung o rieng, co gioi han tuong phan → noi chi tiet, tranh nhieu.</div>
+<div class="func-card-body">Cân bằng sáng thích nghi cục bộ. Chia khuôn mặt thành lưới 8x8 ô để xử lý tương tương phản độc lập, giúp thớ cơ biểu cảm rõ nét kể cả khi học sinh bị ngược sáng.</div>
 </div>
 
 <div class="func-card">
-<div class="func-card-header"><span class="fn-name">CrossEntropyLoss</span></div>
-<div class="func-card-body"><code>Loss = -log(p)</code> voi p la xac suat model du doan cho lop dung. Model doan dung 95% → loss~0.05. Sai → loss cao.</div>
+<div class="func-card-header"><span class="fn-name">EfficientNet-B0</span></div>
+<div class="func-card-body">Mạng nơ-ron học sâu tích chập (CNN) tối ưu hóa của Google (2019) với 5.3 triệu tham số, dung lượng siêu nhẹ ~25MB nên chạy rất mượt trên CPU máy tính học sinh.</div>
 </div>
 
 <div class="func-card">
-<div class="func-card-header"><span class="fn-name">Fine-tuning (Huan luyen them)</span></div>
-<div class="func-card-body">Giu kien thuc tu 450k anh (dong bang backbone), chi day them dac diem rieng tu dataset nho (mo 2 blocks cuoi + classifier). Giong nhu dau bep da gioi, chi can chinh theo khau vi gia dinh.</div>
+<div class="func-card-header"><span class="fn-name">Temporal Smoothing</span></div>
+<div class="func-card-body">Bộ lọc trung bình trượt qua hàng đợi deque trượt 10 khung hình để ổn định nhãn cảm xúc hiển thị, không bị đổi nhãn nhấp nháy liên tục khi người học chớp mắt.</div>
 </div>
 
 <div class="func-card">
-<div class="func-card-header"><span class="fn-name">Learning Rate &amp; Epoch</span></div>
-<div class="func-card-body">Epoch = 1 lan quet het dataset. Learning Rate = kich thuoc buoc cap nhat trong so. Mac dinh <code>1e-4</code> phu hop fine-tune.</div>
-</div>
-
-<div class="func-card">
-<div class="func-card-header"><span class="fn-name">Overfitting (Qua khop)</span></div>
-<div class="func-card-body">Model "hoc thuoc" du lieu train, khong tong quat hoa duoc. Dau hieu: train acc cao, val acc thap. Code chong bang: freeze backbone, validation moi epoch, chi luu best model.</div>
-</div>
-
-<div class="func-card">
-<div class="func-card-header"><span class="fn-name">Confusion Matrix</span></div>
-<div class="func-card-body">Bang N×N: hang = nhan that, cot = nhan du doan. Duong cheo = dung, ngoai = sai. Giup biet lop nao model yeu.</div>
-</div>
-
-<div class="func-card">
-<div class="func-card-header"><span class="fn-name">Precision, Recall, F1</span></div>
-<div class="func-card-body">Precision = doan dung / tong so lan doan. Recall = tim duoc / tong so that. F1 = trung binh dieu hoa cua Precision va Recall.</div>
-</div>
-
-<div class="func-card">
-<div class="func-card-header"><span class="fn-name">GPU vs CPU</span></div>
-<div class="func-card-body">Code tu dong chon device. GPU (CUDA) nhanh hon CPU 10-50 lan. Khong co GPU thi van chay duoc tren CPU.</div>
+<div class="func-card-header"><span class="fn-name">Centroid Tracking</span></div>
+<div class="func-card-body">Thuật toán bám vết khuôn mặt dựa trên khoảng cách tọa độ tâm hình học để định danh chính xác học sinh đang học chính diện và loại bỏ nhiễu người ở hậu cảnh.</div>
 </div>
 </section>
 
 <section id="cau-hoi-bao-ve">
-<h2><span class="section-num">6</span> Cau hoi bao ve</h2>
+<h2><span class="section-num">6</span> Câu hỏi bảo vệ đồ án thường gặp</h2>
 
-<div class="qa-item"><div class="qa-q" onclick="toggleQA(this)"><span class="num">1</span> Tai sao dung HSEmotion ma khong tu train tu dau?<span class="arrow">▼</span></div><div class="qa-a">Training EfficientNet tu dau can hang tram nghin anh va nhieu ngay tren GPU manh. HSEmotion da train san tren AffectNet (450,000 anh). Minh chi fine-tune tren dataset nho (366 anh) — vua nhanh (vai phut), vua tan dung duoc kien thuc tu tap du lieu lon (transfer learning).</div></div>
+<div class="qa-item"><div class="qa-q" onclick="toggleQA(this)"><span class="num">1</span> Tại sao dùng mô hình pretrained HSEmotion?<span class="arrow">▼</span></div><div class="qa-a">Mô hình HSEmotion đã được huấn luyện sẵn trên bộ dữ liệu khổng lồ AffectNet (450.000 ảnh). Việc sử dụng mô hình pretrained giúp hệ thống đạt độ chính xác cao ngay lập tức mà không cần tốn hàng tuần huấn luyện từ đầu trên siêu máy tính.</div></div>
 
-<div class="qa-item"><div class="qa-q" onclick="toggleQA(this)"><span class="num">2</span> Haar Cascade — uu nhuoc diem? Co the thay bang gi?<span class="arrow">▼</span></div><div class="qa-a">Haar Cascade nhanh (real-time tren CPU), nhung kem voi mat nghieng, bi che, thieu sang. Co the thay bang MTCNN (chinh xac hon, cham hon) hoac YOLOv8-face (can GPU).</div></div>
+<div class="qa-item"><div class="qa-q" onclick="toggleQA(this)"><span class="num">2</span> Tại sao nhóm chọn Haar Cascade làm bộ phát hiện mặt?<span class="arrow">▼</span></div><div class="qa-a">Haar Cascade được tích hợp sẵn trong OpenCV, chỉ cần 2 dòng code chạy cực kỳ nhẹ trên CPU máy tính học sinh. Nhóm áp dụng giải pháp lai (Hybrid): Dùng Haar Cascade để cắt mặt nhanh, sau đó dùng mạng học sâu CNN EfficientNet để phân tích cảm xúc, đạt sự cân bằng tuyệt đối giữa tốc độ hiển thị và độ chính xác.</div></div>
 
-<div class="qa-item"><div class="qa-q" onclick="toggleQA(this)"><span class="num">3</span> Temporal Smoothing hoat dong the nao?<span class="arrow">▼</span></div><div class="qa-a">Moi khuon mat co buffer rieng (deque maxlen=10 frame). Them ket qua moi vao buffer, ket qua cuoi = trung binh 10 frame. Giup tranh nhay loan emotion do anh bi nhieu hoac mat mo tam thoi. Key buffer duoc tinh tu tam mat, luong tu hoa 60px de neu chi rung nhe, key khong bi reset.</div></div>
+<div class="qa-item"><div class="qa-q" onclick="toggleQA(this)"><span class="num">3</span> Cách giải quyết hiện tượng nháy nhãn (Flickering)?<span class="arrow">▼</span></div><div class="qa-a">Nhóm sử dụng bộ lọc trung bình trượt Temporal Smoothing lưu xác suất 10 khung hình liên tiếp. Nhãn cảm xúc hiển thị là nhãn có xác suất trung bình cao nhất, giúp giao diện hiển thị ổn định, mượt mà.</div></div>
 
-<div class="qa-item"><div class="qa-q" onclick="toggleQA(this)"><span class="num">4</span> Tai sao moi emotion co nguong rieng?<span class="arrow">▼</span></div><div class="qa-a">Happiness thuong duoc du doan voi do tin cay cao (≥80%), nguong 0.50 an toan. Sadness va Surprise de bi nham, diem thap hon → ha nguong xuong 0.30-0.35 de khong bo sot. Neu khong dat nguong → tra ve Neutral (an toan nhat).</div></div>
+<div class="qa-item"><div class="qa-q" onclick="toggleQA(this)"><span class="num">4</span> Cơ chế chuyển đổi 8 cảm xúc sang 6 cảm xúc là gì?<span class="arrow">▼</span></div><div class="qa-a">Mô hình gốc HSEmotion dự đoán ra 8 cảm xúc. Nhóm lọc lấy điểm số của 6 cảm xúc đích (bỏ qua Fear và Contempt do hiếm gặp trong học trực tuyến), sau đó thực hiện tái chuẩn hóa Softmax (chia xác suất từng lớp cho tổng 6 lớp còn lại) để kéo tổng xác suất về đúng 100% nhằm đảm bảo tính công bằng toán học.</div></div>
 
-<div class="qa-item"><div class="qa-q" onclick="toggleQA(this)"><span class="num">5</span> Dataset gom nhung emotion nao? So luong?<span class="arrow">▼</span></div><div class="qa-a">6 lop: Anger, Disgust, Happiness, Neutral, Sadness, Surprise. Moi lop 61 anh → tong 366 anh. Anh duoc lay tu Kaggle FER2013 + AffectNet subset.</div></div>
+<div class="qa-item"><div class="qa-q" onclick="toggleQA(this)"><span class="num">5</span> Bộ lọc CLAHE đóng vai trò gì?<span class="arrow">▼</span></div><div class="qa-a">Webcam người học thường bị bóng đổ hoặc ngược sáng cửa sổ. Bộ lọc CLAHE cân bằng độ tương phản cục bộ trên lưới 8x8 ô giúp khuôn mặt hiển thị tự nhiên, rõ nét thớ cơ mặt để mô hình học sâu dự đoán chính xác hơn.</div></div>
 
-<div class="qa-item"><div class="qa-q" onclick="toggleQA(this)"><span class="num">6</span> Qua trinh fine-tune chia du lieu the nao?<span class="arrow">▼</span></div><div class="qa-a">Chia 70% train (~258 anh), 15% val (~54 anh), 15% test (~54 anh). Chia ngau nhien voi seed co dinh 42 de ket qua tai lap duoc.</div></div>
+<div class="qa-item"><div class="qa-q" onclick="toggleQA(this)"><span class="num">6</span> Hệ thống này có sử dụng AI để xây dựng không?<span class="arrow">▼</span></div><div class="qa-a">Có. Do thời gian tìm hiểu đề tài ngắn và đi lên từ con số 0, nhóm đã trung thực sử dụng các trợ lý trí tuệ nhân tạo (AI) làm công cụ học tập hỗ trợ tóm tắt lý thuyết, giải thích các thuật toán toán học phức tạp, tối ưu hóa code Python và hỗ trợ gỡ các lỗi tương thích thư viện trong quá trình phát triển dự án.</div><div class="qa-item"><div class="qa-q" onclick="toggleQA(this)"><span class="num">7</span> Tại sao nhóm đặt các ngưỡng cảm xúc khác nhau (Happiness: 0.3, Sadness: 0.2,...)?<span class="arrow">▼</span></div><div class="qa-a">Mỗi biểu cảm có cường độ vận động cơ mặt và tần suất xuất hiện tự nhiên rất khác nhau. Happiness (vui vẻ) rất dễ kích hoạt nên đặt ngưỡng 0.3 để tránh nhiễu miệng khi học sinh nói chuyện. Sadness (buồn bã) biểu hiện rất mờ nhạt và thớ cơ dịch chuyển rất ít khi học tập, nên đặt ngưỡng thấp 0.2 để tăng độ nhạy (Recall), tránh bỏ sót. Việc tinh chỉnh thực nghiệm bộ ngưỡng này giúp hệ thống đạt độ ổn định và chính xác tối ưu.</div></div>
 
-<div class="qa-item"><div class="qa-q" onclick="toggleQA(this)"><span class="num">7</span> Tai sao dong bang backbone, chi mo 2 blocks cuoi?<span class="arrow">▼</span></div><div class="qa-a">Backbone da hoc dac trung tong quat tu 450k anh. Dataset rieng qua nho (258 anh train) — neu mo toan bo se overfit ngay. Chi mo 2 blocks cuoi + classifier (~0.5M tham so) de tinh chinh rieng cho dataset cua minh.</div></div>
+<div class="qa-item"><div class="qa-q" onclick="toggleQA(this)"><span class="num">8</span> Độ chính xác thực nghiệm của hệ thống đạt bao nhiêu và đánh giá thế nào?<span class="arrow">▼</span></div><div class="qa-a">Hệ thống được đánh giá định lượng trên Tập kiểm thử Đông Nam Á độc lập gồm 150 ảnh (25 ảnh cho mỗi lớp chủng tộc Southeast Asian, nhóm tuổi 10-29) và đạt độ chính xác toàn cục <strong>81.33%</strong> (Macro F1-Score đạt 0.81). Trong đó, lớp Happiness đạt độ chính xác F1-Score 1.00 tuyệt đối và Sadness đạt Recall 1.00 tuyệt đối.</div></div>
 
-<div class="qa-item"><div class="qa-q" onclick="toggleQA(this)"><span class="num">8</span> Dau hieu overfit? Code xu ly gi de chong?<span class="arrow">▼</span></div><div class="qa-a">Dau hieu: train acc cao nhung val acc thap. Code chong bang: (1) dong bang backbone, (2) validation moi epoch, (3) chi luu model khi val accuracy tot nhat (best model), khong luu model cuoi cung.</div></div>
-
-<div class="qa-item"><div class="qa-q" onclick="toggleQA(this)"><span class="num">9</span> Confusion matrix cho biet gi?<span class="arrow">▼</span></div><div class="qa-a">CM la bang N×N: hang = nhan that, cot = nhan du doan. Duong cheo = dung, ngoai = sai. Giup biet lop nao model yeu nhat, va no bi nham voi lop nao. VD: Fear va Surprise hay nham nhau vi deu co mat mo to, mieng ha.</div></div>
-
-<div class="qa-item"><div class="qa-q" onclick="toggleQA(this)"><span class="num">10</span> Muc dich cua CLAHE?<span class="arrow">▼</span></div><div class="qa-a">CLAHE can bang sang cuc bo. Webcam trong phong hoc thuong bi anh sang khong deu — mot ben sang, mot ben toi. CLAHE chia anh thanh o 8x8, can bang tung o rieng → ca khuon mat deu ro net, model nhan dien chinh xac hon.</div></div>
-
-<div class="qa-item"><div class="qa-q" onclick="toggleQA(this)"><span class="num">11</span> <code>skip_frames</code> hoat dong the nao?<span class="arrow">▼</span></div><div class="qa-a"><code>skip_frames = 2</code> → chi xu ly AI tren frame chan. Frame le ve lai ket qua cu. Webcam 30 FPS, AI ~15 FPS → ky thuat nay cho hinh muot (30 FPS) ma AI van kip. FPS hien thi van 30, chi co FPS AI la 15.</div></div>
-
-<div class="qa-item"><div class="qa-q" onclick="toggleQA(this)"><span class="num">12</span> File .pt la gi? Ben trong chua gi?<span class="arrow">▼</span></div><div class="qa-a">.pt la checkpoint PyTorch. Chua: <code>model_state_dict</code> (trong so model), <code>class_names</code> (ten cac lop), <code>model_name</code>, <code>val_acc</code> (accuracy tot nhat), <code>epoch</code>.</div></div>
-
-<div class="qa-item"><div class="qa-q" onclick="toggleQA(this)"><span class="num">13</span> Tai sao chi 6 emotion thay vi 8?<span class="arrow">▼</span></div><div class="qa-a">Model HSEmotion ban dau co 8 class (Anger, Contempt, Disgust, Fear, Happiness, Neutral, Sadness, Surprise). Trong my cho hoc online, Contempt (khinh thuong) va Fear (so hai) rat hiem gap. Bo 2 class nay giup model tap trung vao 6 class con lai, chinh xac hon. Khi dung model goc, code trich xuat 6/8 class bang index [0,2,4,5,6,7].</div></div>
-
-<div class="qa-item"><div class="qa-q" onclick="toggleQA(this)"><span class="num">14</span> Ki truc tong the cua he thong?<span class="arrow">▼</span></div><div class="qa-a">He thong nam trong 1 file main.py, gom: (1) EmotionEngine — phat hien mat + nhan dien cam xuc. (2) SessionStats — ghi nhan va bao cao. (3) load_model + do_finetune — fine-tune. (4) do_evaluate — danh gia. (5) 5 mode functions (webcam, image, video, finetune, evaluate). Nguoi dung chon mode qua tham so --mode.</div></div>
-
-<div class="qa-item"><div class="qa-q" onclick="toggleQA(this)"><span class="num">15</span> Tien trinh xu ly 1 frame nhu the nao?<span class="arrow">▼</span></div><div class="qa-a">(1) Doc frame tu camera/video. (2) Neu frame chan: eng.process() goi detect → tim mat. (3) Voi moi mat ≥48px: predict() → CLAHE → HSEmotion → 6 xac suat. (4) Temporal Smoothing: lay trung binh 10 frame gan nhat. (5) Adaptive Threshold: so sanh xac suat cao nhat voi nguong rieng → emotion cuoi. (6) Ve bounding box + label len frame. (7) Hien thi. (8) Nhan phim q de thoat.</div></div>
+</div>
 
 </section>
 
@@ -585,8 +349,8 @@ Dataset chi ~366 anh. Neu mo toan bo 5.3M tham so → overfit ngay. Chi mo ~0.5M
 
 <hr>
 <footer style="text-align:center;padding:32px 0 16px;color:var(--slate-400);font-size:.82rem">
-  Giai thich do an — Nhan dien cam xuc nguoi hoc online<br>
-  Mon: Khai thac thong tin da phuong tien
+  Giải thích đồ án — Nhận diện cảm xúc người học online<br>
+  Môn: Khai thác thông tin đa phương tiện
 </footer>
 
 </div>

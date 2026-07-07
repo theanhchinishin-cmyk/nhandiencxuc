@@ -1,224 +1,145 @@
-# He thong Nhan dang Cam xuc Nguoi hoc Online
+# Hệ thống Nhận dạng Cảm xúc Người học Online
 
-> **Mon hoc:** Khai thac thong tin da phuong tien — Dai hoc Bach khoa Ha Noi  
-> **Mo hinh:** EfficientNet-B0 (HSEmotion) + Fine-tuning  
-> **Ngon ngu:** Python 3.8+ | PyTorch | OpenCV
+> **Môn học:** Khai thác thông tin đa phương tiện — Đại học Bách khoa Hà Nội  
+> **Mô hình:** EfficientNet-B0 (HSEmotion) với cơ chế remap 8 sang 6 lớp  
+> **Ngôn ngữ:** Python 3.8+ | PyTorch | OpenCV  
+> **Độ chính xác thực nghiệm:** **81.33%** trên tập dữ liệu Đông Nam Á độc lập  
 
 ---
 
-## 1. Gioi thieu
+## 1. Giới thiệu
 
-### 1.1. Muc tieu
+Hệ thống nhận dạng **6 cảm xúc cơ bản** của người học qua webcam, video hoặc ảnh tĩnh theo thời gian thực, hoạt động offline hoàn toàn.
 
-He thong nhan dang **6 cam xuc co ban** cua nguoi hoc qua webcam, video hoac anh tinh theo thoi gian thuc, offline hoan toan.
+**6 cảm xúc nhận diện:**
+- `Anger` (Tức giận)
+- `Disgust` (Ghê tởm)
+- `Happiness` (Vui vẻ)
+- `Neutral` (Bình thường / Trung tính)
+- `Sadness` (Buồn bã)
+- `Surprise` (Ngạc nhiên)
 
-**6 cam xuc:**
-
-| Cam xuc | Mo ta |
-|---------|-------|
-| `Anger` | Tuc gian |
-| `Disgust` | Ghe tom |
-| `Happiness` | Vui ve |
-| `Neutral` | Trung tinh |
-| `Sadness` | Buon ba |
-| `Surprise` | Ngac nhien |
-
-### 1.2. Kien truc tong the
-
-He thong chi co **1 file duy nhat** — `main.py` — gom 3 phan:
-
+### 1.1. Kiến trúc luồng xử lý (Pipeline)
 ```
-main.py
-├── Phan 1: Constants + Imports (~15 dong)
-├── Phan 2: EmotionEngine class (~70 dong)
-│   - Haar Cascade phat hien mat
-│   - HSEmotion predict cam xuc
-│   - Temporal Smoothing + Adaptive Threshold
-├── Phan 3: Cac mode functions (~200 dong)
-│   - webcam mode
-│   - image mode
-│   - video mode
-│   - finetune mode
-│   - evaluate mode
-└── Phan 4: main() + argparse (~40 dong)
-```
-
-### 1.3. Co che hoat dong
-
-```
-Dau vao (webcam/image/video)
+Đầu vào (webcam/image/video)
         │
         ▼
-Detect mat (Haar Cascade)
+Detect mặt (Haar Cascade)
         │
         ▼
-Crop tung khuon mat ≥48px
+Crop từng khuôn mặt ≥48px
         │
         ▼
 CLAHE preprocessing (Gray → CLAHE → RGB)
         │
         ▼
-HSEmotion EfficientNet → 6 xac suat
+HSEmotion EfficientNet → 8 xác suất
         │
         ▼
-Temporal Smoothing (trung binh 10 frame)
+Remap sang 6 lớp & Tái chuẩn hóa Softmax
         │
         ▼
-Adaptive Threshold → Emotion cuoi cung
+Temporal Smoothing (trung bình trượt 10 frame)
         │
         ▼
-Ve bounding box + hien thi
+Adaptive Threshold (Ngưỡng thích nghi riêng từng cảm xúc)
+        │
+        ▼
+Vẽ bounding box màu sắc + Hiển thị
 ```
 
 ---
 
-## 2. Cau truc thu muc
+## 2. Cấu trúc thư mục
 
 ```
-tucode/
+nhandiencxuc/
 │
-├── main.py                   ← FILE DUY NHAT — chua toan bo code
-├── README.md                 ← Tai lieu (file nay)
-├── GIAI_THICH_DU_AN.html    ← Tai lieu giai thich
-├── requirements.txt          ← Thu vien can cai
+├── main.py                   ← FILE DUY NHẤT — chứa toàn bộ code chạy
+├── README.md                 ← Hài liệu hướng dẫn sử dụng (file này)
+├── GIAI_THICH_DU_AN.html    ← Trang web giải thích chi tiết đồ án
+├── requirements.txt          ← Danh sách các thư viện cần cài đặt
 │
-├── dataset/                  ← Bo du lieu
-│   ├── train/                ← Tap train & val (366 anh)
-│   │   ├── Anger/           61 anh
-│   │   ├── Disgust/         61 anh
-│   │   ├── Happiness/       61 anh
-│   │   ├── Neutral/         61 anh
-│   │   ├── Sadness/         61 anh
-│   │   └── Surprise/        61 anh
-│   │
-│   └── test_dung1landuynhat/ ← Tap test doc lap (150 anh)
-│       ├── Anger/           25 anh
-│       ├── Disgust/         25 anh
-│       ├── Happiness/       25 anh
-│       ├── Neutral/         25 anh
-│       ├── Sadness/         25 anh
-│       └── Surprise/        25 anh
-│
-├── models/                   ← .pt weights sau khi fine-tune
-│   └── finetuned.pt          (tu tao ra)
-│
-└── reports/                  ← Confusion matrix + training curve
-    ├── confusion_matrix.png
-    └── training_curve.png
+└── reports/                  ← Báo cáo thống kê cảm xúc phiên học (tự xuất)
+    └── emotion_report.png    ← Biểu đồ tròn và timeline phân bố cảm xúc
 ```
 
 ---
 
-## 3. Cai dat va chay
+## 3. Cài đặt và Chạy hệ thống
 
-### 3.1. Yeu cau
-
+### 3.1. Yêu cầu hệ thống
 - Python 3.8+
-- RAM toi thieu 4GB
-- Khong can GPU
+- RAM tối thiểu 4GB
+- Chạy mượt mà trực tiếp trên **CPU** máy tính cá nhân phổ thông.
 
-### 3.2. Cai dat
-
+### 3.2. Cài đặt thư viện
+Mở PowerShell hoặc Command Prompt tại thư mục dự án và chạy:
 ```bash
-# Tao moi truong ao (khuyen nghi)
+# Tạo môi trường ảo (khuyến nghị)
 python -m venv venv
 .\venv\Scripts\activate     # Windows
 
-# Cai thu vien
+# Cài đặt các thư viện cần thiết
 pip install -r requirements.txt
 ```
+> **Lưu ý lần đầu chạy:** Mô hình `enet_b0_8_best_afew` (~25MB) sẽ được tự động tải về thư mục `C:\Users\<tên_user>\.hsemotion\`.
 
-> **Lan dau chay:** HSEmotion tu dong tai model (~25MB) ve `C:\Users\<ten>\.hsemotion\`
+### 3.3. Các lệnh thực thi chính
 
-### 3.3. Cac che do
-
+#### 1. Chạy Webcam thời gian thực (Mặc định)
+Hệ thống sẽ mở camera, nhận diện cảm xúc chính diện và tự động lưu biểu đồ báo cáo khi bạn thoát:
 ```bash
-# Webcam real-time
 python main.py --mode webcam
-
-# Webcam dung model fine-tuned
-python main.py --mode webcam --weights models/finetuned.pt
-
-# Nhan dien tu anh
-python main.py --mode image --input anh.jpg
-python main.py --mode image --input anh.jpg --output ketqua.jpg
-
-# Nhan dien tu video
-python main.py --mode video --input video.mp4
-python main.py --mode video --input video.mp4 --output result.mp4
-
-# Fine-tune
-python main.py --mode finetune --dataset dataset/train --epochs 15
-
-# Danh gia
-python main.py --mode evaluate --dataset dataset/test_dung1landuynhat --weights models/finetuned.pt
 ```
 
-### 3.4. Phim tat (webcam/video)
-
-| Phim | Chuc nang |
-|------|-----------|
-| `q` / `ESC` | Thoat |
-| `s` | Chup anh |
-| `SPACE` | Tam dung (video) |
-
----
-
-## 4. Giai thuat chinh
-
-| Thanh phan | Mo ta |
-|------------|-------|
-| **Haar Cascade** | Phat hien mat ~1ms/frame, dung CPU |
-| **CLAHE** | Can bang sang cuc bo, lam ro net mat |
-| **EfficientNet-B0** | Neural network ~5.3M tham so, nhanh + chinh xac |
-| **Temporal Smoothing** | Deque 10 frame, tinh trung binh → manh, ko bi nhap nhay |
-| **Adaptive Threshold** | Nguong rieng cho tung emotion |
-
----
-
-## 5. Fine-tuning
-
-### 5.1. Chien luoc
-
-1. Tai model HSEmotion pre-trained (hoc tu 450k anh AffectNet)
-2. Dong bang toan bo backbone (giu kien thuc cu)
-3. Mo 2 blocks cuoi + classifier (hoc them data moi)
-4. Train/Val/Test split 70/15/15
-
-### 5.2. Chay
-
+#### 2. Nhận diện từ file Ảnh tĩnh
+Đọc ảnh, vẽ bounding box cảm xúc và xuất ra ảnh kết quả:
 ```bash
-python main.py --mode finetune --dataset dataset/train --epochs 15
+python main.py --mode image --input duong_dan_anh.jpg [--output ket_qua.jpg]
 ```
 
-Ket qua luu vao `models/finetuned.pt`.
-
-### 5.3. Danh gia
-
+#### 3. Nhận diện từ file Video
+Đọc luồng video, hiển thị nhận diện kèm thanh tiến trình bên dưới, ghi nhận lịch sử và xuất Dashboard báo cáo khi hết video hoặc khi ngắt:
 ```bash
-python main.py --mode evaluate --dataset dataset/test_dung1landuynhat --weights models/finetuned.pt
+python main.py --mode video --input duong_dan_video.mp4 [--output ket_qua.mp4]
 ```
 
-So sanh accuracy model goc vs fine-tuned, xuat confusion matrix + classification report vao `reports/`.
+### 3.4. Phím tắt khi chạy (Webcam/Video)
+- `q` hoặc `ESC`: Thoát chương trình (đồng thời tự động vẽ và lưu Dashboard báo cáo tại `reports/emotion_report.png`).
+- `s`: Chụp ảnh màn hình giao diện nhận diện (lưu tại thư mục `data/`).
+- `SPACE` (Dấu cách): Tạm dừng / Tiếp tục chạy video (chỉ áp dụng ở `--mode video`).
 
 ---
 
-## 6. Tham so dong lenh
+## 4. Giải thuật cốt lõi
 
-| Tham so | Gia tri | Mac dinh | Mode |
-|---------|---------|----------|------|
-| `--mode` | webcam/image/video/finetune/evaluate | webcam | Tat ca |
-| `--model` | enet_b0_8_best_afew / enet_b0_8_best_vgaf / enet_b2_8 | enet_b0_8_best_afew | Tat ca |
-| `--weights` | duong dan .pt | None | webcam, image, video |
-| `--camera` | so int | 0 | webcam |
-| `--input` | duong dan file | None | image, video |
-| `--output` | duong dan file | None | image, video |
-| `--dataset` | duong dan thu muc | None | finetune, evaluate |
-| `--epochs` | so int | 15 | finetune |
-| `--lr` | so thuc | 0.0001 | finetune |
-| `--batch-size` | so int | 16 | finetune, evaluate |
-| `--save-weights` | duong dan .pt | models/finetuned.pt | finetune |
+- **Haar Cascade Face Detector:** Nhận diện nhanh vị trí khuôn mặt trên CPU trong khoảng ~1-2ms.
+- **CLAHE Preprocessing:** Cân bằng sáng cục bộ lưới 8x8, chống bóng đổ và ngược sáng webcam học sinh.
+- **8-to-6 Remapping & Softmax:** Loại bỏ 2 nhãn thừa *Fear* (Sợ hãi) và *Contempt* (Khinh bỉ) từ đầu ra 8 lớp của HSEmotion, tái chuẩn hóa thang đo về đúng chuẩn phân phối xác suất 100% cho 6 lớp đích.
+- **Temporal Smoothing:** Sử dụng hàng đợi deque trượt 10 khung hình tính xác suất trung bình, loại bỏ hiện tượng nháy nhãn hiển thị (Flickering).
+- **Centroid Tracking:** Định danh khuôn mặt chính diện (Primary Face) dựa trên lưới tọa độ tâm 60px để lọc bỏ người đi lại phía sau hậu cảnh.
+- **Adaptive Thresholding:** Ngưỡng quyết định riêng biệt cho từng lớp để chống báo động cảm xúc giả (`Happiness: 0.3, Sadness: 0.2, Surprise: 0.3, Anger: 0.3, Neutral: 0.35, Disgust: 0.3`).
 
 ---
 
-*Dai hoc Bach khoa Ha Noi — Mon Khai thac thong tin da phuong tien*
+## 5. Kết quả thực nghiệm định lượng
+
+Hệ thống được đánh giá trên **Tập kiểm thử Đông Nam Á độc lập** gồm 150 ảnh (25 ảnh cho mỗi lớp cảm xúc) được trích chọn từ tập FairFace chủng tộc Southeast Asian, nhóm tuổi 10-29 và gán nhãn thủ công.
+
+### 5.1. Báo cáo phân loại chi tiết (Classification Report)
+- **Độ chính xác toàn cục (Accuracy):** **81.33%**
+- **Macro F1-Score:** **0.81**
+
+| Lớp cảm xúc | Precision | Recall | F1-Score | Support |
+| :--- | :---: | :---: | :---: | :---: |
+| **Anger** | 0.92 | 0.96 | 0.94 | 25 |
+| **Disgust** | 0.88 | 0.56 | 0.68 | 25 |
+| **Happiness** | 1.00 | 1.00 | 1.00 | 25 |
+| **Neutral** | 0.67 | 0.64 | 0.65 | 25 |
+| **Sadness** | 0.64 | 1.00 | 0.78 | 25 |
+| **Surprise** | 0.90 | 0.72 | 0.80 | 25 |
+
+### 5.2. Nhận xét
+- Việc tinh chỉnh bộ ngưỡng thích nghi thực nghiệm giúp tối ưu hóa sự cân bằng giữa Precision và Recall.
+- Lớp **Happiness** và **Sadness** đều đạt độ nhạy (Recall) tuyệt đối 100% trên tập kiểm thử, đảm bảo không bỏ sót bất kỳ nét mặt tích cực hay biểu cảm buồn chán, ủ rũ nào của học sinh.
