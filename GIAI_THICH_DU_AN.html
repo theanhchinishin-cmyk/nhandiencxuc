@@ -822,7 +822,7 @@ FACE_CASCADE = cv2.data.haarcascades + <span class="style-string">'haacascade_fr
 
             <!-- 5.7 GIẢI THÍCH CHI TIẾT TỪNG DÒNG CODE -->
             <h3 id="57-line-by-line"><span class="section-num">5.7</span> Giải thích chi tiết từng dòng code (1-218)</h3>
-            <p>Dưới đây là bảng giải thích từng dòng code một cách ngắn gọn, bình dân và cực kỳ dễ hiểu, loại bỏ hoàn toàn các thuật ngữ lập trình phức tạp:</p>
+            <p>Dưới đây là bảng giải thích từng dòng code của tệp <code>main.py</code> tập trung vào bản chất thực tế: <strong>cái này dùng để làm gì</strong>, và <strong>ý nghĩa thực tế của các thông số là gì</strong>, giúp người không biết lập trình cũng có thể nắm rõ:</p>
             
             <div class="table-wrap">
                 <table>
@@ -830,169 +830,185 @@ FACE_CASCADE = cv2.data.haarcascades + <span class="style-string">'haacascade_fr
                         <tr>
                             <th style="width: 12%;">Dòng code</th>
                             <th style="width: 33%;">Nội dung Code</th>
-                            <th style="width: 55%;">Giải thích ý nghĩa bằng ngôn ngữ bình dân</th>
+                            <th style="width: 55%;">Cái này dùng để làm gì? Ý nghĩa thông số ra sao?</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td><strong>1 - 4</strong></td>
                             <td><code>"""<br>main.py - He thong nhan dang...<br>"""</code></td>
-                            <td>Dòng chú thích giới thiệu tên phần mềm và hướng dẫn cách gõ lệnh chạy trên máy tính.</td>
+                            <td>Dòng ghi chú hướng dẫn nhanh cách gõ câu lệnh để chạy phần mềm trong terminal.</td>
                         </tr>
                         <tr>
                             <td><strong>6</strong></td>
                             <td><code>import os, sys, time, argparse, numpy as np, cv2, torch</code></td>
-                            <td>Khai báo các bộ công cụ bổ trợ cho máy tính (như quản lý thư mục, đo thời gian học, mở webcam, vẽ khung và chạy AI PyTorch).</td>
+                            <td>Nạp các thư viện phần mềm hỗ trợ (như mở webcam camera, tính toán số liệu và chạy AI). Nếu thiếu các thư viện này, máy tính không thể hiểu được các câu lệnh xử lý ảnh bên dưới.</td>
                         </tr>
                         <tr>
                             <td><strong>7</strong></td>
                             <td><code>from collections import deque, Counter</code></td>
-                            <td>Nạp bộ nhớ lưu 10 giây gần nhất (để tránh nháy nhãn khi chớp mắt) và bộ đếm số lần xuất hiện cảm xúc để tính phần trăm.</td>
+                            <td>Nạp bộ nhớ lưu 10 giây gần nhất (<code>deque</code>) và bộ đếm tần suất xuất hiện cảm xúc (<code>Counter</code>) để tính tỷ lệ phần trăm cho biểu đồ báo cáo.</td>
                         </tr>
                         <tr>
                             <td><strong>8</strong></td>
                             <td><code>from datetime import datetime</code></td>
-                            <td>Lấy ngày giờ thực tế hiện tại để đặt tên cho ảnh chụp màn hình khi người dùng bấm nút chụp.</td>
+                            <td>Lấy ngày giờ thực tế hiện tại để đặt tên cho ảnh chụp màn hình lưu vào ổ cứng khi nhấn phím <code>s</code>.</td>
                         </tr>
                         <tr>
                             <td><strong>9</strong></td>
                             <td><code>from hsemotion.facial_emotions import ...</code></td>
-                            <td>Nạp bộ não AI nhận dạng cảm xúc đã được học sẵn từ hàng vạn khuôn mặt trên thế giới.</td>
+                            <td>Nạp bộ não AI EfficientNet-B0 đã học sẵn từ 450.000 khuôn mặt trên thế giới để nhận diện cảm xúc.</td>
                         </tr>
                         <tr>
                             <td><strong>10</strong></td>
                             <td><code>import matplotlib.pyplot as plt</code></td>
-                            <td>Nạp công cụ vẽ biểu đồ tròn và dòng thời gian cảm xúc khi kết thúc buổi học.</td>
+                            <td>Nạp thư viện đồ họa để tự động vẽ biểu đồ báo cáo cuối phiên học dưới dạng file ảnh PNG.</td>
                         </tr>
                         <tr>
                             <td><strong>13</strong></td>
                             <td><code>EMOTIONS = ['Anger','Disgust',...]</code></td>
-                            <td>Danh sách 6 cảm xúc máy sẽ nhận diện: Giận dữ, Ghê tởm, Vui vẻ, Bình thường, Buồn, Ngạc nhiên.</td>
+                            <td>Khai báo danh sách 6 cảm xúc đích sẽ nhận diện. Nhóm đã loại bỏ 2 lớp không dùng trong học tập là Sợ Hãi và Khinh Bỉ để tăng độ tập trung.</td>
                         </tr>
                         <tr>
                             <td><strong>14 - 15</strong></td>
                             <td><code>EMO_COLORS = {'Happy':(0,255,0), ...}</code></td>
-                            <td>Thiết lập màu sắc cho khung vuông vẽ lên mặt (ví dụ: Vui vẻ vẽ khung màu xanh lá, Giận dữ vẽ khung màu đỏ).</td>
+                            <td>Định nghĩa màu sắc cho khung vuông vẽ lên mặt. OpenCV dùng chuẩn màu ngược BGR (Ví dụ: <code>(0,255,0)</code> là màu Xanh lá cho Happy, <code>(0,0,255)</code> là màu Đỏ cho Angry).</td>
                         </tr>
                         <tr>
                             <td><strong>16</strong></td>
                             <td><code>DISPLAY = {'Anger':'Angry', ...}</code></td>
-                            <td>Đổi tên viết tắt cảm xúc sang tên hiển thị ngắn gọn hơn trên màn hình camera (Happiness đổi thành Happy).</td>
+                            <td>Bản đồ đổi tên các nhãn cảm xúc sang từ viết gọn hơn để in lên khung camera (ví dụ đổi <code>Happiness</code> thành <code>Happy</code>).</td>
                         </tr>
                         <tr>
                             <td><strong>17</strong></td>
                             <td><code>FACE_CASCADE = cv2.data.haarcascades + ...</code></td>
-                            <td>Nạp tệp cấu hình chứa thuật toán tìm vị trí khuôn mặt có sẵn của OpenCV.</td>
+                            <td>Lấy đường dẫn nạp file XML chứa thuật toán tìm vị trí khuôn mặt mặc định Haar Cascade của thư viện OpenCV.</td>
                         </tr>
                         <tr>
                             <td><strong>20</strong></td>
                             <td><code>class EmotionEngine:</code></td>
-                            <td>Tạo ra một bộ máy xử lý cảm xúc (tìm mặt, tiền xử lý và đoán cảm xúc).</td>
+                            <td>Khai báo lớp đối tượng quản lý toàn bộ các tính năng AI cốt lõi (tìm mặt, cân bằng sáng mặt và đoán cảm xúc).</td>
                         </tr>
                         <tr>
                             <td><strong>21</strong></td>
                             <td><code>def __init__(self, model_name=...):</code></td>
-                            <td>Hàm cài đặt các cấu hình ban đầu khi khởi động bộ máy xử lý cảm xúc này.</td>
+                            <td>Hàm thiết lập các thông số và mô hình ban đầu khi khởi động bộ máy <code>EmotionEngine</code>.</td>
                         </tr>
                         <tr>
                             <td><strong>23 - 24</strong></td>
                             <td><code>torch_load = torch.load<br>torch.load = lambda ...</code></td>
-                            <td>Tắt các dòng cảnh báo màu đỏ không quan trọng của hệ thống PyTorch khi chạy để màn hình hiển thị sạch sẽ.</td>
+                            <td><strong>Tắt cảnh báo màu đỏ:</strong> Định nghĩa đè hàm load tạm thời để ép tắt các dòng thông báo cảnh báo bảo mật màu đỏ của hệ thống PyTorch khi chạy cho màn hình sạch sẽ.</td>
                         </tr>
                         <tr>
                             <td><strong>25</strong></td>
                             <td><code>self.er = HSEmotionRecognizer(...)</code></td>
-                            <td>Tải bộ não AI nhận diện cảm xúc nặng 25MB lên bộ nhớ RAM của máy tính.</td>
+                            <td>Nạp trọng số bộ não AI EfficientNet-B0 pretrained nặng 25MB lên bộ nhớ RAM. Chọn B0 vì siêu nhẹ, chạy mượt trên CPU của máy tính học sinh bình thường.</td>
                         </tr>
                         <tr>
                             <td><strong>26</strong></td>
                             <td><code>torch.load = torch_load</code></td>
-                            <td>Khôi phục lại hàm nạp ban đầu để tránh làm ảnh hưởng các phần code khác.</td>
+                            <td>Khôi phục lại hàm nạp ban đầu để tránh gây lỗi cho các thư viện khác.</td>
                         </tr>
                         <tr>
                             <td><strong>28</strong></td>
                             <td><code>self.fc = cv2.CascadeClassifier(...)</code></td>
-                            <td>Kích hoạt bộ quét tìm khuôn mặt từ file cấu hình XML đã nạp.</td>
+                            <td>Kích hoạt bộ quét tìm khuôn mặt từ file XML cấu hình đã nạp ở dòng 17.</td>
                         </tr>
                         <tr>
                             <td><strong>29</strong></td>
                             <td><code>self.bufs = {}</code></td>
-                            <td>Tạo từ điển lưu bộ nhớ 10 giây gần nhất của từng khuôn mặt đang được theo dõi.</td>
+                            <td>Tạo từ điển lưu bộ đệm nhớ 10 giây gần nhất của từng học sinh xuất hiện trước camera để làm mịn nhãn.</td>
                         </tr>
                         <tr>
                             <td><strong>30</strong></td>
                             <td><code>self.BSZ, self.GRID = 10, 60</code></td>
-                            <td>BSZ=10 (lưu 10 giây gần nhất), GRID=60 (nếu mặt chỉ nhúc nhích nhẹ dưới 60 pixel thì vẫn coi là một người cũ, tránh tạo người mới).</td>
+                            <td>
+                                <strong>Ý nghĩa thông số:</strong><br>
+                                - <code>BSZ = 10</code>: Máy sẽ nhớ 10 khung hình (0.3s) gần nhất để tính trung bình, tránh nháy nhãn khi chớp mắt.<br>
+                                - <code>GRID = 60</code>: Máy chia màn hình thành lưới ảo 60px. Nếu mặt học sinh dịch chuyển lệch dưới 60px, máy vẫn hiểu đây là cùng một học sinh cũ, không tạo người mới.
+                            </td>
                         </tr>
                         <tr>
                             <td><strong>31</strong></td>
                             <td><code>self.THRESH = {'Happiness':.3, ...}</code></td>
-                            <td>Đặt bộ ngưỡng nhạy cảm xúc (như Buồn chỉ cần đạt 20% là máy báo Buồn, Vui vẻ cần 30% máy mới báo Vui).</td>
+                            <td>
+                                <strong>Ý nghĩa bộ ngưỡng thích nghi:</strong><br>
+                                - <code>Happiness: 0.3</code> (30%): Đặt ngưỡng cao để tránh nhận nhầm khi học sinh nói chuyện (khóe miệng cử động giống cười).<br>
+                                - <code>Sadness: 0.2</code> (20%): Hạ thấp ngưỡng để tăng độ nhạy, giúp không bỏ sót biểu cảm buồn chán, ủ rũ mờ nhạt khi học bài.
+                            </td>
                         </tr>
                         <tr>
                             <td><strong>32</strong></td>
                             <td><code>self.clahe = cv2.createCLAHE(...)</code></td>
-                            <td>Bộ lọc ánh sáng: chia mặt thành lưới 8x8 ô để làm sáng đều cục bộ, chống bóng đổ và ngược sáng webcam học sinh.</td>
+                            <td>
+                                <strong>Cân bằng sáng cục bộ CLAHE:</strong><br>
+                                - <code>tileGridSize=(8,8)</code>: Chia khuôn mặt thành 64 ô nhỏ bằng nhau để làm sáng độc lập, giải quyết ngược sáng webcam học sinh.<br>
+                                - <code>clipLimit=2.0</code>: Giới hạn tương phản tối đa gấp 2 lần để tránh ảnh bị nhiễu hạt (noise) nặng khi học ban đêm thiếu sáng.
+                            </td>
                         </tr>
                         <tr>
                             <td><strong>34</strong></td>
                             <td><code>def detect(self, frame):</code></td>
-                            <td>Hàm tìm vị trí khuôn mặt trên khung hình camera.</td>
+                            <td>Hàm tìm vị trí khuôn mặt học sinh trên khung hình webcam.</td>
                         </tr>
                         <tr>
                             <td><strong>35</strong></td>
                             <td><code>gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)</code></td>
-                            <td>Chuyển ảnh camera sang màu trắng đen vì thuật toán tìm mặt chỉ cần độ sáng tối, không cần màu.</td>
+                            <td>Chuyển khung hình sang màu trắng đen Grayscale vì thuật toán tìm mặt chỉ cần thông tin độ sáng tối, giúp giảm tải dữ liệu và máy chạy nhanh hơn.</td>
                         </tr>
                         <tr>
                             <td><strong>36</strong></td>
                             <td><code>return self.fc.detectMultiScale(...)</code></td>
-                            <td>Chạy quét tìm mặt: ảnh thu nhỏ 10% mỗi lượt quét để bắt được xa/gần, quét trùng lặp 5 lần để tránh nhận nhầm đồ vật.</td>
+                            <td>
+                                <strong>Thuật toán tìm mặt Haar Cascade:</strong><br>
+                                - <code>scaleFactor=1.1</code>: Thu nhỏ bức ảnh 10% mỗi lượt quét để ô quét cố định của máy tìm được cả mặt ở gần (to) và mặt ở xa (nhỏ).<br>
+                                - <code>minNeighbors=5</code>: Ô quét phải quét trúng khuôn mặt ít nhất 5 lần ở các vị trí chồng lấn nhau thì mới công nhận là mặt thật, tránh nhận nhầm cái cốc, ổ điện.
+                            </td>
                         </tr>
                         <tr>
                             <td><strong>38</strong></td>
                             <td><code>def predict(self, face_img):</code></td>
-                            <td>Hàm dự đoán cảm xúc cho một khuôn mặt đã được cắt riêng ra.</td>
+                            <td>Hàm tính toán ra phần trăm cảm xúc từ vùng ảnh khuôn mặt đã được cắt riêng ra.</td>
                         </tr>
                         <tr>
                             <td><strong>39</strong></td>
                             <td><code>gray = cv2.cvtColor(face_img, ...)</code></td>
-                            <td>Chuyển ảnh khuôn mặt đã cắt sang màu trắng đen để chuẩn bị xử lý tương phản sáng.</td>
+                            <td>Chuyển khuôn mặt cắt ra sang màu trắng đen để chuẩn bị xử lý cân bằng sáng.</td>
                         </tr>
                         <tr>
                             <td><strong>40</strong></td>
                             <td><code>eq = self.clahe.apply(gray)</code></td>
-                            <td>Làm sáng đều vùng mặt bị bóng đổ hoặc ngược sáng để các nét co cơ biểu cảm hiển thị rõ ràng nhất.</td>
+                            <td>Áp dụng bộ lọc CLAHE làm sáng đều khuôn mặt, giúp thớ cơ bồi biểu cảm hiện rõ nét kể cả khi ngược sáng.</td>
                         </tr>
                         <tr>
                             <td><strong>41</strong></td>
                             <td><code>rgb = cv2.cvtColor(eq, ...)</code></td>
-                            <td>Chuyển lại sang ảnh màu RGB vì bộ não AI yêu cầu ảnh đầu vào phải có đầy đủ 3 kênh màu.</td>
+                            <td>Chuyển lại sang ảnh màu RGB vì bộ não AI yêu cầu ảnh đầu vào phải có đủ 3 kênh màu để nhận dạng.</td>
                         </tr>
                         <tr>
                             <td><strong>42</strong></td>
                             <td><code>name, scores = self.er.predict_emotions(...)</code></td>
-                            <td>Đưa ảnh mặt vào bộ não AI để nhận về điểm số phần trăm của 8 cảm xúc gốc.</td>
+                            <td>Đưa ảnh mặt vào bộ não AI để nhận về điểm số xác suất của 8 cảm xúc gốc.</td>
                         </tr>
                         <tr>
                             <td><strong>44</strong></td>
                             <td><code>raw6 = np.array([scores[0], ...])</code></td>
-                            <td>Lọc lấy 6 cảm xúc cần nhận dạng, bỏ đi 2 cảm xúc thừa là Sợ Hãi và Khinh Bỉ.</td>
+                            <td><strong>Ánh xạ 8 sang 6 lớp:</strong> Trích lọc lấy xác suất của 6 lớp cảm xúc cần nhận diện, loại bỏ 2 lớp không dùng trong học tập là Sợ Hãi và Khinh Bỉ.</td>
                         </tr>
                         <tr>
                             <td><strong>45</strong></td>
                             <td><code>scores = raw6 / raw6.sum() ...</code></td>
-                            <td>Tính toán lại tỷ lệ phần trăm sao cho tổng xác suất của 6 cảm xúc đích này cộng lại bằng đúng 100%.</td>
+                            <td><strong>Tái chuẩn hóa xác suất:</strong> Chia điểm của từng lớp cho tổng 6 lớp để tổng phần trăm cộng lại quay về đúng 100% hợp lệ toán học.</td>
                         </tr>
                         <tr>
                             <td><strong>46</strong></td>
                             <td><code>return scores</code></td>
-                            <td>Trả về danh sách phần trăm cảm xúc đã được chuẩn hóa.</td>
+                            <td>Trả về danh sách xác suất 6 cảm xúc đã được chuẩn hóa.</td>
                         </tr>
                         <tr>
                             <td><strong>48</strong></td>
                             <td><code>def process(self, frame):</code></td>
-                            <td>Hàm tổng xử lý chính trên camera (tìm mặt -> định dạng bám vết -> đoán cảm xúc -> làm mịn nhãn -> lọc ngưỡng).</td>
+                            <td>Hàm tổng xử lý chính trên khung hình webcam (tìm mặt -> bám vết người học -> đoán cảm xúc -> làm mịn -> lọc ngưỡng).</td>
                         </tr>
                         <tr>
                             <td><strong>49</strong></td>
@@ -1007,27 +1023,27 @@ FACE_CASCADE = cv2.data.haarcascades + <span class="style-string">'haacascade_fr
                         <tr>
                             <td><strong>51 - 52</strong></td>
                             <td><code>if len(faces) > 1:<br>faces = sorted(faces, key=..., reverse=True)</code></td>
-                            <td>Nếu thấy nhiều người, sắp xếp khuôn mặt to nhất lên đầu để ưu tiên học sinh chính ngồi trực diện camera.</td>
+                            <td>Nếu thấy nhiều người, sắp xếp khuôn mặt to nhất lên đầu để luôn ưu tiên học sinh chính ngồi trước camera, tránh lưu nhầm báo cáo.</td>
                         </tr>
                         <tr>
                             <td><strong>53</strong></td>
                             <td><code>active = set()</code></td>
-                            <td>Tạo danh sách tạm chứa tọa độ các khuôn mặt đang hoạt động thực tế.</td>
+                            <td>Tạo danh sách tạm chứa ID các khuôn mặt đang hoạt động thực tế trên khung hình.</td>
                         </tr>
                         <tr>
                             <td><strong>54 - 57</strong></td>
                             <td><code>for (x,y,w,h) in faces:<br>if w>=48 and h>=48:<br>k = ...<br>active.add(k)</code></td>
-                            <td>Xét từng khuôn mặt lớn hơn 48x48px, tính toán tọa độ tâm mặt đưa về lưới ảo 60px để làm ID bám vết khuôn mặt.</td>
+                            <td>Xét từng khuôn mặt lớn hơn 48x48px, tính toán tọa độ tâm mặt đưa về lưới ảo 60px để làm ID bám vết khuôn mặt. Bỏ qua các mặt nhỏ hơn 48px ở quá xa.</td>
                         </tr>
                         <tr>
                             <td><strong>58 - 59</strong></td>
                             <td><code>for k in set(self.bufs.keys())-active:<br>del self.bufs[k]</code></td>
-                            <td>Nếu một người đã rời khỏi camera, tiến hành xóa bộ nhớ đệm của họ đi để giải phóng RAM cho máy chạy nhẹ.</td>
+                            <td>Nếu một người đã rời khỏi camera, tiến hành xóa bộ đệm của họ đi để giải phóng RAM cho máy chạy nhẹ, tránh rò rỉ bộ nhớ.</td>
                         </tr>
                         <tr>
                             <td><strong>60 - 61</strong></td>
                             <td><code>for (x,y,w,h) in faces:<br>if w&lt;48 or h&lt;48: continue</code></td>
-                            <td>Vòng lặp thứ hai để đoán cảm xúc cho từng người, bỏ qua các khuôn mặt ở xa quá nhỏ.</td>
+                            <td>Vòng lặp thứ hai để tiến hành đoán cảm xúc cho từng người học, bỏ qua các khuôn mặt ở xa quá nhỏ.</td>
                         </tr>
                         <tr>
                             <td><strong>62</strong></td>
@@ -1042,7 +1058,7 @@ FACE_CASCADE = cv2.data.haarcascades + <span class="style-string">'haacascade_fr
                         <tr>
                             <td><strong>64</strong></td>
                             <td><code>scores = self.predict(face)</code></td>
-                            <td>Gọi hàm predict ở dòng 38 để bộ não AI tính toán phần trăm cảm xúc của khuôn mặt này.</td>
+                            <td>Gọi hàm predict để bộ não AI tính toán phần trăm cảm xúc của khuôn mặt này.</td>
                         </tr>
                         <tr>
                             <td><strong>65</strong></td>
@@ -1057,12 +1073,12 @@ FACE_CASCADE = cv2.data.haarcascades + <span class="style-string">'haacascade_fr
                         <tr>
                             <td><strong>67</strong></td>
                             <td><code>avg = np.mean(self.bufs[k], axis=0)</code></td>
-                            <td>Lấy trung bình cộng xác suất của 10 khung hình gần nhất để nhãn hiển thị được mượt mà, không bị nhấp nháy liên tục khi học sinh chớp mắt.</td>
+                            <td><strong>Làm mịn thời gian (Smoothing):</strong> Lấy trung bình cộng xác suất của 10 khung hình gần nhất để nhãn hiển thị được mượt mà, không bị nhấp nháy liên tục khi học sinh chớp mắt.</td>
                         </tr>
                         <tr>
                             <td><strong>68</strong></td>
                             <td><code>idx = np.argmax(avg)</code></td>
-                            <td>Tìm chỉ số index của cảm xúc có điểm số trung bình lớn nhất.</td>
+                            <td>Tìm cảm xúc có điểm số trung bình lớn nhất.</td>
                         </tr>
                         <tr>
                             <td><strong>69</strong></td>
@@ -1102,12 +1118,12 @@ FACE_CASCADE = cv2.data.haarcascades + <span class="style-string">'haacascade_fr
                         <tr>
                             <td><strong>81</strong></td>
                             <td><code>self.history = []</code></td>
-                            <td>Tạo danh sách trống trong RAM để lưu trữ dòng thời gian và cảm xúc của học sinh.</td>
+                            <td>Khởi tạo danh sách trống trong RAM để lưu trữ dòng thời gian và cảm xúc của học sinh.</td>
                         </tr>
                         <tr>
                             <td><strong>82</strong></td>
                             <td><code>self.order = list(EMO_COLORS.keys())</code></td>
-                            <td>Sắp xếp thứ tự hiển thị các cảm xúc trên trục đứng Y của đồ thị dòng thời gian.</td>
+                            <td>Sắp xếp thứ tự các cảm xúc trên trục đứng Y của đồ thị dòng thời gian.</td>
                         </tr>
                         <tr>
                             <td><strong>84</strong></td>
@@ -1152,7 +1168,7 @@ FACE_CASCADE = cv2.data.haarcascades + <span class="style-string">'haacascade_fr
                         <tr>
                             <td><strong>99 - 100</strong></td>
                             <td><code>emo2y = ...<br>yv = ...</code></td>
-                            <td>Ánh xạ tên cảm xúc sang tọa độ số nguyên 0-5 làm mốc vẽ đồ thị.</td>
+                            <td>Ánh xạ tên cảm xúc sang tọa độ số nguyên 0-5 làm mốc vẽ đồ thị Y.</td>
                         </tr>
                         <tr>
                             <td><strong>102</strong></td>
@@ -1177,12 +1193,15 @@ FACE_CASCADE = cv2.data.haarcascades + <span class="style-string">'haacascade_fr
                         <tr>
                             <td><strong>106 - 108</strong></td>
                             <td><code>for t,e,c in zip(ts,emos,confs):<br>rgb = ...<br>ax2.scatter(t, emo2y[e], s=max(40,c*250), ...)</code></td>
-                            <td>Vẽ các chấm tròn màu, chấm tròn càng to nghĩa là học sinh biểu hiện cảm xúc đó càng rõ nét (size = max(40, độ tin cậy * 250)).</td>
+                            <td>
+                                <strong>Vẽ các chấm tròn màu:</strong><br>
+                                Chấm tròn càng to nghĩa là học sinh biểu hiện cảm xúc đó càng rõ nét (size <code>s = max(40, độ tin cậy * 250)</code>).
+                            </td>
                         </tr>
                         <tr>
                             <td><strong>109 - 110</strong></td>
                             <td><code>ax2.set_yticks(...)<br>ax2.set_yticklabels(...)</code></td>
-                            <td>Thiết lập tọa độ vạch chia và ghi chữ tên cảm xúc tương ứng vào trục đứng Y.</td>
+                            <td>Thiết lập tọa độ vạch chia Y và ghi chữ tên cảm xúc tương ứng vào trục đứng Y.</td>
                         </tr>
                         <tr>
                             <td><strong>111 - 113</strong></td>
@@ -1207,7 +1226,7 @@ FACE_CASCADE = cv2.data.haarcascades + <span class="style-string">'haacascade_fr
                         <tr>
                             <td><strong>117</strong></td>
                             <td><code>print(f'  Da luu: reports/emotion_report.png')</code></td>
-                            <td>In dòng thông báo báo cáo đã lưu thành công ra màn hình đen console.</td>
+                            <td>In thông báo đã ghi file Dashboard ra màn hình đen console.</td>
                         </tr>
                         <tr>
                             <td><strong>120</strong></td>
@@ -1217,7 +1236,7 @@ FACE_CASCADE = cv2.data.haarcascades + <span class="style-string">'haacascade_fr
                         <tr>
                             <td><strong>121</strong></td>
                             <td><code>out = frame.copy()</code></td>
-                            <td>Tạo bản sao của ảnh để vẽ vẽ lên, tránh vẽ trực tiếp làm hỏng ma trận ảnh gốc của webcam.</td>
+                            <td>Tạo bản sao của ảnh để vẽ, tránh vẽ trực tiếp làm hỏng ma trận ảnh gốc của webcam.</td>
                         </tr>
                         <tr>
                             <td><strong>122 - 123</strong></td>
@@ -1247,7 +1266,7 @@ FACE_CASCADE = cv2.data.haarcascades + <span class="style-string">'haacascade_fr
                         <tr>
                             <td><strong>128</strong></td>
                             <td><code>cv2.rectangle(out,(x,y-lh-10),(x+lw+6,y),color,-1)</code></td>
-                            <td>Vẽ một ô chữ nhật đặc (độ dày nét vẽ là -1) làm nền nhãn nằm đè ngay phía trên khung mặt để chữ hiển thị rõ ràng.</td>
+                            <td>Vẽ một ô chữ nhật đặc (độ dày nét vẽ là -1) làm nền nhãn ngay phía trên khung mặt để chữ hiển thị rõ ràng, không bị chìm vào hậu cảnh.</td>
                         </tr>
                         <tr>
                             <td><strong>129</strong></td>
@@ -1312,7 +1331,10 @@ FACE_CASCADE = cv2.data.haarcascades + <span class="style-string">'haacascade_fr
                         <tr>
                             <td><strong>148</strong></td>
                             <td><code>if fc%skip==0: last=eng.process(frame); ...</code></td>
-                            <td>Nhảy khung hình: chỉ chạy AI xử lý ở khung hình chẵn (2,4,6...) để giảm tải 50% CPU, ghi nhận kết quả và mốc thời gian vào stats.</td>
+                            <td>
+                                <strong>Nhảy khung hình chẵn lẻ:</strong><br>
+                                Chỉ chạy AI xử lý ở khung hình chia hết cho 2 để giảm tải $50\%$ khối lượng tính toán cho CPU giúp máy tính chạy rất mát.
+                            </td>
                         </tr>
                         <tr>
                             <td><strong>149</strong></td>
@@ -1392,7 +1414,7 @@ FACE_CASCADE = cv2.data.haarcascades + <span class="style-string">'haacascade_fr
                         <tr>
                             <td><strong>177</strong></td>
                             <td><code>if fc%skip==0: last=eng.process(frame); ...</code></td>
-                            <td>Chỉ chạy AI xử lý cảm xúc ở khung hình chẵn để video chạy mượt, ghi nhận stats cảm xúc của học sinh vào RAM.</td>
+                            <td>Chỉ chạy AI xử lý cảm xúc ở khung hình chẵn để video chạy nhanh, ghi nhận stats cảm xúc của học sinh vào RAM.</td>
                         </tr>
                         <tr>
                             <td><strong>178</strong></td>
@@ -1402,7 +1424,7 @@ FACE_CASCADE = cv2.data.haarcascades + <span class="style-string">'haacascade_fr
                         <tr>
                             <td><strong>179</strong></td>
                             <td><code>prog = fc/total if total>0 else 0</code></td>
-                            <td>Tính toán phần trăm tiến độ xử lý video hiện tại (từ 0.0 đến 1.0).</td>
+                            <td>Tính phần trăm tiến độ xử lý video hiện tại (từ 0.0 đến 1.0).</td>
                         </tr>
                         <tr>
                             <td><strong>180 - 181</strong></td>
@@ -1422,7 +1444,7 @@ FACE_CASCADE = cv2.data.haarcascades + <span class="style-string">'haacascade_fr
                         <tr>
                             <td><strong>184</strong></td>
                             <td><code>cv2.imshow('Emotion Detection',display)</code></td>
-                            <td>Hiển thị cửa sổ video nhận dạng cảm xúc lên màn hình máy tính.</td>
+                            <td>Hiển thị cửa sổ video nhận diện cảm xúc lên màn hình máy tính.</td>
                         </tr>
                         <tr>
                             <td><strong>185 - 186</strong></td>
@@ -1432,7 +1454,10 @@ FACE_CASCADE = cv2.data.haarcascades + <span class="style-string">'haacascade_fr
                         <tr>
                             <td><strong>187 - 190</strong></td>
                             <td><code>elif k==ord(' '): while True: ...</code></td>
-                            <td>Tạm dừng video bằng phím cách: Nếu nhấn phím SPACE, chạy vòng lặp treo đứng yên video. Nhấn lại SPACE để chạy tiếp.</td>
+                            <td>
+                                <strong>Tạm dừng video:</strong><br>
+                                Nhấn phím cách <code>SPACE</code> để tạm dừng video khi cần quan sát và bấm lại <code>SPACE</code> để chạy tiếp.
+                            </td>
                         </tr>
                         <tr>
                             <td><strong>191 - 195</strong></td>
