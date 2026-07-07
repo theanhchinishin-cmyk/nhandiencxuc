@@ -283,17 +283,19 @@
             color: var(--emerald-700);
         }
 
-        /* Tables */
+        /* Tables - Optimized to wrap text and fit 100% width on all screens */
         .table-wrap {
-            overflow-x: auto;
             margin: 24px 0;
             border-radius: 10px;
             border: 1px solid var(--slate-200);
+            overflow: hidden;
+            background: #ffffff;
         }
         table {
             width: 100%;
             border-collapse: collapse;
             font-size: 0.9rem;
+            table-layout: fixed; /* Force matching column percentages */
         }
         thead {
             background: var(--slate-100);
@@ -301,14 +303,17 @@
         th {
             font-weight: 600;
             text-align: left;
-            padding: 12px 16px;
+            padding: 12px 14px;
             color: var(--slate-800);
             border-bottom: 2px solid var(--slate-200);
         }
         td {
-            padding: 12px 16px;
+            padding: 12px 14px;
             border-bottom: 1px solid var(--slate-200);
             color: var(--slate-700);
+            word-wrap: break-word; /* Enable text wrapping */
+            word-break: break-word;
+            white-space: normal;
         }
         tbody tr:hover {
             background: var(--slate-50);
@@ -594,9 +599,9 @@ Luồng hiển thị thời gian thực + Ghi lịch sử RAM (O(1) ghi nhận) 
                     <table>
                         <thead>
                             <tr>
-                                <th>Tên thư viện</th>
-                                <th>Mục đích sử dụng cụ thể trong dự án</th>
-                                <th>Hệ quả nếu thiếu thư viện này</th>
+                                <th style="width: 22%;">Tên thư viện</th>
+                                <th style="width: 44%;">Mục đích sử dụng cụ thể trong dự án</th>
+                                <th style="width: 34%;">Hệ quả nếu thiếu thư viện này</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -823,9 +828,9 @@ FACE_CASCADE = cv2.data.haarcascades + <span class="style-string">'haacascade_fr
                 <table>
                     <thead>
                         <tr>
-                            <th style="width: 120px;">Dòng code</th>
-                            <th style="width: 250px;">Nội dung Code</th>
-                            <th>Giải thích vai trò & Sự liên kết logic</th>
+                            <th style="width: 12%;">Dòng code</th>
+                            <th style="width: 33%;">Nội dung Code</th>
+                            <th style="width: 55%;">Giải thích vai trò & Sự liên kết logic</th>
                         </tr>
                     </thead>
                     <tbody>
@@ -1650,11 +1655,11 @@ FACE_CASCADE = cv2.data.haarcascades + <span class="style-string">'haacascade_fr
                     <table>
                         <thead>
                             <tr>
-                                <th>Lớp cảm xúc</th>
-                                <th>Precision (Độ chính xác)</th>
-                                <th>Recall (Độ nhạy)</th>
-                                <th>F1-Score (Cân bằng)</th>
-                                <th>Số lượng ảnh kiểm thử</th>
+                                <th style="width: 25%;">Lớp cảm xúc</th>
+                                <th style="width: 20%;">Precision</th>
+                                <th style="width: 18%;">Recall</th>
+                                <th style="width: 18%;">F1-Score</th>
+                                <th style="width: 19%;">Số mẫu</th>
                             </tr>
                         </thead>
                         <tbody>
