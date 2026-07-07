@@ -341,6 +341,10 @@ engine.process():
 
 <div class="qa-item"><div class="qa-q" onclick="toggleQA(this)"><span class="num">8</span> Độ chính xác thực nghiệm của hệ thống đạt bao nhiêu và đánh giá thế nào?<span class="arrow">▼</span></div><div class="qa-a">Hệ thống được đánh giá định lượng trên Tập kiểm thử Đông Nam Á độc lập gồm 150 ảnh (25 ảnh cho mỗi lớp chủng tộc Southeast Asian, nhóm tuổi 10-29) và đạt độ chính xác toàn cục <strong>81.33%</strong> (Macro F1-Score đạt 0.81). Trong đó, lớp Happiness đạt độ chính xác F1-Score 1.00 tuyệt đối và Sadness đạt Recall 1.00 tuyệt đối.</div></div>
 
+<div class="qa-item"><div class="qa-q" onclick="toggleQA(this)"><span class="num">9</span> Tại sao nhóm không Fine-tuning (huấn luyện thêm) mô hình trên tập dữ liệu Đông Nam Á?<span class="arrow">▼</span></div><div class="qa-a">Nhóm quyết định không Fine-tuning trọng số mạng nơ-ron vì hai lý do chính: 
+1. <strong>Nguy cơ Quá khớp (Overfitting):</strong> Huấn luyện một mạng nơ-ron lớn như EfficientNet-B0 (5.3 triệu tham số) trên một tập dữ liệu nhỏ (150 ảnh) chắc chắn sẽ làm mô hình bị quá khớp, mất khả năng tổng quát hóa trên các khuôn mặt khác.
+2. <strong>Giải pháp thay thế hiệu quả hơn:</strong> Thay vì thay đổi trọng số mô hình, nhóm đã thực hiện <strong>Tinh chỉnh ngưỡng quyết định thích nghi (Decision Threshold Tuning)</strong> kết hợp tiền xử lý ảnh CLAHE. Giải pháp này giúp tối ưu hóa trực tiếp điểm số phân loại, tăng độ chính xác lên 81.33% và đảm bảo thời gian chạy mượt mà ổn định trên CPU mà không làm hỏng mô hình gốc.</div></div>
+
 </div>
 
 </section>
