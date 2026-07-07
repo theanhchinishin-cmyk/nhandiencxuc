@@ -1,217 +1,218 @@
+# -*- coding: utf-8 -*-
 """
-main_note.py - Phien ban ghi chu chi tiet tung dong 1 cua He thong nhan dang cam xuc nguoi hoc online
-Su dung: python main_note.py [--mode webcam|image|video]
+main_note.py - Phiên bản ghi chú chi tiết từng dòng của Hệ thống nhận dạng cảm xúc người học online
+Sử dụng: python main_note.py [--mode webcam|image|video]
 """
 
-import os, sys, time, argparse, numpy as np, cv2, torch  # [Dòng 6] Nap thu vien: os (quan ly file/thu muc), sys (bien he thong), time (do thoi gian), argparse (doc tham so terminal), numpy (ma tran), cv2 (OpenCV), torch (PyTorch)
-from collections import deque, Counter  # [Dòng 7] deque: hang doi truot 10 khung hinh lam min nhan, Counter: bo dem so lan xuat hien cam xuc de ve bieu do tron
-from datetime import datetime  # [Dòng 8] Lay ngay gio he thong thuc te de dat ten file anh chup man hinh khi nguoi dung an nut 's'
-from hsemotion.facial_emotions import HSEmotionRecognizer  # [Dòng 9] Nap lop HSEmotionRecognizer chua mo hinh EfficientNet-B0 pretrained de du doan cam xuc
-import matplotlib.pyplot as plt  # [Dòng 10] Nap thu vien ve do thi Matplotlib de tu dong xuat ra Dashboard báo cao PNG sau khi hoc xong
+import os, sys, time, argparse, numpy as np, cv2, torch  # [Dòng 6] Nạp thư viện: os (quản lý file/thư mục), sys (biến hệ thống), time (đo thời gian), argparse (đọc tham số dòng lệnh), numpy (ma trận toán học), cv2 (OpenCV), torch (học sâu PyTorch)
+from collections import deque, Counter  # [Dòng 7] deque: hàng đợi trượt 10 khung hình để làm mịn nhãn hiển thị, Counter: bộ đếm số lần xuất hiện cảm xúc phục vụ vẽ biểu đồ tròn
+from datetime import datetime  # [Dòng 8] Lấy ngày giờ hệ thống thực tế để tự động đặt tên file ảnh chụp màn hình khi người dùng nhấn phím 's'
+from hsemotion.facial_emotions import HSEmotionRecognizer  # [Dòng 9] Nạp lớp HSEmotionRecognizer chứa mô hình EfficientNet-B0 pretrained để dự đoán cảm xúc
+import matplotlib.pyplot as plt  # [Dòng 10] Nạp thư viện vẽ đồ thị Matplotlib để tự động xuất ra Dashboard báo cáo PNG sau khi học xong
 
-# ── Constants ──  # [Dong 12] Khai bao cac hang so cau hinh toan cuc cua he thong
-EMOTIONS = ['Anger','Disgust','Happiness','Neutral','Sadness','Surprise']  # [Dong 13] Danh sach 6 nhan cam xuc dich ma he thong se phan loai va ve len man hinh
-EMO_COLORS = {'Happy':(0,255,0),'Sad':(255,80,80),'Angry':(0,0,255),  # [Dong 14] Ban do mau BGR ve bounding box: Happy (Xanh la), Sad (Xanh duong nhat), Angry (Do)
-              'Surprise':(0,165,255),'Neutral':(180,180,180),'Disgust':(0,160,160)}  # [Dong 15] Tiep tuc ma mau BGR: Surprise (Cam), Neutral (Xam), Disgust (Vang dat)
-DISPLAY = {'Anger':'Angry','Happiness':'Happy','Sadness':'Sad','Contempt':'Disgust'}  # [Dong 16] Anh xa doi ten nhan noi bo sang ten hien thi ngan gon, dep mat tren giao dien camera
-FACE_CASCADE = cv2.data.haarcascades + 'haarcascade_frontalface_default.xml'  # [Dong 17] Lay file XML cau hinh Haar Cascade dung de quet va tim vi tri mat cua OpenCV
+# ── Constants ──  # [Dòng 12] Khai báo các hằng số cấu hình toàn cục của hệ thống
+EMOTIONS = ['Anger','Disgust','Happiness','Neutral','Sadness','Surprise']  # [Dòng 13] Danh sách 6 nhãn cảm xúc đích mà hệ thống sẽ phân loại và vẽ lên màn hình
+EMO_COLORS = {'Happy':(0,255,0),'Sad':(255,80,80),'Angry':(0,0,255),  # [Dòng 14] Bản đồ màu BGR vẽ bounding box: Happy (Xanh lá), Sad (Xanh dương nhạt), Angry (Đỏ)
+              'Surprise':(0,165,255),'Neutral':(180,180,180),'Disgust':(0,160,160)}  # [Dòng 15] Tiếp tục mã màu BGR: Surprise (Cam), Neutral (Xám), Disgust (Vàng đất)
+DISPLAY = {'Anger':'Angry','Happiness':'Happy','Sadness':'Sad','Contempt':'Disgust'}  # [Dòng 16] Ánh xạ đổi tên nhãn nội bộ viết tắt sang tên hiển thị thân thiện trên giao diện camera
+FACE_CASCADE = cv2.data.haarcascades + 'haarcascade_frontalface_default.xml'  # [Dòng 17] Đường dẫn tệp XML Haar Cascade dùng để quét và tìm vị trí khuôn mặt trong OpenCV
 
-# ── Emotion Engine ──  # [Dong 19] Khai bao Class EmotionEngine - bo xu ly ki thuat, tien xu ly va chay mo hinh du doan
-class EmotionEngine:  # [Dong 20] Dinh nghia lop EmotionEngine
-    def __init__(self, model_name='enet_b0_8_best_afew'):  # [Dong 21] Ham khoi tao các thanh phan cua engine khi doi tuong duoc tao
-        # Override torch.load to bypass weights_only warning in HSEmotionRecognizer  # [Dong 22] Chu thich ky thuat tat canh bao PyTorch
-        torch_load = torch.load  # [Dong 23] Luu tam ham torch.load goc cua thu vien PyTorch vao bien
-        torch.load = lambda f,**kw: torch_load(f,**{**kw,'weights_only':False})  # [Dong 24] Ghi de ham load bang lambda de ep weights_only=False, tat canh bao bao mat
-        self.er = HSEmotionRecognizer(model_name=model_name)  # [Dong 25] Khoi tao mo hinh HSEmotion (EfficientNet-B0 pretrained ~25MB)
-        torch.load = torch_load  # [Dong 26] Khoi phuc lai ham torch.load goc cua PyTorch ngay lap tuc de khong anh huong thu vien khac
+# ── Emotion Engine ──  # [Dòng 19] Khai báo Class EmotionEngine - bộ xử lý kỹ thuật, tiền xử lý và chạy mô hình dự đoán
+class EmotionEngine:  # [Dòng 20] Định nghĩa lớp EmotionEngine
+    def __init__(self, model_name='enet_b0_8_best_afew'):  # [Dòng 21] Hàm khởi tạo các thành phần của engine khi đối tượng được tạo
+        # Override torch.load to bypass weights_only warning in HSEmotionRecognizer  # [Dòng 22] Ghi chú kỹ thuật tắt cảnh báo PyTorch
+        torch_load = torch.load  # [Dòng 23] Lưu tạm hàm torch.load gốc của thư viện PyTorch vào biến
+        torch.load = lambda f,**kw: torch_load(f,**{**kw,'weights_only':False})  # [Dòng 24] Ghi đè hàm load bằng lambda để ép weights_only=False, tắt cảnh báo bảo mật
+        self.er = HSEmotionRecognizer(model_name=model_name)  # [Dòng 25] Khởi tạo mô hình HSEmotion (EfficientNet-B0 pretrained ~25MB)
+        torch.load = torch_load  # [Dòng 26] Khôi phục lại hàm torch.load gốc của PyTorch ngay lập tức để không ảnh hưởng hàm khác
         
-        self.fc = cv2.CascadeClassifier(FACE_CASCADE)  # [Dong 28] Nap bo quet mat Haar Cascade tu file XML da dinh nghia o dong 17
-        self.bufs = {}  # [Dong 29] Dict bufs: tu dien luu tru hang doi truot deque loc min xac suat cho tung khuon mat
-        self.BSZ, self.GRID = 10, 60  # [Dong 30] BSZ = 10 (co hang doi lam min), GRID = 60 (kich thuoc o luoi de tracking tam mat)
-        self.THRESH = {'Happiness':.3,'Sadness':.2,'Surprise':.3,'Anger':.3,'Neutral':.35,'Disgust':.3}  # [Dong 31] Bo nguong thich nghi de loc nhan, tranh bao gia
-        self.clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))  # [Dong 32] Khoi tao CLAHE can bang sang cuc bo: clip limit = 2.0, chia luoi 8x8 o
+        self.fc = cv2.CascadeClassifier(FACE_CASCADE)  # [Dòng 28] Nạp bộ quét mặt Haar Cascade từ file XML đã định nghĩa ở dòng 17
+        self.bufs = {}  # [Dòng 29] Dict bufs: từ điển lưu trữ hàng đợi trượt deque lọc mịn xác suất cho từng khuôn mặt
+        self.BSZ, self.GRID = 10, 60  # [Dòng 30] BSZ = 10 (cỡ hàng đợi làm mịn), GRID = 60 (kích thước ô lưới ảo để tracking định danh mặt)
+        self.THRESH = {'Happiness':.3,'Sadness':.2,'Surprise':.3,'Anger':.3,'Neutral':.35,'Disgust':.3}  # [Dòng 31] Bộ ngưỡng quyết định thích nghi cho 6 cảm xúc để tránh báo giả
+        self.clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))  # [Dòng 32] Khởi tạo CLAHE cân bằng sáng cục bộ: giới hạn tương phản = 2.0, lưới 8x8 ô
 
-    def detect(self, frame):  # [Dong 34] Dinh nghia ham phat hien cac khuon mat co trong mot khung hinh cap vao
-        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)  # [Dong 35] Chuyen anh mau BGR sang anh xam vi Haar Cascade chi can dung cuong do sang de quet
-        return self.fc.detectMultiScale(gray, 1.1, 5, minSize=(30,30))  # [Dong 36] Quet tim mat: scaleFactor=1.1, minNeighbors=5, bo qua mat < 30x30px
+    def detect(self, frame):  # [Dòng 34] Định nghĩa hàm phát hiện các khuôn mặt có trong một khung hình cấp vào
+        gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)  # [Dòng 35] Chuyển ảnh màu BGR sang ảnh xám vì Haar Cascade chỉ cần dùng cường độ sáng để quét
+        return self.fc.detectMultiScale(gray, 1.1, 5, minSize=(30,30))  # [Dòng 36] Quét tìm mặt: scaleFactor=1.1, minNeighbors=5, bỏ qua mặt < 30x30px
 
-    def predict(self, face_img):  # [Dong 38] Dinh nghia ham du doan cam xuc cho mot vung anh khuon mat da cat ra
-        gray = cv2.cvtColor(face_img, cv2.COLOR_BGR2GRAY)  # [Dong 39] Chuyen anh cat khuon mat sang anh xam Grayscale de chuan bi can bang sang
-        eq = self.clahe.apply(gray)  # [Dong 40] Ap dung CLAHE de can bang sang deu tren cac vung mat, lam ro net cac nep nhan va tho co bieu cam
-        rgb = cv2.cvtColor(eq, cv2.COLOR_GRAY2RGB)  # [Dong 41] Chuyen lai anh xam sang 3 kenh RGB vi model EfficientNet yeu cau dau vao 3 kenh mau
-        name, scores = self.er.predict_emotions(rgb, logits=False)  # [Dong 42] Chay model predict tra ve mảng 8 xac suat cam xuc goc
-        # Anh xa 8 lop cua HSEmotion sang 6 lop cua bai toan  # [Dong 43] Chu thich phep anh xa
-        raw6 = np.array([scores[0], scores[2], scores[4], scores[5], scores[6], scores[7]])  # [Dong 44] Loc lay 6 lop, bo Fear (chi so 1) va Contempt (chi so 3)
-        scores = raw6 / raw6.sum() if raw6.sum() > 0 else raw6  # [Dong 45] Tai chuan hoa Softmax rut gon: chia tung phan tu cho tong de tong xac suat = 100%
-        return scores  # [Dong 46] Tra ve mang 6 gia tri xac suat da chuan hoa cua khuon mat
+    def predict(self, face_img):  # [Dòng 38] Định nghĩa hàm dự đoán cảm xúc cho một vùng ảnh khuôn mặt đã cắt ra
+        gray = cv2.cvtColor(face_img, cv2.COLOR_BGR2GRAY)  # [Dòng 39] Chuyển ảnh cắt khuôn mặt sang ảnh xám Grayscale để chuẩn bị cân bằng sáng
+        eq = self.clahe.apply(gray)  # [Dòng 40] Áp dụng CLAHE để cân bằng sáng đều trên các vùng mặt, làm rõ nét các nếp nhăn và thớ cơ biểu cảm
+        rgb = cv2.cvtColor(eq, cv2.COLOR_GRAY2RGB)  # [Dòng 41] Chuyển lại ảnh xám sang 3 kênh RGB vì model EfficientNet yêu cầu đầu vào 3 kênh màu
+        name, scores = self.er.predict_emotions(rgb, logits=False)  # [Dòng 42] Chạy model predict trả về mảng 8 xác suất cảm xúc gốc
+        # Anh xa 8 lop cua HSEmotion sang 6 lop cua bai toan  # [Dòng 43] Ghi chú phép ánh xạ
+        raw6 = np.array([scores[0], scores[2], scores[4], scores[5], scores[6], scores[7]])  # [Dòng 44] Lọc lấy 6 lớp, bỏ Fear (chỉ số 1) và Contempt (chỉ số 3)
+        scores = raw6 / raw6.sum() if raw6.sum() > 0 else raw6  # [Dòng 45] Tái chuẩn hóa Softmax rút gọn: chia từng phần tử cho tổng để tổng xác suất = 100%
+        return scores  # [Dòng 46] Trả về mảng 6 giá trị xác suất đã chuẩn hóa của khuôn mặt
 
-    def process(self, frame):  # [Dong 48] Dinh nghia ham tong xu ly luong tren 1 khung hinh (detect, tracking, predict, smoothing, threshold)
-        results = []  # [Dong 49] Khoi tao list result trong de chua thong tin ket qua cac mat trong khung hinh nay
-        faces = self.detect(frame)  # [Dong 50] Goi ham detect o dong 34 de phat hien tat ca cac khuon mat trong frame
-        if len(faces) > 1:  # [Dong 51] Neu phat hien tu 2 khuon mat tro len
-            faces = sorted(faces, key=lambda f: f[2]*f[3], reverse=True)  # [Dong 52] Sap xep mat theo dien tich giam dan (f[2]*f[3]). Mat lon nhat o vi tri dau (index 0)
-        active = set()  # [Dong 53] Khoi tao tap hop active de luu tru toa do tam cua cac khuon mat dang thuc su xuat hien tren frame
-        for (x,y,w,h) in faces:  # [Dong 54] Vong lap xet qua tung khuon mat
-            if w>=48 and h>=48:  # [Dong 55] Chi quan tam den cac khuon mat co do rong va dai tu 48px tro len
-                k = ((x+w//2)//self.GRID*self.GRID, (y+h//2)//self.GRID*self.GRID)  # [Dong 56] Centroid Tracking: Luong tu hoa tam mat ve o luoi 60px lam khoa dinh danh k
-                active.add(k)  # [Dong 57] Them khoa dinh danh k vao tap hop active
-        for k in set(self.bufs.keys())-active:  # [Dong 58] Tim cac khuon mat co trong bo dem tu dien nhung khong con xuat hien tren camera
-            del self.bufs[k]  # [Dong 59] Xoa bo dem cua khuon mat da roi di khoi camera de tranh bi ro ri bo nho RAM
-        for (x,y,w,h) in faces:  # [Dong 60] Vong lap thu hai de thuc hien predict cho tung mat
-            if w<48 or h<48: continue  # [Dong 61] Bỏ qua ngay cac khuon mặt o qua xa, qua nhỏ (nho hon 48x48 pixel)
-            k = ((x+w//2)//self.GRID*self.GRID, (y+h//2)//self.GRID*self.GRID)  # [Dong 62] Tinh khoa dinh danh k de dinh vi dung nguoi trong bufs
-            face = frame[y:y+h,x:x+w]  # [Dong 63] Cat lay rieng vung anh ma tran chua khuon mat (Crop) tu frame anh goc
-            scores = self.predict(face)  # [Dong 64] Chay ham predict o dong 38 de lay mảng 6 xac suat cam xuc
-            if k not in self.bufs: self.bufs[k] = deque(maxlen=self.BSZ)  # [Dong 65] Neu la nguoi moi, khoi tao hang doi deque luu toi da 10 khung hinh
-            self.bufs[k].append(scores)  # [Dong 66] Day mang xac suat moi vao hang doi deque cua nguoi do
-            avg = np.mean(self.bufs[k], axis=0)  # [Dong 67] Temporal Smoothing: Tinh trung binh cong xac suat cua 10 khung hinh gan nhat
-            idx = np.argmax(avg)  # [Dong 68] Tim chi so index cua cam xuc dat xac suat trung binh lon nhat
-            conf = float(avg[idx])  # [Dong 69] Lay gia tri xac suat cao nhat do (do tin cay) ep kieu Float
-            emo = EMOTIONS[idx]  # [Dong 70] Tra cuu ten cam xuc tu mảng EMOTIONS dua vao chi so idx vua tim duoc
-            if conf < self.THRESH.get(emo, .4):  # [Dong 71] Kiem tra nguong thich nghi: neu do tin cay thap hon nguong quy dinh (vi du Happiness < 0.3)
-                emo, conf = 'Neutral', float(avg[EMOTIONS.index('Neutral')])  # [Dong 72] Ep cam xuc ve nhan mac dinh Neutral va lay dung xac suat lop Neutral tuong ung
-            else:  # [Dong 73] Truong hop dat tren nguong thich nghi
-                emo = DISPLAY.get(emo, emo)  # [Dong 74] Doi ten sang nhan hien thi than thien tren UI (vi du: Happiness -> Happy)
-            results.append({'bbox':(x,y,w,h),'emotion':emo,'confidence':conf,'probs':avg})  # [Dong 75] Them ket qua gom bounding box, nhan, do tin cay vao list results
-        return results  # [Dong 76] Tra ve danh sach kết quả phan tich cac khuon mat cua khung hinh nay
+    def process(self, frame):  # [Dòng 48] Định nghĩa hàm tổng xử lý luồng trên 1 khung hình (detect, tracking, predict, smoothing, threshold)
+        results = []  # [Dòng 49] Khởi tạo danh sách kết quả trống cho khung hình hiện tại
+        faces = self.detect(frame)  # [Dòng 50] Gọi hàm detect ở dòng 34 để phát hiện tất cả các khuôn mặt trong frame
+        if len(faces) > 1:  # [Dòng 51] Nếu phát hiện từ 2 khuôn mặt trở lên
+            faces = sorted(faces, key=lambda f: f[2]*f[3], reverse=True)  # [Dòng 52] Sắp xếp mặt theo diện tích giảm dần (f[2]*f[3]). Mặt lớn nhất ở vị trí đầu (index 0)
+        active = set()  # [Dòng 53] Khởi tạo tập hợp active để lưu trữ tọa độ tâm của các khuôn mặt đang thực sự xuất hiện trên frame
+        for (x,y,w,h) in faces:  # [Dòng 54] Vòng lặp xét qua từng khuôn mặt
+            if w>=48 and h>=48:  # [Dòng 55] Chỉ quan tâm đến các khuôn mặt có độ rộng và dài từ 48px trở lên
+                k = ((x+w//2)//self.GRID*self.GRID, (y+h//2)//self.GRID*self.GRID)  # [Dòng 56] Centroid Tracking: Lượng tử hóa tâm mặt về ô lưới 60px làm khóa định danh k
+                active.add(k)  # [Dòng 57] Thêm khóa định danh k vào tập hợp active
+        for k in set(self.bufs.keys())-active:  # [Dòng 58] Tìm các khuôn mặt có trong bộ đệm từ điển nhưng không còn xuất hiện trên camera
+            del self.bufs[k]  # [Dòng 59] Xóa bộ đệm của khuôn mặt đã rời đi khỏi camera để tránh bị rò rỉ bộ nhớ RAM
+        for (x,y,w,h) in faces:  # [Dòng 60] Vòng lặp thứ hai để thực hiện predict cho từng mặt
+            if w<48 or h<48: continue  # [Dòng 61] Bỏ qua ngay các khuôn mặt ở quá xa, quá nhỏ (nhỏ hơn 48x48 pixel)
+            k = ((x+w//2)//self.GRID*self.GRID, (y+h//2)//self.GRID*self.GRID)  # [Dòng 62] Tính khóa định danh k để định vị đúng người trong bufs
+            face = frame[y:y+h,x:x+w]  # [Dòng 63] Cắt lấy riêng vùng ảnh ma trận chứa khuôn mặt (Crop) từ frame ảnh gốc
+            scores = self.predict(face)  # [Dòng 64] Chạy hàm predict ở dòng 38 để lấy mảng 6 xác suất cảm xúc
+            if k not in self.bufs: self.bufs[k] = deque(maxlen=self.BSZ)  # [Dòng 65] Nếu là người mới, khởi tạo hàng đợi deque lưu tối đa 10 khung hình
+            self.bufs[k].append(scores)  # [Dòng 66] Đẩy mảng xác suất mới dự đoán vào hàng đợi deque của người đó
+            avg = np.mean(self.bufs[k], axis=0)  # [Dòng 67] Temporal Smoothing: Tính trung bình cộng xác suất của 10 khung hình gần nhất
+            idx = np.argmax(avg)  # [Dòng 68] Tìm chỉ số index của cảm xúc đạt xác suất trung bình lớn nhất
+            conf = float(avg[idx])  # [Dòng 69] Lấy giá trị xác suất cao nhất đó (độ tin cậy) ép kiểu Float
+            emo = EMOTIONS[idx]  # [Dòng 70] Tra cứu tên cảm xúc từ mảng EMOTIONS dựa vào chỉ số idx vừa tìm được
+            if conf < self.THRESH.get(emo, .4):  # [Dòng 71] Kiểm tra ngưỡng thích nghi: nếu độ tin cậy thấp hơn ngưỡng quy định (ví dụ Happiness < 0.3)
+                emo, conf = 'Neutral', float(avg[EMOTIONS.index('Neutral')])  # [Dòng 72] Ép cảm xúc về nhãn mặc định Neutral và lấy đúng xác suất lớp Neutral tương ứng
+            else:  # [Dòng 73] Trường hợp đạt trên ngưỡng thích nghi
+                emo = DISPLAY.get(emo, emo)  # [Dòng 74] Đổi tên sang nhãn hiển thị thân thiện trên UI (ví dụ: Happiness -> Happy)
+            results.append({'bbox':(x,y,w,h),'emotion':emo,'confidence':conf,'probs':avg})  # [Dòng 75] Thêm kết quả gồm bounding box, nhãn, độ tin cậy vào list results
+        return results  # [Dòng 76] Trả về danh sách kết quả phân tích các khuôn mặt của khung hình này
 
-# ── Session Stats ──  # [Dong 78] Khai bao Class SessionStats - ghi nhan thong ke phien hoc va tu dong ve do thi Dashboard
-class SessionStats:  # [Dong 79] Dinh nghia lop SessionStats
-    def __init__(self):  # [Dong 80] Ham khoi tao bo thong ke
-        self.history = []  # [Dong 81] Khoi tao danh sach history trong de ghi nhan lich su cam xuc theo thoi gian thuc tren RAM
-        self.order = list(EMO_COLORS.keys())  # [Dong 82] Lay danh sach ten cam xuc theo ma mau de sap xep thu tu truc Y tren bieu do timeline
+# ── Session Stats ──  # [Dòng 78] Khai báo Class SessionStats - ghi nhận thống kê phiên học và tự động vẽ đồ thị Dashboard
+class SessionStats:  # [Dòng 79] Định nghĩa lớp SessionStats
+    def __init__(self):  # [Dòng 80] Hàm khởi tạo bộ thống kê
+        self.history = []  # [Dòng 81] Khởi tạo danh sách history trống để ghi nhận lịch sử cảm xúc theo thời gian thực trên RAM
+        self.order = list(EMO_COLORS.keys())  # [Dòng 82] Lấy danh sách tên cảm xúc theo mã màu để sắp xếp thứ tự trục Y trên biểu đồ timeline
 
-    def record(self, t, results):  # [Dong 84] Dinh nghia ham ghi nhan lich su tai thoi diem t (giay)
-        if results:  # [Dong 85] Neu co ket qua phat hien mat tren frame
-            r = results[0]  # [Dong 86] Chi lay khuon mat lon nhat ở vi tri results[0] (Primary Face - hoc sinh chính), bo qua nhiễu sau lung
-            self.history.append({'time':t,'emotion':r['emotion'],'confidence':r['confidence']})  # [Dong 87] Append O(1) thoi gian, nhan, do tin cay vao RAM
+    def record(self, t, results):  # [Dòng 84] Định nghĩa hàm ghi nhận dữ liệu cảm xúc tại mốc thời gian t (giây)
+        if results:  # [Dòng 85] Nếu có kết quả phát hiện mặt trên frame
+            r = results[0]  # [Dòng 86] Chỉ lấy khuôn mặt lớn nhất ở vị trí results[0] (Primary Face - học sinh chính), bỏ qua nhiễu sau lưng
+            self.history.append({'time':t,'emotion':r['emotion'],'confidence':r['confidence']})  # [Dòng 87] Append O(1) thời gian, nhãn, độ tin cậy vào RAM
 
-    def report(self, out_dir='reports'):  # [Dong 89] Dinh nghia ham ve va luu Dashboard reports/emotion_report.png
-        if not self.history: return  # [Dong 90] Neu danh sach lich su trong (chua ghi duoc gi), dung ham khong ve
-        os.makedirs(out_dir, exist_ok=True)  # [Dong 91] Tao thu muc reports/ tren o cung neu thu muc nay chua ton tai
-        ts = [h['time'] for h in self.history]  # [Dong 92] Tach rieng danh sach thoi gian ts tu lich su
-        emos = [h['emotion'] for h in self.history]  # [Dong 93] Tach rieng danh sach cac nhan cam xuc emos tu lich su
-        confs = [h['confidence'] for h in self.history]  # [Dong 94] Tach rieng danh sach cac do tin cay confs tu lich su
-        cnt = Counter(emos)  # [Dong 95] Dem tan suat xuat hien tung cam xuc de ve bieu do tron
-        present = [e for e in self.order if e in cnt]  # [Dong 96] Loc cac cam xuc thuc te co xuat hien trong phien hoc
-        counts = [cnt[e] for e in present]  # [Dong 97] Lay so lan xuat hien tuong ung voi tung cam xuc do
-        colors = [tuple(c/255 for c in reversed(EMO_COLORS[e])) for e in present]  # [Dong 98] Chuyen doi ma mau BGR sang ti le RGB (0.0 - 1.0) cua Matplotlib
-        emo2y = {e:i for i,e in enumerate(self.order)}  # [Dong 99] Anh xa ten cam xuc sang index so nguyen 0-5 de lam toa do truc dung Y
-        yv = [emo2y[e] for e in emos]  # [Dong 100] Tao mang yv chua index truc dung tuong ung cho toan bo chuoi cam xuc lich su
+    def report(self, out_dir='reports'):  # [Dòng 89] Định nghĩa hàm vẽ và lưu Dashboard reports/emotion_report.png
+        if not self.history: return  # [Dòng 90] Nếu danh sách lịch sử trống (chưa ghi được gì), dừng hàm không vẽ
+        os.makedirs(out_dir, exist_ok=True)  # [Dòng 91] Tạo thư mục reports/ trên ổ cứng nếu thư mục này chưa tồn tại
+        ts = [h['time'] for h in self.history]  # [Dòng 92] Tách riêng danh sách thời gian ts từ lịch sử
+        emos = [h['emotion'] for h in self.history]  # [Dòng 93] Tách riêng danh sách các nhãn cảm xúc emos từ lịch sử
+        confs = [h['confidence'] for h in self.history]  # [Dòng 94] Tách riêng danh sách các độ tin cậy confs từ lịch sử
+        cnt = Counter(emos)  # [Dòng 95] Đếm tần suất xuất hiện từng cảm xúc để vẽ biểu đồ tròn
+        present = [e for e in self.order if e in cnt]  # [Dòng 96] Lọc các cảm xúc thực tế có xuất hiện trong phiên học
+        counts = [cnt[e] for e in present]  # [Dòng 97] Lấy số lần xuất hiện tương ứng với từng cảm xúc đó
+        colors = [tuple(c/255 for c in reversed(EMO_COLORS[e])) for e in present]  # [Dòng 98] Chuyển đổi mã màu BGR sang tỉ lệ RGB (0.0 - 1.0) của Matplotlib
+        emo2y = {e:i for i,e in enumerate(self.order)}  # [Dòng 99] Ánh xạ tên cảm xúc sang index số nguyên 0-5 để làm tọa độ trục đứng Y
+        yv = [emo2y[e] for e in emos]  # [Dòng 100] Tạo mảng yv chứa index trục đứng tương ứng cho toàn bộ chuôi cảm xúc lịch sử
 
-        fig, (ax1,ax2) = plt.subplots(2,1,figsize=(12,10),gridspec_kw={'height_ratios':[1,1.5]})  # [Dong 102] Tao khung bieu do size 12x10 inch, chia lam 2 do thi chong doc: ax1 (tren, ti le 1.0), ax2 (duoi, ti le 1.5)
-        ax1.pie(counts, labels=present, colors=colors, autopct=lambda p:f'{p:.1f}%', startangle=90)  # [Dong 103] Ve do thi tron (Pie Chart) phan bo thoi luong cam xuc. Goc bat dau 90 do
-        ax1.set_title('Phan Bo Cam Xuc')  # [Dong 104] Dat ten tieu de cho bieu do tron la "Phan Bo Cam Xuc"
-        ax2.step(ts, yv, where='post', color='gray', alpha=.5, linewidth=1.5, linestyle='--')  # [Dong 105] Ve bieu do buoc duong dut net xam noi cac moc cam xuc de thay su bien doi
-        for t,e,c in zip(ts,emos,confs):  # [Dong 106] Duyet qua thoi gian, nhan, do tin cay de ve cac cham tron
-            rgb = tuple(v/255 for v in reversed(EMO_COLORS[e]))  # [Dong 107] Lay ma mau RGB phu hop cho cham tron tuong ung voi cam xuc do
-            ax2.scatter(t, emo2y[e], s=max(40,c*250), color=[rgb], edgecolors='black', linewidth=.5)  # [Dong 108] Ve cham tron, size s co gian dong theo do tin cay = max(40, c*250), co vien den
-        ax2.set_yticks(range(len(self.order)))  # [Dong 109] Thiet lap so vach chia tren truc Y bang dung so cam xuc (0 den 5)
-        ax2.set_yticklabels(self.order)  # [Dong 110] Gan chu ten cam xuc tuong ung vao cac vach chia truc Y
-        ax2.set_xlabel('Thoi gian (giay)')  # [Dong 111] Dat ten nhan truc nam ngang X la "Thoi gian (giay)"
-        ax2.set_ylabel('Cam xuc')  # [Dong 112] Dat ten nhan truc dung Y la "Cam xuc"
-        ax2.grid(True, alpha=.3)  # [Dong 113] Bat luoi bieu do voi do trong suot 0.3 de de giong hang toa do
-        plt.tight_layout()  # [Dong 114] Căn chinh tu dong de cac chu tren bieu do khong bi chong cheo hoac mat vien
-        plt.savefig(os.path.join(out_dir,'emotion_report.png'), dpi=150, bbox_inches='tight')  # [Dong 115] Luu toan bo hinh anh Dashboard thanh file reports/emotion_report.png voi DPI = 150
-        plt.close()  # [Dong 116] Dong doi tuong do thi Matplotlib de giai phong hoan toan bo nho RAM
-        print(f'  Da luu: reports/emotion_report.png')  # [Dong 117] In thong bao da ghi file Dashboard ra man hinh console
+        fig, (ax1,ax2) = plt.subplots(2,1,figsize=(12,10),gridspec_kw={'height_ratios':[1,1.5]})  # [Dòng 102] Tạo khung biểu đồ size 12x10 inch, chia làm 2 đồ thị chồng dọc: ax1 (trên, tỉ lệ 1.0), ax2 (dưới, tỉ lệ 1.5)
+        ax1.pie(counts, labels=present, colors=colors, autopct=lambda p:f'{p:.1f}%', startangle=90)  # [Dòng 103] Vẽ đồ thị tròn (Pie Chart) phân bố thời lượng cảm xúc. Góc bắt đầu 90 độ
+        ax1.set_title('Phan Bo Cam Xuc')  # [Dòng 104] Đặt tên tiêu đề cho biểu đồ tròn là "Phan Bo Cam Xuc"
+        ax2.step(ts, yv, where='post', color='gray', alpha=.5, linewidth=1.5, linestyle='--')  # [Dòng 105] Vẽ biểu đồ bước đường đứt nét xám nối các mốc cảm xúc để thấy sự biến đổi
+        for t,e,c in zip(ts,emos,confs):  # [Dòng 106] Duyệt qua thời gian, nhãn, độ tin cậy để vẽ các chấm tròn
+            rgb = tuple(v/255 for v in reversed(EMO_COLORS[e]))  # [Dòng 107] Lấy mã màu RGB phù hợp cho chấm tròn tương ứng với cảm xúc đó
+            ax2.scatter(t, emo2y[e], s=max(40,c*250), color=[rgb], edgecolors='black', linewidth=.5)  # [Dòng 108] Vẽ chấm tròn, size s co giãn động theo độ tin cậy = max(40, c*250), có viền đen
+        ax2.set_yticks(range(len(self.order)))  # [Dòng 109] Thiết lập số vạch chia trên trục Y bằng đúng số cảm xúc (0 đến 5)
+        ax2.set_yticklabels(self.order)  # [Dòng 110] Gán chữ tên cảm xúc tương ứng vào các vạch chia trục Y
+        ax2.set_xlabel('Thoi gian (giay)')  # [Dòng 111] Đặt tên nhãn trục nằm ngang X là "Thời gian (giây)"
+        ax2.set_ylabel('Cam xuc')  # [Dòng 112] Đặt tên nhãn trục đứng Y là "Cảm xúc"
+        ax2.grid(True, alpha=.3)  # [Dòng 113] Bật lưới biểu đồ với độ trong suốt 0.3 để dễ gióng hàng tọa độ
+        plt.tight_layout()  # [Dòng 114] Căn chỉnh tự động để các chữ trên biểu đồ không bị chồng chéo hoặc mất viền
+        plt.savefig(os.path.join(out_dir,'emotion_report.png'), dpi=150, bbox_inches='tight')  # [Dòng 115] Lưu toàn bộ hình ảnh Dashboard thành file reports/emotion_report.png với DPI = 150
+        plt.close()  # [Dòng 116] Đóng đối tượng đồ thị Matplotlib để giải phóng hoàn toàn bộ nhớ RAM
+        print(f'  Da luu: reports/emotion_report.png')  # [Dòng 117] In thông báo đã ghi file Dashboard ra màn hình console
 
-# ── Draw Helpers ──  # [Dong 119] Dinh nghia cac ham tro giup do hoa ve khung bounding box va viet chu nhan len giao dien camera
-def draw_boxes(frame, results):  # [Dong 120] Dinh nghia ham draw_boxes, nhan vao khung hinh va ket qua results
-    out = frame.copy()  # [Dong 121] Copy ra ban sao anh out de ve, giu nguyen ma tran anh thô frame ban dau khoi bi thay doi
-    for r in results:  # [Dong 122] Vong lap duyet qua ket qua tung mat hien co tren khung hinh
-        x,y,w,h = r['bbox']; emo = r['emotion']; conf = r['confidence']  # [Dong 123] Lay toa do khung hop (x,y,w,h), ten cam xuc, va do tin cay
-        color = EMO_COLORS.get(emo,(255,255,255))  # [Dong 124] Lay mau sac ve khung tuong ung voi cam xuc, mac dinh la trang neu khong co
-        cv2.rectangle(out,(x,y),(x+w,y+h),color,2)  # [Dong 125] Ve khung hop chu nhat net day 2px bao quanh khuon mat hoc sinh
-        lbl = f'{emo}: {conf:.0%}'  # [Dong 126] Tao chuoi van ban hien thi: cam xuc + do tin cay lam tron phan tram (vi du: Happy: 95%)
-        (lw,lh),_ = cv2.getTextSize(lbl,cv2.FONT_HERSHEY_SIMPLEX,.65,2)  # [Dong 127] Tinh kich thuoc o chu de thiet ke nen cho chu vua van
-        cv2.rectangle(out,(x,y-lh-10),(x+lw+6,y),color,-1)  # [Dong 128] Ve o hop chu nhat dac (do day -1) lam nen cho chu nhan ngay tren khung mat
-        cv2.putText(out,lbl,(x+3,y-5),cv2.FONT_HERSHEY_SIMPLEX,.65,(0,0,0),2)  # [Dong 129] Viet nhan chu mau den (0,0,0) len tren o hop nen net day 2px
-    return out  # [Dong 130] Tra ve khung hinh da duoc ve bounding box va ghi chu hoan thien
+# ── Draw Helpers ──  # [Dòng 119] Định nghĩa các hàm trợ giúp đồ họa vẽ khung bounding box và viết chữ nhãn lên giao diện camera
+def draw_boxes(frame, results):  # [Dòng 120] Định nghĩa hàm draw_boxes, nhận vào khung hình và kết quả results
+    out = frame.copy()  # [Dòng 121] Copy ra bản sao ảnh out để vẽ, giữ nguyên ma trận ảnh thô frame ban đầu khỏi bị thay đổi
+    for r in results:  # [Dòng 122] Vòng lặp duyệt qua kết quả từng mặt hiện có trên khung hình
+        x,y,w,h = r['bbox']; emo = r['emotion']; conf = r['confidence']  # [Dòng 123] Lấy tọa độ khung hộp (x,y,w,h), tên cảm xúc, và độ tin cậy
+        color = EMO_COLORS.get(emo,(255,255,255))  # [Dòng 124] Lấy màu sắc vẽ khung tương ứng với cảm xúc, mặc định là trắng nếu không có
+        cv2.rectangle(out,(x,y),(x+w,y+h),color,2)  # [Dòng 125] Vẽ khung hộp chữ nhật nét dày 2px bao quanh khuôn mặt học sinh
+        lbl = f'{emo}: {conf:.0%}'  # [Dòng 126] Tạo chuỗi văn bản hiển thị: cảm xúc + độ tin cậy làm tròn phần trăm (ví dụ: Happy: 95%)
+        (lw,lh),_ = cv2.getTextSize(lbl,cv2.FONT_HERSHEY_SIMPLEX,.65,2)  # [Dòng 127] Tính kích thước ô chữ để thiết kế nền cho chữ vừa vặn
+        cv2.rectangle(out,(x,y-lh-10),(x+lw+6,y),color,-1)  # [Dòng 128] Vẽ ô hộp chữ nhật đặc (độ dày -1) làm nền cho chữ nhãn ngay trên khung mặt
+        cv2.putText(out,lbl,(x+3,y-5),cv2.FONT_HERSHEY_SIMPLEX,.65,(0,0,0),2)  # [Dòng 129] Viết nhãn chữ màu đen (0,0,0) lên trên ô hộp nền nét dày 2px
+    return out  # [Dòng 130] Trả về khung hình đã được vẽ bounding box và ghi chú hoàn thiện
 
-# ── Modes ──  # [Dong 132] Khai bao cac ham dieu khien ung dung theo tung che do chay đầu vao
-def mode_webcam(args):  # [Dong 133] Dinh nghia ham chay Webcam thoi gian thuc
-    cap = cv2.VideoCapture(args.camera, cv2.CAP_DSHOW)  # [Dong 134] Mo webcam bang DirectShow (Windows) de camera khoi dong len ngay lap tuc
-    if not cap.isOpened(): cap = cv2.VideoCapture(args.camera)  # [Dong 135] Thu lai bang ham mac dinh neu DirectShow khong tuong thich thiet bi
-    if not cap.isOpened(): print('Ko mo duoc camera!'); return  # [Dong 136] Neu camera bi lỗi hoac khong tim thay, in loi va dung chuong trinh
-    cap.set(cv2.CAP_PROP_FRAME_WIDTH,640); cap.set(cv2.CAP_PROP_FRAME_HEIGHT,480)  # [Dong 137] Cau hinh webcam chay o do phan giai chuan 640x480 pixel
-    eng = EmotionEngine(args.model)  # [Dong 138] Khoi tao bo xu ly cam xuc engine chay model EfficientNet
-    stats = SessionStats(); fc=0; skip=2; last=[]; start_t = time.time()  # [Dong 139] Khoi tao stats ghi chet, bo dem frame fc=0, skip=2 de nhay frame tiet kiem CPU, start_t ghi moc bat dau
+# ── Modes ──  # [Dòng 132] Khai báo các hàm điều khiển ứng dụng theo từng chế độ chạy đầu vào
+def mode_webcam(args):  # [Dòng 133] Định nghĩa hàm chạy Webcam thời gian thực
+    cap = cv2.VideoCapture(args.camera, cv2.CAP_DSHOW)  # [Dòng 134] Mở webcam bằng DirectShow (Windows) để camera khởi động lên ngay lập tức
+    if not cap.isOpened(): cap = cv2.VideoCapture(args.camera)  # [Dòng 135] Thử lại bằng hàm mặc định nếu DirectShow không tương thích thiết bị
+    if not cap.isOpened(): print('Ko mo duoc camera!'); return  # [Dòng 136] Nếu camera bị lỗi hoặc không tìm thấy, in lỗi và dừng chương trình
+    cap.set(cv2.CAP_PROP_FRAME_WIDTH,640); cap.set(cv2.CAP_PROP_FRAME_HEIGHT,480)  # [Dòng 137] Cấu hình webcam chạy ở độ phân giải chuẩn 640x480 pixel
+    eng = EmotionEngine(args.model)  # [Dòng 138] Khởi tạo bộ xử lý cảm xúc engine chạy model EfficientNet
+    stats = SessionStats(); fc=0; skip=2; last=[]; start_t = time.time()  # [Dòng 139] Khởi tạo stats ghi chép, bộ đếm frame fc=0, skip=2 để nhảy frame tiết kiệm CPU, start_t ghi mốc bắt đầu
 
-    os.makedirs('data', exist_ok=True)  # [Dong 141] Tu dong tao thu muc data/ dung de luu cac file anh chup man hinh camera
+    os.makedirs('data', exist_ok=True)  # [Dòng 141] Tự động tạo thư mục data/ dùng để lưu các file ảnh chụp màn hình camera
 
-    try:  # [Dong 143] Khoi block try an toan bat buoc chay cap camera
-        while True:  # [Dong 144] Vong lap vo han doc webcam thoi gian thuc
-            ret,frame = cap.read()  # [Dong 145] Doc mot khung hinh moi tu camera. ret báo doc thanh cong, frame chua anh
-            if not ret: break  # [Dong 146] Neu webcam bi mat ket noi hoac khong doc duoc anh, tu dong thoat vong lap
-            fc+=1  # [Dong 147] Tang bien dem khung hinh them 1 don vi
-            if fc%skip==0: last=eng.process(frame); stats.record(time.time()-start_t,last)  # [Dong 148] Nhay khung hinh: chi xu ly AI o frame chan (2,4,6...) de do nong may, ghi nhan stats
-            display = draw_boxes(frame, last)  # [Dong 149] Ve bounding box va nhan len anh thuc te de hien thi
-            cv2.putText(display,f'Frame:{fc} Faces:{len(last)}',(10,30),cv2.FONT_HERSHEY_SIMPLEX,.6,(0,255,255),2)  # [Dong 150] In thong so so frame va so mat o goc tren ben trai
-            cv2.putText(display,'q:thoat s:chup',(10,display.shape[0]-12),cv2.FONT_HERSHEY_SIMPLEX,.45,(200,200,200),1)  # [Dong 151] In chu huong dan phim tat duoi đáy ben trai
-            cv2.imshow('Emotion Detection',display)  # [Dong 152] Mo cua so giao dien camera hien thi ket qua nhận dien cam xuc cho nguoi hoc xem
-            k=cv2.waitKey(1)&0xFF  # [Dong 153] Doc phim bam cua nguoi dung thoi gian cho la 1 mili giay
-            if k in (ord('q'),27): break  # [Dong 154] Neu nguoi dung an phim q hoac phim ESC (ma 27), ngat vong lap de tat
-            elif k==ord('s'): cv2.imwrite(f'data/{datetime.now():%Y%m%d_%H%M%S}.jpg',display)  # [Dong 155] Neu nguoi dung an nut s, chup anh giao dien luu vao thu muc data/
-    finally:  # [Dong 156] Khong ke chuong trinh chay binh thuong hay bi loi, luon luon thuc thi giai phong camera o day
-        cap.release(); cv2.destroyAllWindows()  # [Dong 157] Tat webcam camera va tat toan bo cac cua so OpenCV tren man hinh
-        stats.report()  # [Dong 158] Goi ham report o dong 89 de tu dong ve va xuat ra Dashboard reports/emotion_report.png
+    try:  # [Dòng 143] Khối block try an toàn bắt buộc chạy cấp camera
+        while True:  # [Dòng 144] Vòng lặp vô hạn đọc webcam thời gian thực
+            ret,frame = cap.read()  # [Dòng 145] Đọc một khung hình mới từ camera. ret báo đọc thành công, frame chứa ảnh
+            if not ret: break  # [Dòng 146] Nếu webcam bị mất kết nối hoặc không đọc được ảnh, tự động thoát vòng lặp
+            fc+=1  # [Dòng 147] Tăng biến đếm khung hình thêm 1 đơn vị
+            if fc%skip==0: last=eng.process(frame); stats.record(time.time()-start_t,last)  # [Dòng 148] Nhảy khung hình: chỉ xử lý AI ở frame chẵn (2,4,6...) để đỡ nóng máy, ghi nhận stats
+            display = draw_boxes(frame, last)  # [Dòng 149] Vẽ bounding box và nhãn lên ảnh thực tế để hiển thị
+            cv2.putText(display,f'Frame:{fc} Faces:{len(last)}',(10,30),cv2.FONT_HERSHEY_SIMPLEX,.6,(0,255,255),2)  # [Dòng 150] In thông số số frame và số mặt ở góc trên bên trái
+            cv2.putText(display,'q:thoat s:chup',(10,display.shape[0]-12),cv2.FONT_HERSHEY_SIMPLEX,.45,(200,200,200),1)  # [Dòng 151] In chữ hướng dẫn phím tắt dưới đáy bên trái
+            cv2.imshow('Emotion Detection',display)  # [Dòng 152] Mở cửa sổ giao diện camera hiển thị kết quả nhận diện cảm xúc cho người học xem
+            k=cv2.waitKey(1)&0xFF  # [Dòng 153] Đọc phím bấm của người dùng thời gian chờ là 1 mili giây
+            if k in (ord('q'),27): break  # [Dòng 154] Nếu người dùng ấn phím q hoặc phím ESC (mã 27), ngắt vòng lặp để tắt
+            elif k==ord('s'): cv2.imwrite(f'data/{datetime.now():%Y%m%d_%H%M%S}.jpg',display)  # [Dòng 155] Nếu người dùng ấn nút s, chụp ảnh giao diện lưu vào thư mục data/
+    finally:  # [Dòng 156] Không kể chương trình chạy bình thường hay bị lỗi, luôn luôn thực thi giải phóng camera ở đây
+        cap.release(); cv2.destroyAllWindows()  # [Dòng 157] Tắt webcam camera và tắt toàn bộ các cửa sổ OpenCV trên màn hình
+        stats.report()  # [Dòng 158] Gọi hàm report ở dòng 89 để tự động vẽ và xuất ra Dashboard reports/emotion_report.png
 
-def mode_video(args):  # [Dong 160] Dinh nghia ham chay nhan dien cam xuc tu file video offline
-    if not args.input or not os.path.isfile(args.input): print('Khong tim thay video!'); return  # [Dong 161] Neu khong co video dau vao, in loi va thoat
-    cap = cv2.VideoCapture(args.input)  # [Dong 162] Mo file video dau vao bang OpenCV
-    eng = EmotionEngine(args.model)  # [Dong 163] Khoi tao bo engine xu ly
-    stats = SessionStats(); fc=0; skip=2; last=[]; start_t = time.time()  # [Dong 164] Khoi tao cac thong so ghi nhan thong ke tuong tu webcam
-    fps = cap.get(cv2.CAP_PROP_FPS) or 25  # [Dong 165] Lay toc do khung hinh (FPS) cua video de dong bo thoi gian ghi file dau ra
-    total = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))  # [Dong 166] Lay tong so khung hinh cua video dung de tinh toan thanh tien trinh (progress bar)
-    writer = None  # [Dong 167] Khoi tao bien ghi video writer mac dinh bang None
-    if args.output:  # [Dong 168] Neu nguoi dung truyen duong dan video dau ra muon luu ket qua
-        w=int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)); h=int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))  # [Dong 169] Lay chieu rong va chieu cao dung cua video goc
-        writer = cv2.VideoWriter(args.output, cv2.VideoWriter_fourcc(*'mp4v'), fps, (w,h))  # [Dong 170] Khoi tao bo ghi VideoWriter MP4
+def mode_video(args):  # [Dòng 160] Định nghĩa hàm chạy nhận diện cảm xúc từ file video offline
+    if not args.input or not os.path.isfile(args.input): print('Khong tim thay video!'); return  # [Dòng 161] Nếu không có video đầu vào, in lỗi và thoát
+    cap = cv2.VideoCapture(args.input)  # [Dòng 162] Mở file video đầu vào bằng OpenCV
+    eng = EmotionEngine(args.model)  # [Dòng 163] Khởi tạo bộ engine xử lý
+    stats = SessionStats(); fc=0; skip=2; last=[]; start_t = time.time()  # [Dòng 164] Khởi tạo các thông số ghi nhận thống kê tương tự webcam
+    fps = cap.get(cv2.CAP_PROP_FPS) or 25  # [Dòng 165] Lấy tốc độ khung hình (FPS) của video để đồng bộ thời gian ghi file đầu ra
+    total = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))  # [Dòng 166] Lấy tổng số khung hình của video dùng để tính toán thanh tiến trình (progress bar)
+    writer = None  # [Dòng 167] Khởi tạo biến ghi video writer mặc định bằng None
+    if args.output:  # [Dòng 168] Nếu người dùng truyền đường dẫn video đầu ra muốn lưu kết quả
+        w=int(cap.get(cv2.CAP_PROP_FRAME_WIDTH)); h=int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))  # [Dòng 169] Lấy chiều rộng và chiều cao đúng của video gốc
+        writer = cv2.VideoWriter(args.output, cv2.VideoWriter_fourcc(*'mp4v'), fps, (w,h))  # [Dòng 170] Khởi tạo bộ ghi VideoWriter MP4
 
-    try:  # [Dong 172] Khoi block try an toan de doc video
-        while True:  # [Dong 173] Vong lap vo han doc tung khung hinh cua video
-            ret,frame = cap.read()  # [Dong 174] Doc frame tiep theo cua video
-            if not ret: break  # [Dong 175] Khi video het khung hinh (het phim), tu dong thoat vong lap
-            fc+=1  # [Dong 176] Tang bien dem khung hinh cua video them 1
-            if fc%skip==0: last=eng.process(frame); stats.record(time.time()-start_t,last)  # [Dong 177] Nhay khung hinh: chi xử ly AI o frame chan de video chay muot, ghi nhan stats
-            display = draw_boxes(frame, last)  # [Dong 178] Ve nhan cam xuc len frame hien tai
-            prog = fc/total if total>0 else 0  # [Dong 179] Tinh phan tram tien do video hien tai tu 0.0 den 1.0
-            cv2.rectangle(display,(0,display.shape[0]-6),(display.shape[1],display.shape[0]),(50,50,50),-1)  # [Dong 180] Ve o vuong xam dam o sat day man hinh lam duong ray cho thanh tien trinh
-            cv2.rectangle(display,(0,display.shape[0]-6),(int(display.shape[1]*prog),display.shape[0]),(0,200,255),-1)  # [Dong 181] Ve de o mau vang dai bang dung prog x display.width de bieu thi thanh tien do chay
-            cv2.putText(display,f'Frame {fc}/{total} Faces:{len(last)}',(10,28),cv2.FONT_HERSHEY_SIMPLEX,.6,(0,255,255),2)  # [Dong 182] In thong tin tien trinh frame len goc trai man hinh
-            if writer: writer.write(display)  # [Dong 183] Ghi ghi frame da ve nhan vao video dau ra neu co yeu cau ghi file
-            cv2.imshow('Emotion Detection',display)  # [Dong 184] Hien thi cua so video len man hinh
-            k=cv2.waitKey(1)&0xFF  # [Dong 185] Bat phim bam cua nguoi dung cho 1 mili giay
-            if k in (ord('q'),27): break  # [Dong 186] Neu nhan q hoac ESC, dung video ngay lap tuc
-            elif k==ord(' '):  # [Dong 187] Neu nhan nut SPACE (Dau cach)
-                while True:  # [Dong 188] Chay vong lap vo han de dung phim (Pause video)
-                    if cv2.waitKey(100)&0xFF!=ord(' '): continue  # [Dong 189] Neu chua bam lai nut SPACE, tiep tuc treo
-                    else: break  # [Dong 190] Neu bam lai nut SPACE, tiep tuc chay tiep video
-    finally:  # [Dong 191] Khai bao khoi finally dong va giai phong file video
-        cap.release()  # [Dong 192] Ngat ket noi doc video
-        if writer: writer.release()  # [Dong 193] Giai phong file video dau ra de ghi hoan tat du lieu xuat ra dia
-        cv2.destroyAllWindows()  # [Dong 194] Dong cua so video tren man hinh
-        stats.report()  # [Dong 195] Goi ve Dashboard emotion_report.png báo cao cuoi video
+    try:  # [Dòng 172] Khối block try an toàn để đọc video
+        while True:  # [Dòng 173] Vòng lặp vô hạn đọc từng khung hình của video
+            ret,frame = cap.read()  # [Dòng 174] Đọc frame tiếp theo của video
+            if not ret: break  # [Dòng 175] Khi video hết khung hình (hết phim), tự động thoát vòng lặp
+            fc+=1  # [Dòng 176] Tăng biến đếm khung hình của video thêm 1
+            if fc%skip==0: last=eng.process(frame); stats.record(time.time()-start_t,last)  # [Dòng 177] Nhảy khung hình: chỉ xử lý AI ở frame chẵn để video chạy mượt, ghi nhận stats
+            display = draw_boxes(frame, last)  # [Dòng 178] Vẽ nhãn cảm xúc lên frame hiện tại
+            prog = fc/total if total>0 else 0  # [Dòng 179] Tính phần trăm tiến độ video hiện tại từ 0.0 đến 1.0
+            cv2.rectangle(display,(0,display.shape[0]-6),(display.shape[1],display.shape[0]),(50,50,50),-1)  # [Dòng 180] Vẽ ô vuông xám đậm ở sát đáy màn hình làm đường ray cho thanh tiến trình
+            cv2.rectangle(display,(0,display.shape[0]-6),(int(display.shape[1]*prog),display.shape[0]),(0,200,255),-1)  # [Dòng 181] Vẽ đè ô màu vàng dài bằng đúng prog x display.width để biểu thị thanh tiến độ chạy
+            cv2.putText(display,f'Frame {fc}/{total} Faces:{len(last)}',(10,28),cv2.FONT_HERSHEY_SIMPLEX,.6,(0,255,255),2)  # [Dòng 182] In thông tin tiến trình frame lên góc trái màn hình
+            if writer: writer.write(display)  # [Dòng 183] Ghi ghi frame đã vẽ nhãn vào video đầu ra nếu có yêu cầu ghi file
+            cv2.imshow('Emotion Detection',display)  # [Dòng 184] Hiển thị cửa sổ video lên màn hình
+            k=cv2.waitKey(1)&0xFF  # [Dòng 185] Bắt phím bấm của người dùng chờ 1 mili giây
+            if k in (ord('q'),27): break  # [Dòng 186] Nếu nhấn q hoặc ESC, dừng video ngay lập tức
+            elif k==ord(' '):  # [Dòng 187] Nếu nhấn nút SPACE (Dấu cách)
+                while True:  # [Dòng 188] Chạy vòng lặp vô hạn để dừng phim (Pause video)
+                    if cv2.waitKey(100)&0xFF!=ord(' '): continue  # [Dòng 189] Nếu chưa bấm lại nút SPACE, tiếp tục treo
+                    else: break  # [Dòng 190] Nếu bấm lại nút SPACE, tiếp tục chạy tiếp video
+    finally:  # [Dòng 191] Khai báo khối finally đóng và giải phóng file video
+        cap.release()  # [Dòng 192] Ngắt kết nối đọc video
+        if writer: writer.release()  # [Dòng 193] Giải phóng file video đầu ra để ghi hoàn tất dữ liệu xuất ra đĩa
+        cv2.destroyAllWindows()  # [Dòng 194] Đóng cửa sổ video trên màn hình
+        stats.report()  # [Dòng 195] Gọi vẽ Dashboard emotion_report.png báo cáo cuối video
 
-def mode_image(args):  # [Dong 197] Dinh nghia ham nhan dien cam xuc tren file anh tinh
-    if not args.input or not os.path.isfile(args.input): print('Khong tim thay anh!'); return  # [Dong 198] Neu khong tim thay anh dau vao, in loi va thoat
-    frame = cv2.imread(args.input)  # [Dong 199] Doc file anh vao bo nho bang OpenCV
-    if frame is None: print('Ko doc duoc anh!'); return  # [Dong 200] Neu anh loi khong the doc duoc, in loi va thoat
-    eng = EmotionEngine(args.model)  # [Dong 201] Khoi tao bo engine xu ly
-    results = eng.process(frame)  # [Dong 202] Quet phat hien va nhan dạng cam xuc tat ca cac mat co trong anh
-    display = draw_boxes(frame, results)  # [Dong 203] Ve bounding box va viet nhan len anh
-    if args.output: cv2.imwrite(args.output, display); print(f'Da luu: {args.output}')  # [Dong 204] Neu co tham so output, luu anh ket qua xuong o cung
-    cv2.imshow('Emotion Detection',display)  # [Dong 205] Mo cua so hien thi anh kết qua len man hinh
-    cv2.waitKey(0); cv2.destroyAllWindows()  # [Dong 206] Treo cua so vo han cho den khi nguoi dung an 1 phim bat ky thi tat o
+def mode_image(args):  # [Dòng 197] Định nghĩa hàm nhận diện cảm xúc trên file ảnh tĩnh
+    if not args.input or not os.path.isfile(args.input): print('Khong tim thay anh!'); return  # [Dòng 198] Nếu không tìm thấy ảnh đầu vào, in lỗi và thoát
+    frame = cv2.imread(args.input)  # [Dòng 199] Đọc file ảnh vào bộ nhớ bằng OpenCV
+    if frame is None: print('Ko doc duoc anh!'); return  # [Dòng 200] Nếu ảnh lỗi không thể đọc được, in lỗi và thoát
+    eng = EmotionEngine(args.model)  # [Dòng 201] Khởi tạo bộ engine xử lý
+    results = eng.process(frame)  # [Dòng 202] Quét phát hiện và nhận dạng cảm xúc tất cả các mặt có trong ảnh
+    display = draw_boxes(frame, results)  # [Dòng 203] Vẽ bounding box và viết nhãn lên ảnh
+    if args.output: cv2.imwrite(args.output, display); print(f'Da luu: {args.output}')  # [Dòng 204] Nếu có tham số output, lưu ảnh kết quả xuống ổ cứng
+    cv2.imshow('Emotion Detection',display)  # [Dòng 205] Mở cửa sổ hiển thị ảnh kết quả lên màn hình
+    cv2.waitKey(0); cv2.destroyAllWindows()  # [Dòng 206] Treo cửa sổ vô hạn cho đến khi người dùng ấn 1 phím bất kỳ thì tắt ô
 
-# ── Main ──  # [Dong 208] Vung dinh nghia diem khoi chay chuong trinh
-if __name__ == '__main__':  # [Dong 209] Diem vao chinh thuc cua chuong trinh Python chay tu terminal
-    p = argparse.ArgumentParser(description='Nhan dang cam xuc')  # [Dong 210] Khoi tao bo nhan tham so dong lenh argparse
-    p.add_argument('--mode', default='webcam', choices=['webcam','image','video'])  # [Dong 211] Tham so --mode de chon che do chay: webcam (mac dinh), image, video
-    p.add_argument('--model', default='enet_b0_8_best_afew')  # [Dong 212] Tham so --model de chon model cua HSEmotion. Mac dinh dung EfficientNet-B0
-    p.add_argument('--camera', type=int, default=0)  # [Dong 213] Tham so --camera de chon cong camera ket noi (mac dinh la 0 - webcam goc)
-    p.add_argument('--input', default=None)  # [Dong 214] Tham so --input nhan duong dan file video hoac anh dau vao
-    p.add_argument('--output', default=None)  # [Dong 215] Tham so --output nhan duong dan file ghi video hoac ghi anh ket qua
-    args = p.parse_args()  # [Dong 216] Phich va nap cac tham so người dung da nhap vao bien doi tuong args
-    {'webcam':mode_webcam,'image':mode_image,'video':mode_video}[args.mode](args)  # [Dong 217] Ky thuat Dictionary Mapping goi dong ham (mode_webcam/mode_image/mode_video) tuong ung, truyen tham so args
+# ── Main ──  # [Dòng 208] Vùng định nghĩa điểm khởi chạy chương trình
+if __name__ == '__main__':  # [Dòng 209] Điểm vào chính thức của chương trình Python chạy từ terminal
+    p = argparse.ArgumentParser(description='Nhan dang cam xuc')  # [Dòng 210] Khởi tạo bộ nhận tham số dòng lệnh argparse
+    p.add_argument('--mode', default='webcam', choices=['webcam','image','video'])  # [Dòng 211] Tham số --mode để chọn chế độ chạy: webcam (mặc định), image, video
+    p.add_argument('--model', default='enet_b0_8_best_afew')  # [Dòng 212] Tham số --model để chọn model của HSEmotion. Mặc định dùng EfficientNet-B0
+    p.add_argument('--camera', type=int, default=0)  # [Dòng 213] Tham số --camera để chọn cổng camera kết nối (mặc định là 0 - webcam gốc)
+    p.add_argument('--input', default=None)  # [Dòng 214] Tham số --input nhận đường dẫn file video hoặc ảnh đầu vào
+    p.add_argument('--output', default=None)  # [Dòng 215] Tham số --output nhận đường dẫn file ghi video hoặc ghi ảnh kết quả
+    args = p.parse_args()  # [Dòng 216] Phân tích và nạp các tham số người dùng đã nhập vào biến đối tượng args
+    {'webcam':mode_webcam,'image':mode_image,'video':mode_video}[args.mode](args)  # [Dòng 217] Kỹ thuật Dictionary Mapping gọi động hàm (mode_webcam/mode_image/mode_video) tương ứng, truyền tham số args
