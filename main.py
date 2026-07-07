@@ -194,12 +194,12 @@ def mode_video(args):
         cv2.destroyAllWindows()
         stats.report()
 
-def mode_image(args):
+def mode_image(args): 
     if not args.input or not os.path.isfile(args.input): print('Khong tim thay anh!'); return
     frame = cv2.imread(args.input)
     if frame is None: print('Ko doc duoc anh!'); return
     eng = EmotionEngine(args.model)
-    results = eng.process(frame)
+    results = eng.process(frame) 
     display = draw_boxes(frame, results)
     if args.output: cv2.imwrite(args.output, display); print(f'Da luu: {args.output}')
     cv2.imshow('Emotion Detection',display)

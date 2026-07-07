@@ -822,7 +822,7 @@ FACE_CASCADE = cv2.data.haarcascades + <span class="style-string">'haacascade_fr
 
             <!-- 5.7 GIẢI THÍCH CHI TIẾT TỪNG DÒNG CODE -->
             <h3 id="57-line-by-line"><span class="section-num">5.7</span> Giải thích chi tiết từng dòng code (1-218)</h3>
-            <p>Dưới đây là bảng giải thích chi tiết, dễ hiểu, có sự kết nối và xâu chuỗi logic của toàn bộ 218 dòng mã nguồn trong file <code>main.py</code>:</p>
+            <p>Dưới đây là bảng giải thích từng dòng code một cách ngắn gọn, bình dân và cực kỳ dễ hiểu, loại bỏ hoàn toàn các thuật ngữ lập trình phức tạp:</p>
             
             <div class="table-wrap">
                 <table>
@@ -830,362 +830,339 @@ FACE_CASCADE = cv2.data.haarcascades + <span class="style-string">'haacascade_fr
                         <tr>
                             <th style="width: 12%;">Dòng code</th>
                             <th style="width: 33%;">Nội dung Code</th>
-                            <th style="width: 55%;">Giải thích vai trò & Sự liên kết logic</th>
+                            <th style="width: 55%;">Giải thích ý nghĩa bằng ngôn ngữ bình dân</th>
                         </tr>
                     </thead>
                     <tbody>
                         <tr>
                             <td><strong>1 - 4</strong></td>
-                            <td><code>"""<br>main.py - He thong nhan dang cam xuc...<br>"""</code></td>
-                            <td>Chú thích chuỗi tài liệu đầu file (Docstring) để mô tả tên chương trình và hướng dẫn nhanh dòng lệnh chạy các chế độ.</td>
+                            <td><code>"""<br>main.py - He thong nhan dang...<br>"""</code></td>
+                            <td>Dòng chú thích giới thiệu tên phần mềm và hướng dẫn cách gõ lệnh chạy trên máy tính.</td>
                         </tr>
                         <tr>
                             <td><strong>6</strong></td>
                             <td><code>import os, sys, time, argparse, numpy as np, cv2, torch</code></td>
-                            <td>
-                                <strong>Nạp các thư viện hệ thống và tính toán cốt lõi:</strong><br>
-                                - <code>os</code>: Tạo thư mục lưu ảnh <code>data/</code> và báo cáo <code>reports/</code>.<br>
-                                - <code>sys</code>: Tương tác với biến hệ thống của Python.<br>
-                                - <code>time</code>: Đếm giây trôi qua để vẽ trục thời gian dòng cảm xúc.<br>
-                                - <code>argparse</code>: Đọc tham số nhập từ terminal (như chọn chế độ webcam/video/ảnh).<br>
-                                - <code>numpy as np</code>: Xử lý các phép toán ma trận ảnh và xác suất toán học.<br>
-                                - <code>cv2</code> (OpenCV): Đọc webcam, vẽ khung chữ nhật bao mặt, và hiển thị giao diện đồ họa lên màn hình.<br>
-                                - <code>torch</code> (PyTorch): Nạp mô hình học sâu và chạy dự đoán trên CPU.
-                            </td>
+                            <td>Khai báo các bộ công cụ bổ trợ cho máy tính (như quản lý thư mục, đo thời gian học, mở webcam, vẽ khung và chạy AI PyTorch).</td>
                         </tr>
                         <tr>
                             <td><strong>7</strong></td>
                             <td><code>from collections import deque, Counter</code></td>
-                            <td>
-                                Nạp hai cấu trúc dữ liệu nâng cao:<br>
-                                - <code>deque</code>: Hàng đợi trượt cố định (giống toa tàu 10 toa) để tính trung bình cộng xác suất, khử nháy nhãn hiển thị.<br>
-                                - <code>Counter</code>: Bộ đếm tần suất xuất hiện của từng cảm xúc để tính toán phần trăm cho biểu đồ tròn.
-                            </td>
+                            <td>Nạp bộ nhớ lưu 10 giây gần nhất (để tránh nháy nhãn khi chớp mắt) và bộ đếm số lần xuất hiện cảm xúc để tính phần trăm.</td>
                         </tr>
                         <tr>
                             <td><strong>8</strong></td>
                             <td><code>from datetime import datetime</code></td>
-                            <td>Nạp thư viện lấy ngày giờ thực tế của hệ thống để đặt tên duy nhất cho tệp ảnh chụp màn hình khi bấm phím <code>s</code>.</td>
+                            <td>Lấy ngày giờ thực tế hiện tại để đặt tên cho ảnh chụp màn hình khi người dùng bấm nút chụp.</td>
                         </tr>
                         <tr>
                             <td><strong>9</strong></td>
-                            <td><code>from hsemotion.facial_emotions import HSEmotionRecognizer</code></td>
-                            <td>Nạp lớp nhận diện cảm xúc <code>HSEmotionRecognizer</code> chứa cấu trúc mạng EfficientNet-B0 đã được huấn luyện sẵn trên 450.000 ảnh khuôn mặt của bộ dữ liệu AffectNet.</td>
+                            <td><code>from hsemotion.facial_emotions import ...</code></td>
+                            <td>Nạp bộ não AI nhận dạng cảm xúc đã được học sẵn từ hàng vạn khuôn mặt trên thế giới.</td>
                         </tr>
                         <tr>
                             <td><strong>10</strong></td>
                             <td><code>import matplotlib.pyplot as plt</code></td>
-                            <td>Nạp thư viện vẽ đồ thị để tự động xuất ra Dashboard báo cáo cảm xúc khi kết thúc phiên học.</td>
+                            <td>Nạp công cụ vẽ biểu đồ tròn và dòng thời gian cảm xúc khi kết thúc buổi học.</td>
                         </tr>
                         <tr>
                             <td><strong>13</strong></td>
-                            <td><code>EMOTIONS = ['Anger','Disgust','Happiness','Neutral','Sadness','Surprise']</code></td>
-                            <td>Khai báo mảng chứa 6 cảm xúc đích của bài toán. Các chỉ số 0 đến 5 của mảng này tương ứng với kết quả xác suất đầu ra của mạng nơ-ron sau khi ánh xạ.</td>
+                            <td><code>EMOTIONS = ['Anger','Disgust',...]</code></td>
+                            <td>Danh sách 6 cảm xúc máy sẽ nhận diện: Giận dữ, Ghê tởm, Vui vẻ, Bình thường, Buồn, Ngạc nhiên.</td>
                         </tr>
                         <tr>
                             <td><strong>14 - 15</strong></td>
-                            <td><code>EMO_COLORS = {'Happy':(0,255,0), 'Sad':(255,80,80), ...}</code></td>
-                            <td>Khai báo bảng mã màu BGR (Xanh dương, Xanh lá, Đỏ) của thư viện OpenCV để vẽ khung bounding box và nhãn cảm xúc tương ứng cho từng nhãn.</td>
+                            <td><code>EMO_COLORS = {'Happy':(0,255,0), ...}</code></td>
+                            <td>Thiết lập màu sắc cho khung vuông vẽ lên mặt (ví dụ: Vui vẻ vẽ khung màu xanh lá, Giận dữ vẽ khung màu đỏ).</td>
                         </tr>
                         <tr>
                             <td><strong>16</strong></td>
-                            <td><code>DISPLAY = {'Anger':'Angry','Happiness':'Happy', ...}</code></td>
-                            <td>Ánh xạ đổi tên nhãn cảm xúc nội bộ viết tắt sang tên hiển thị thân thiện và ngắn gọn hơn trên giao diện UI của camera.</td>
+                            <td><code>DISPLAY = {'Anger':'Angry', ...}</code></td>
+                            <td>Đổi tên viết tắt cảm xúc sang tên hiển thị ngắn gọn hơn trên màn hình camera (Happiness đổi thành Happy).</td>
                         </tr>
                         <tr>
                             <td><strong>17</strong></td>
-                            <td><code>FACE_CASCADE = cv2.data.haarcascades + 'haarcascade_frontalface_default.xml'</code></td>
-                            <td>Định nghĩa đường dẫn chứa file XML cấu hình thuật toán phát hiện mặt Haar Cascade mặc định của thư viện OpenCV.</td>
+                            <td><code>FACE_CASCADE = cv2.data.haarcascades + ...</code></td>
+                            <td>Nạp tệp cấu hình chứa thuật toán tìm vị trí khuôn mặt có sẵn của OpenCV.</td>
                         </tr>
                         <tr>
                             <td><strong>20</strong></td>
                             <td><code>class EmotionEngine:</code></td>
-                            <td>Khai báo lớp đối tượng (Class) chính chịu trách nhiệm quản lý toàn bộ logic kỹ thuật của AI: phát hiện khuôn mặt, tiền xử lý CLAHE, dự đoán xác suất cảm xúc, bám vết tâm và làm mịn.</td>
+                            <td>Tạo ra một bộ máy xử lý cảm xúc (tìm mặt, tiền xử lý và đoán cảm xúc).</td>
                         </tr>
                         <tr>
                             <td><strong>21</strong></td>
-                            <td><code>def __init__(self, model_name='enet_b0_8_best_afew'):</code></td>
-                            <td>Định nghĩa hàm khởi tạo (Constructor) của class <code>EmotionEngine</code>, tự động chạy khi ta khởi tạo đối tượng engine. Mặc định sử dụng model EfficientNet-B0.</td>
+                            <td><code>def __init__(self, model_name=...):</code></td>
+                            <td>Hàm cài đặt các cấu hình ban đầu khi khởi động bộ máy xử lý cảm xúc này.</td>
                         </tr>
                         <tr>
                             <td><strong>23 - 24</strong></td>
-                            <td><code>torch_load = torch.load<br>torch.load = lambda f,**kw: torch_load(f,**{**kw,'weights_only':False})</code></td>
-                            <td><strong>Kỹ thuật nạp ghi đè tạm thời (Overriding):</strong> Lưu lại hàm <code>torch.load</code> gốc của PyTorch và định nghĩa đè một hàm tạm để ép cấu hình tham số <code>weights_only=False</code>. Giúp tắt các cảnh báo phiền phức khi HSEmotion nạp file model đã lưu.</td>
+                            <td><code>torch_load = torch.load<br>torch.load = lambda ...</code></td>
+                            <td>Tắt các dòng cảnh báo màu đỏ không quan trọng của hệ thống PyTorch khi chạy để màn hình hiển thị sạch sẽ.</td>
                         </tr>
                         <tr>
                             <td><strong>25</strong></td>
-                            <td><code>self.er = HSEmotionRecognizer(model_name=model_name)</code></td>
-                            <td>Khởi tạo bộ nhận diện <code>HSEmotionRecognizer</code> và tự động tải file trọng số model (~25MB) từ Internet hoặc nạp từ cache thư mục người dùng.</td>
+                            <td><code>self.er = HSEmotionRecognizer(...)</code></td>
+                            <td>Tải bộ não AI nhận diện cảm xúc nặng 25MB lên bộ nhớ RAM của máy tính.</td>
                         </tr>
                         <tr>
                             <td><strong>26</strong></td>
                             <td><code>torch.load = torch_load</code></td>
-                            <td>Khôi phục ngay lại hàm <code>torch.load</code> gốc của PyTorch để tránh ảnh hưởng đến các thư viện xử lý dữ liệu khác trong hệ thống.</td>
+                            <td>Khôi phục lại hàm nạp ban đầu để tránh làm ảnh hưởng các phần code khác.</td>
                         </tr>
                         <tr>
                             <td><strong>28</strong></td>
-                            <td><code>self.fc = cv2.CascadeClassifier(FACE_CASCADE)</code></td>
-                            <td>Khởi tạo bộ phân loại khuôn mặt Haar Cascade từ đường dẫn cấu hình file XML để sẵn sàng cho tác vụ quét mặt trên ảnh xám.</td>
+                            <td><code>self.fc = cv2.CascadeClassifier(...)</code></td>
+                            <td>Kích hoạt bộ quét tìm khuôn mặt từ file cấu hình XML đã nạp.</td>
                         </tr>
                         <tr>
                             <td><strong>29</strong></td>
                             <td><code>self.bufs = {}</code></td>
-                            <td>Khởi tạo từ điển (Dictionary) trống để lưu trữ hàng đợi trượt xác suất của từng khuôn mặt đang được theo dõi trên camera.</td>
+                            <td>Tạo từ điển lưu bộ nhớ 10 giây gần nhất của từng khuôn mặt đang được theo dõi.</td>
                         </tr>
                         <tr>
                             <td><strong>30</strong></td>
                             <td><code>self.BSZ, self.GRID = 10, 60</code></td>
-                            <td>Đặt kích thước hàng đợi làm mịn (<code>BSZ = 10</code> khung hình) và kích thước ô lưới ảo (<code>GRID = 60</code> pixel) dùng để định vị bám vết khuôn mặt học sinh.</td>
+                            <td>BSZ=10 (lưu 10 giây gần nhất), GRID=60 (nếu mặt chỉ nhúc nhích nhẹ dưới 60 pixel thì vẫn coi là một người cũ, tránh tạo người mới).</td>
                         </tr>
                         <tr>
                             <td><strong>31</strong></td>
-                            <td><code>self.THRESH = {'Happiness':.3,'Sadness':.2,'Surprise':.3,'Anger':.3,'Neutral':.35,'Disgust':.3}</code></td>
-                            <td>Cài đặt bộ ngưỡng thích nghi thực nghiệm cho 6 cảm xúc. Nếu xác suất cảm xúc cao nhất dưới ngưỡng này, hệ thống tự động đưa về nhãn nền <code>Neutral</code> để chống báo động giả.</td>
+                            <td><code>self.THRESH = {'Happiness':.3, ...}</code></td>
+                            <td>Đặt bộ ngưỡng nhạy cảm xúc (như Buồn chỉ cần đạt 20% là máy báo Buồn, Vui vẻ cần 30% máy mới báo Vui).</td>
                         </tr>
                         <tr>
                             <td><strong>32</strong></td>
-                            <td><code>self.clahe = cv2.createCLAHE(clipLimit=2.0, tileGridSize=(8,8))</code></td>
-                            <td>Khởi tạo bộ lọc cân bằng tương phản thích nghi cục bộ CLAHE với giới hạn cắt nhiễu <code>clipLimit=2.0</code> và lưới ô ảnh 8x8 (64 ô nhỏ).</td>
+                            <td><code>self.clahe = cv2.createCLAHE(...)</code></td>
+                            <td>Bộ lọc ánh sáng: chia mặt thành lưới 8x8 ô để làm sáng đều cục bộ, chống bóng đổ và ngược sáng webcam học sinh.</td>
                         </tr>
                         <tr>
                             <td><strong>34</strong></td>
                             <td><code>def detect(self, frame):</code></td>
-                            <td>Định nghĩa hàm phát hiện khuôn mặt trên khung hình camera. Nhận đầu vào là khung hình màu và trả về mảng các tọa độ mặt phát hiện được.</td>
+                            <td>Hàm tìm vị trí khuôn mặt trên khung hình camera.</td>
                         </tr>
                         <tr>
                             <td><strong>35</strong></td>
                             <td><code>gray = cv2.cvtColor(frame, cv2.COLOR_BGR2GRAY)</code></td>
-                            <td>Chuyển đổi ảnh màu BGR sang ảnh xám Grayscale bằng OpenCV để giảm độ phức tạp tính toán trước khi đưa vào Haar Cascade.</td>
+                            <td>Chuyển ảnh camera sang màu trắng đen vì thuật toán tìm mặt chỉ cần độ sáng tối, không cần màu.</td>
                         </tr>
                         <tr>
                             <td><strong>36</strong></td>
-                            <td><code>return self.fc.detectMultiScale(gray, 1.1, 5, minSize=(30,30))</code></td>
-                            <td>Gọi thuật toán quét đa tỷ lệ của Haar Cascade. Trả về danh sách chứa tọa độ các khuôn mặt dạng <code>(x, y, w, h)</code>. Bỏ qua các mặt nhỏ hơn 30x30 pixel.</td>
+                            <td><code>return self.fc.detectMultiScale(...)</code></td>
+                            <td>Chạy quét tìm mặt: ảnh thu nhỏ 10% mỗi lượt quét để bắt được xa/gần, quét trùng lặp 5 lần để tránh nhận nhầm đồ vật.</td>
                         </tr>
                         <tr>
                             <td><strong>38</strong></td>
                             <td><code>def predict(self, face_img):</code></td>
-                            <td>Định nghĩa hàm nhận dạng cảm xúc cho một khuôn mặt đã cắt. Nhận đầu vào là ảnh cắt khuôn mặt, trả về mảng 6 xác suất cảm xúc đích.</td>
+                            <td>Hàm dự đoán cảm xúc cho một khuôn mặt đã được cắt riêng ra.</td>
                         </tr>
                         <tr>
                             <td><strong>39</strong></td>
-                            <td><code>gray = cv2.cvtColor(face_img, cv2.COLOR_BGR2GRAY)</code></td>
-                            <td>Chuyển đổi khuôn mặt đã cắt sang ảnh xám Grayscale để thực hiện cân bằng sáng.</td>
+                            <td><code>gray = cv2.cvtColor(face_img, ...)</code></td>
+                            <td>Chuyển ảnh khuôn mặt đã cắt sang màu trắng đen để chuẩn bị xử lý tương phản sáng.</td>
                         </tr>
                         <tr>
                             <td><strong>40</strong></td>
                             <td><code>eq = self.clahe.apply(gray)</code></td>
-                            <td>Áp dụng bộ lọc CLAHE trên ảnh xám để phân bổ lại độ sáng tối cục bộ, làm nổi bật rõ nét các nếp nhăn và biểu cảm cơ mặt.</td>
+                            <td>Làm sáng đều vùng mặt bị bóng đổ hoặc ngược sáng để các nét co cơ biểu cảm hiển thị rõ ràng nhất.</td>
                         </tr>
                         <tr>
                             <td><strong>41</strong></td>
-                            <td><code>rgb = cv2.cvtColor(eq, cv2.COLOR_GRAY2RGB)</code></td>
-                            <td>Chuyển đổi lại ảnh xám đã xử lý sang định dạng 3 kênh màu RGB vì mô hình học sâu EfficientNet yêu cầu đầu vào 3 kênh ảnh.</td>
+                            <td><code>rgb = cv2.cvtColor(eq, ...)</code></td>
+                            <td>Chuyển lại sang ảnh màu RGB vì bộ não AI yêu cầu ảnh đầu vào phải có đầy đủ 3 kênh màu.</td>
                         </tr>
                         <tr>
                             <td><strong>42</strong></td>
-                            <td><code>name, scores = self.er.predict_emotions(rgb, logits=False)</code></td>
-                            <td>Đưa ảnh khuôn mặt RGB qua mô hình học sâu để dự đoán và trả về tên cảm xúc cùng mảng chứa xác suất của 8 cảm xúc gốc.</td>
+                            <td><code>name, scores = self.er.predict_emotions(...)</code></td>
+                            <td>Đưa ảnh mặt vào bộ não AI để nhận về điểm số phần trăm của 8 cảm xúc gốc.</td>
                         </tr>
                         <tr>
                             <td><strong>44</strong></td>
-                            <td><code>raw6 = np.array([scores[0], scores[2], scores[4], scores[5], scores[6], scores[7]])</code></td>
-                            <td><strong>Ánh xạ (Mapping) 8 sang 6 lớp:</strong> Trích lọc lấy xác suất của 6 lớp cảm xúc quan tâm, loại bỏ 2 lớp không liên quan (Fear - chỉ số 1, Contempt - chỉ số 3).</td>
+                            <td><code>raw6 = np.array([scores[0], ...])</code></td>
+                            <td>Lọc lấy 6 cảm xúc cần nhận dạng, bỏ đi 2 cảm xúc thừa là Sợ Hãi và Khinh Bỉ.</td>
                         </tr>
                         <tr>
                             <td><strong>45</strong></td>
-                            <td><code>scores = raw6 / raw6.sum() if raw6.sum() > 0 else raw6</code></td>
-                            <td><strong>Tái chuẩn hóa Softmax rút gọn:</strong> Chia xác suất của từng lớp cho tổng 6 lớp để tổng thang đo quay về đúng 100% hợp lệ toán học.</td>
+                            <td><code>scores = raw6 / raw6.sum() ...</code></td>
+                            <td>Tính toán lại tỷ lệ phần trăm sao cho tổng xác suất của 6 cảm xúc đích này cộng lại bằng đúng 100%.</td>
                         </tr>
                         <tr>
                             <td><strong>46</strong></td>
                             <td><code>return scores</code></td>
-                            <td>Trả về mảng 6 giá trị xác suất cảm xúc đã được chuẩn hóa.</td>
+                            <td>Trả về danh sách phần trăm cảm xúc đã được chuẩn hóa.</td>
                         </tr>
                         <tr>
                             <td><strong>48</strong></td>
                             <td><code>def process(self, frame):</code></td>
-                            <td>Định nghĩa hàm đầu não kết nối: quét mặt, bám vết, lọc mịn thời gian, kiểm tra ngưỡng thích nghi và đóng gói kết quả cho một khung hình.</td>
+                            <td>Hàm tổng xử lý chính trên camera (tìm mặt -> định dạng bám vết -> đoán cảm xúc -> làm mịn nhãn -> lọc ngưỡng).</td>
                         </tr>
                         <tr>
                             <td><strong>49</strong></td>
                             <td><code>results = []</code></td>
-                            <td>Khởi tạo danh sách trống <code>results</code> để lưu các kết quả đóng gói của khung hình hiện tại.</td>
+                            <td>Tạo danh sách trống chứa kết quả của các khuôn mặt trong khung hình hiện tại.</td>
                         </tr>
                         <tr>
                             <td><strong>50</strong></td>
                             <td><code>faces = self.detect(frame)</code></td>
-                            <td>Gọi hàm <code>detect</code> ở dòng 34 để tìm tất cả các vị trí khuôn mặt có trên khung hình thô.</td>
+                            <td>Gọi hàm tìm mặt để xác định tọa độ các khuôn mặt đang có trên camera.</td>
                         </tr>
                         <tr>
                             <td><strong>51 - 52</strong></td>
-                            <td><code>if len(faces) > 1:<br>faces = sorted(faces, key=lambda f: f[2]*f[3], reverse=True)</code></td>
-                            <td>Nếu phát hiện nhiều hơn 1 khuôn mặt, sắp xếp chúng theo diện tích (chiều rộng <code>f[2]</code> x chiều cao <code>f[3]</code>) giảm dần. Khuôn mặt to nhất (học sinh ngồi trước camera) sẽ được xếp lên đầu tiên (vị trí chỉ số 0).</td>
+                            <td><code>if len(faces) > 1:<br>faces = sorted(faces, key=..., reverse=True)</code></td>
+                            <td>Nếu thấy nhiều người, sắp xếp khuôn mặt to nhất lên đầu để ưu tiên học sinh chính ngồi trực diện camera.</td>
                         </tr>
                         <tr>
                             <td><strong>53</strong></td>
                             <td><code>active = set()</code></td>
-                            <td>Khởi tạo một tập hợp (Set) trống để lưu trữ các tọa độ khuôn mặt đang thực sự tồn tại trong khung hình này.</td>
+                            <td>Tạo danh sách tạm chứa tọa độ các khuôn mặt đang hoạt động thực tế.</td>
                         </tr>
                         <tr>
                             <td><strong>54 - 57</strong></td>
-                            <td><code>for (x,y,w,h) in faces:<br>if w>=48 and h>=48:<br>k = ((x+w//2)//self.GRID*self.GRID, ...)<br>active.add(k)</code></td>
-                            <td>Vòng lặp duyệt các khuôn mặt để xác định tọa độ tâm. Bỏ qua các mặt nhỏ hơn 48x48px. Tâm khuôn mặt được lượng tử hóa trên lưới 60px để tạo một khóa định danh <code>k</code> độc nhất và lưu vào tập hợp <code>active</code>.</td>
+                            <td><code>for (x,y,w,h) in faces:<br>if w>=48 and h>=48:<br>k = ...<br>active.add(k)</code></td>
+                            <td>Xét từng khuôn mặt lớn hơn 48x48px, tính toán tọa độ tâm mặt đưa về lưới ảo 60px để làm ID bám vết khuôn mặt.</td>
                         </tr>
                         <tr>
                             <td><strong>58 - 59</strong></td>
                             <td><code>for k in set(self.bufs.keys())-active:<br>del self.bufs[k]</code></td>
-                            <td>So sánh các khóa trong bộ đệm và tập hoạt động hiện tại. Tiến hành xóa (giải phóng) các bộ đệm của những khuôn mặt đã rời khỏi camera để tránh rò rỉ RAM.</td>
+                            <td>Nếu một người đã rời khỏi camera, tiến hành xóa bộ nhớ đệm của họ đi để giải phóng RAM cho máy chạy nhẹ.</td>
                         </tr>
                         <tr>
                             <td><strong>60 - 61</strong></td>
                             <td><code>for (x,y,w,h) in faces:<br>if w&lt;48 or h&lt;48: continue</code></td>
-                            <td>Vòng lặp thứ hai để tiến hành xử lý nhận dạng cảm xúc. Bỏ qua các khuôn mặt ở xa quá nhỏ (nhỏ hơn 48x48px).</td>
+                            <td>Vòng lặp thứ hai để đoán cảm xúc cho từng người, bỏ qua các khuôn mặt ở xa quá nhỏ.</td>
                         </tr>
                         <tr>
                             <td><strong>62</strong></td>
-                            <td><code>k = ((x+w//2)//self.GRID*self.GRID, (y+h//2)//self.GRID*self.GRID)</code></td>
-                            <td>Tính toán lại khóa tọa độ tâm lượng tử hóa trên lưới 60px của khuôn mặt hiện tại để tìm bộ đệm tương ứng của người đó.</td>
+                            <td><code>k = ((x+w//2)//self.GRID*self.GRID, ...)</code></td>
+                            <td>Xác định ID tương ứng của khuôn mặt để lấy đúng bộ nhớ lịch sử của người đó.</td>
                         </tr>
                         <tr>
                             <td><strong>63</strong></td>
                             <td><code>face = frame[y:y+h,x:x+w]</code></td>
-                            <td>Thực hiện phép cắt lát mảng ảnh (Crop) để lấy riêng vùng ảnh chứa khuôn mặt từ khung hình gốc.</td>
+                            <td>Cắt vùng ảnh chứa khuôn mặt từ khung hình camera gốc.</td>
                         </tr>
                         <tr>
                             <td><strong>64</strong></td>
                             <td><code>scores = self.predict(face)</code></td>
-                            <td>Gọi hàm <code>predict</code> ở dòng 38 để dự đoán xác suất cảm xúc của vùng mặt vừa cắt.</td>
+                            <td>Gọi hàm predict ở dòng 38 để bộ não AI tính toán phần trăm cảm xúc của khuôn mặt này.</td>
                         </tr>
                         <tr>
                             <td><strong>65</strong></td>
-                            <td><code>if k not in self.bufs: self.bufs[k] = deque(maxlen=self.BSZ)</code></td>
-                            <td>Nếu phát hiện một khuôn mặt mới (khóa <code>k</code> chưa có trong bộ đệm), khởi tạo một hàng đợi trượt deque lưu tối đa 10 khung hình.</td>
+                            <td><code>if k not in self.bufs: self.bufs[k] = deque(...)</code></td>
+                            <td>Nếu là khuôn mặt mới xuất hiện, tạo một hàng đợi lưu tối đa 10 khung hình gần nhất.</td>
                         </tr>
                         <tr>
                             <td><strong>66</strong></td>
                             <td><code>self.bufs[k].append(scores)</code></td>
-                            <td>Đẩy mảng xác suất cảm xúc mới dự đoán vào hàng đợi của khuôn mặt đó.</td>
+                            <td>Đẩy kết quả phần trăm cảm xúc mới nhất vào hàng đợi bộ nhớ.</td>
                         </tr>
                         <tr>
                             <td><strong>67</strong></td>
                             <td><code>avg = np.mean(self.bufs[k], axis=0)</code></td>
-                            <td><strong>Làm mịn thời gian (Temporal Smoothing):</strong> Tính trung bình cộng xác suất cảm xúc của 10 khung hình gần nhất trong bộ đệm để loại bỏ các điểm nhiễu tức thời.</td>
+                            <td>Lấy trung bình cộng xác suất của 10 khung hình gần nhất để nhãn hiển thị được mượt mà, không bị nhấp nháy liên tục khi học sinh chớp mắt.</td>
                         </tr>
                         <tr>
                             <td><strong>68</strong></td>
                             <td><code>idx = np.argmax(avg)</code></td>
-                            <td>Tìm chỉ số (index) của cảm xúc có xác suất trung bình lớn nhất trong mảng.</td>
+                            <td>Tìm chỉ số index của cảm xúc có điểm số trung bình lớn nhất.</td>
                         </tr>
                         <tr>
                             <td><strong>69</strong></td>
                             <td><code>conf = float(avg[idx])</code></td>
-                            <td>Lấy giá trị xác suất (độ tin cậy) lớn nhất đó và chuyển sang kiểu số thực Float.</td>
+                            <td>Lấy điểm tin cậy (phần trăm) của cảm xúc lớn nhất đó.</td>
                         </tr>
                         <tr>
                             <td><strong>70</strong></td>
                             <td><code>emo = EMOTIONS[idx]</code></td>
-                            <td>Tra cứu tên cảm xúc tương ứng với chỉ số <code>idx</code> trong mảng <code>EMOTIONS</code>.</td>
+                            <td>Lấy tên cảm xúc tương ứng.</td>
                         </tr>
                         <tr>
                             <td><strong>71 - 72</strong></td>
-                            <td><code>if conf < self.THRESH.get(emo, .4):<br>emo, conf = 'Neutral', float(avg[EMOTIONS.index('Neutral')])</code></td>
-                            <td><strong>Lọc qua bộ ngưỡng thích nghi:</strong> Nếu độ tin cậy thấp hơn ngưỡng quy định (ví dụ: Anger &lt; 0.3), hệ thống tự động ép cảm xúc của học sinh về trạng thái nền mặc định là <code>Neutral</code> và lấy xác suất của lớp Neutral tương ứng.</td>
+                            <td><code>if conf < self.THRESH.get(emo, .4):<br>emo, conf = 'Neutral', ...</code></td>
+                            <td>Nếu điểm số quá thấp dưới ngưỡng nhạy (dòng 31), máy tự động đưa về nhãn mặc định Neutral (Bình thường) để tránh phán đoán bừa bãi.</td>
                         </tr>
                         <tr>
                             <td><strong>74</strong></td>
                             <td><code>emo = DISPLAY.get(emo, emo)</code></td>
-                            <td>Đổi tên nhãn cảm xúc sang nhãn hiển thị dễ đọc (ví dụ: đổi <code>Happiness</code> thành <code>Happy</code>) để in lên màn hình.</td>
+                            <td>Đổi tên nhãn sang nhãn ngắn gọn hiển thị (ví dụ: Happiness đổi thành Happy).</td>
                         </tr>
                         <tr>
                             <td><strong>75</strong></td>
-                            <td><code>results.append({'bbox':(x,y,w,h),'emotion':emo,'confidence':conf,'probs':avg})</code></td>
-                            <td>Đóng gói kết quả gồm tọa độ khung mặt, nhãn cảm xúc hiển thị, độ tin cậy và mảng xác suất của khuôn mặt này vào danh sách.</td>
+                            <td><code>results.append({'bbox':(x,y,w,h),'emotion':emo,...})</code></td>
+                            <td>Đóng gói tọa độ khung mặt, tên cảm xúc, độ tin cậy và mảng xác suất vào kết quả.</td>
                         </tr>
                         <tr>
                             <td><strong>76</strong></td>
                             <td><code>return results</code></td>
-                            <td>Trả về danh sách chứa kết quả nhận diện của toàn bộ các khuôn mặt có trong khung hình hiện tại.</td>
+                            <td>Trả về danh sách kết quả phân tích cảm xúc của toàn bộ khuôn mặt trong khung hình này.</td>
                         </tr>
                         <tr>
                             <td><strong>79</strong></td>
                             <td><code>class SessionStats:</code></td>
-                            <td>Khai báo lớp đối tượng (Class) chịu trách nhiệm lưu trữ lịch sử RAM cảm xúc học sinh và kết xuất Dashboard biểu đồ báo cáo khi đóng chương trình.</td>
-                        </tr>
-                        <tr>
-                            <td><strong>80</strong></td>
-                            <td><code>def __init__(self):</code></td>
-                            <td>Định nghĩa hàm khởi tạo (Constructor) của class <code>SessionStats</code>.</td>
+                            <td>Tạo đối tượng ghi nhận thống kê cảm xúc buổi học và vẽ biểu đồ báo cáo khi đóng chương trình.</td>
                         </tr>
                         <tr>
                             <td><strong>81</strong></td>
                             <td><code>self.history = []</code></td>
-                            <td>Khởi tạo một danh sách trống <code>self.history</code> trong bộ nhớ RAM để lưu lịch sử cảm xúc theo thời gian thực.</td>
+                            <td>Tạo danh sách trống trong RAM để lưu trữ dòng thời gian và cảm xúc của học sinh.</td>
                         </tr>
                         <tr>
                             <td><strong>82</strong></td>
                             <td><code>self.order = list(EMO_COLORS.keys())</code></td>
-                            <td>Lấy danh sách các tên cảm xúc hiển thị làm mốc sắp xếp thứ tự trên trục đứng Y của biểu đồ dòng thời gian.</td>
+                            <td>Sắp xếp thứ tự hiển thị các cảm xúc trên trục đứng Y của đồ thị dòng thời gian.</td>
                         </tr>
                         <tr>
                             <td><strong>84</strong></td>
                             <td><code>def record(self, t, results):</code></td>
-                            <td>Định nghĩa hàm ghi nhận dữ liệu cảm xúc tại mốc thời gian <code>t</code> (giây).</td>
+                            <td>Định nghĩa hàm ghi nhận cảm xúc của học sinh tại giây học thứ t.</td>
                         </tr>
                         <tr>
                             <td><strong>85 - 87</strong></td>
-                            <td><code>if results:<br>r = results[0]<br>self.history.append({'time':t,'emotion':r['emotion'],...})</code></td>
-                            <td>Nếu khung hình có chứa khuôn mặt, lấy kết quả của khuôn mặt to nhất ngồi trước camera ở vị trí đầu tiên <code>results[0]</code> (học sinh chính), bỏ qua người lạ phía sau, và lưu mốc thời gian, tên cảm xúc cùng độ tin cậy vào danh sách lịch sử. Độ phức tạp là O(1) rất nhanh.</td>
+                            <td><code>if results:<br>r = results[0]<br>self.history.append(...)</code></td>
+                            <td>Nếu camera thấy người, lấy kết quả của học sinh ngồi trước webcam (results[0]) lưu vào RAM, bỏ qua người lạ đi qua phía sau.</td>
                         </tr>
                         <tr>
                             <td><strong>89</strong></td>
                             <td><code>def report(self, out_dir='reports'):</code></td>
-                            <td>Định nghĩa hàm tự động vẽ và xuất Dashboard báo cáo PNG. Nhận đầu vào là thư mục lưu file đầu ra.</td>
+                            <td>Định nghĩa hàm vẽ và lưu Dashboard reports/emotion_report.png khi buổi học kết thúc.</td>
                         </tr>
                         <tr>
                             <td><strong>90</strong></td>
                             <td><code>if not self.history: return</code></td>
-                            <td>Nếu danh sách lịch sử trống (chưa có khuôn mặt nào được ghi nhận), dừng hàm và không thực hiện vẽ biểu đồ.</td>
+                            <td>Nếu chưa có dữ liệu lịch sử nào được ghi nhận, dừng hàm không vẽ biểu đồ.</td>
                         </tr>
                         <tr>
                             <td><strong>91</strong></td>
                             <td><code>os.makedirs(out_dir, exist_ok=True)</code></td>
-                            <td>Gọi thư viện tạo thư mục lưu báo cáo <code>reports/</code> nếu thư mục này chưa tồn tại trên ổ cứng.</td>
+                            <td>Tạo thư mục reports/ lưu báo cáo trên máy tính nếu chưa có sẵn.</td>
                         </tr>
                         <tr>
                             <td><strong>92 - 94</strong></td>
-                            <td><code>ts = [h['time'] for h in self.history]<br>emos = ...<br>confs = ...</code></td>
-                            <td>Sử dụng phép List Comprehension để tách lịch sử thành 3 danh sách riêng biệt: thời gian <code>ts</code>, cảm xúc <code>emos</code> và độ tin cậy <code>confs</code> để chuẩn bị vẽ đồ thị.</td>
+                            <td><code>ts = [h['time'] for ...]<br>emos = ...<br>confs = ...</code></td>
+                            <td>Tách lịch sử thành 3 danh sách riêng biệt: giây học, tên cảm xúc, độ tin cậy để sẵn sàng vẽ đồ thị.</td>
                         </tr>
                         <tr>
                             <td><strong>95</strong></td>
                             <td><code>cnt = Counter(emos)</code></td>
-                            <td>Đếm số lần xuất hiện của từng cảm xúc trong lịch sử để phục vụ tính tỷ lệ phần trăm vẽ biểu đồ tròn.</td>
+                            <td>Đếm số lần xuất hiện của từng cảm xúc để tính toán phần trăm cho biểu đồ tròn.</td>
                         </tr>
                         <tr>
-                            <td><strong>96 - 97</strong></td>
-                            <td><code>present = [e for e in self.order if e in cnt]<br>counts = [cnt[e] for e in present]</code></td>
-                            <td>Lọc ra các cảm xúc thực tế xuất hiện trong phiên học và lấy số lần đếm tương ứng cho từng cảm xúc đó.</td>
-                        </tr>
-                        <tr>
-                            <td><strong>98</strong></td>
-                            <td><code>colors = [tuple(c/255 for c in reversed(EMO_COLORS[e])) for e in present]</code></td>
-                            <td>Chuyển đổi mã màu BGR nguyên bản sang định dạng RGB chuẩn mực của Matplotlib (chia giá trị cho 255 để đưa về dải 0.0 - 1.0).</td>
+                            <td><strong>96 - 98</strong></td>
+                            <td><code>present = [e for e in self.order if e in cnt]<br>counts = [cnt[e] for e in present]<br>colors = ...</code></td>
+                            <td>Lọc các cảm xúc thực tế xuất hiện, lấy số lượng đếm tương ứng và chuyển mã màu về chuẩn màu vẽ đồ thị.</td>
                         </tr>
                         <tr>
                             <td><strong>99 - 100</strong></td>
-                            <td><code>emo2y = {e:i for i,e in enumerate(self.order)}<br>yv = [emo2y[e] for e in emos]</code></td>
-                            <td>Ánh xạ tên cảm xúc thành các chỉ số số nguyên 0 đến 5 trên trục đứng Y của biểu đồ dòng thời gian.</td>
+                            <td><code>emo2y = ...<br>yv = ...</code></td>
+                            <td>Ánh xạ tên cảm xúc sang tọa độ số nguyên 0-5 làm mốc vẽ đồ thị.</td>
                         </tr>
                         <tr>
                             <td><strong>102</strong></td>
-                            <td><code>fig, (ax1,ax2) = plt.subplots(2,1,figsize=(12,10),gridspec_kw={'height_ratios':[1,1.5]})</code></td>
-                            <td>Khởi tạo giao diện hình vẽ đồ họa matplotlib gồm 2 đồ thị xếp dọc: <code>ax1</code> (biểu đồ tròn, tỷ lệ chiều cao 1.0) và <code>ax2</code> (timeline, tỷ lệ chiều cao 1.5). Kích thước hình vẽ là 12x10 inch.</td>
+                            <td><code>fig, (ax1,ax2) = plt.subplots(...)</code></td>
+                            <td>Tạo khung biểu đồ rộng 12x10 inch, chia dọc thành 2 đồ thị: ax1 (biểu đồ tròn ở trên), ax2 (timeline ở dưới).</td>
                         </tr>
                         <tr>
                             <td><strong>103</strong></td>
-                            <td><code>ax1.pie(counts, labels=present, colors=colors, autopct=lambda p:f'{p:.1f}%', startangle=90)</code></td>
-                            <td>Vẽ biểu đồ tròn (Pie Chart) hiển thị tỷ lệ phần trăm phân bố thời gian của từng biểu cảm. Góc quay bắt đầu từ 90 độ.</td>
+                            <td><code>ax1.pie(counts, labels=present, colors=colors, ...)</code></td>
+                            <td>Vẽ biểu đồ tròn thể hiện tỷ lệ phần trăm phân bố thời gian của các trạng thái biểu cảm.</td>
                         </tr>
                         <tr>
                             <td><strong>104</strong></td>
@@ -1194,68 +1171,63 @@ FACE_CASCADE = cv2.data.haarcascades + <span class="style-string">'haacascade_fr
                         </tr>
                         <tr>
                             <td><strong>105</strong></td>
-                            <td><code>ax2.step(ts, yv, where='post', color='gray', alpha=.5, ... linestyle='--')</code></td>
-                            <td>Vẽ đường đứt nét dạng bước màu xám kết nối sự chuyển dịch trạng thái cảm xúc của học sinh qua các mốc thời gian thực.</td>
+                            <td><code>ax2.step(ts, yv, where='post', color='gray', ...)</code></td>
+                            <td>Vẽ đường nét đứt bậc thang màu xám kết nối các mốc cảm xúc theo thời gian.</td>
                         </tr>
                         <tr>
                             <td><strong>106 - 108</strong></td>
-                            <td><code>for t,e,c in zip(ts,emos,confs):<br>rgb = ...<br>ax2.scatter(t, emo2y[e], s=max(40,c*250), color=[rgb], ...)</code></td>
-                            <td>Vòng lặp vẽ các điểm tròn biểu thị từng khung hình nhận dạng cảm xúc. Kích thước (size <code>s</code>) của mỗi chấm tròn co dãn động theo công thức <code>max(40, c*250)</code> tỷ lệ thuận với độ tin cậy của AI. Chấm tròn to thể hiện AI nhận diện chắc chắn.</td>
+                            <td><code>for t,e,c in zip(ts,emos,confs):<br>rgb = ...<br>ax2.scatter(t, emo2y[e], s=max(40,c*250), ...)</code></td>
+                            <td>Vẽ các chấm tròn màu, chấm tròn càng to nghĩa là học sinh biểu hiện cảm xúc đó càng rõ nét (size = max(40, độ tin cậy * 250)).</td>
                         </tr>
                         <tr>
                             <td><strong>109 - 110</strong></td>
-                            <td><code>ax2.set_yticks(range(len(self.order)))<br>ax2.set_yticklabels(self.order)</code></td>
-                            <td>Thiết lập các vạch chia và gán chữ tên cảm xúc tương ứng cho trục đứng Y của biểu đồ dòng thời gian.</td>
+                            <td><code>ax2.set_yticks(...)<br>ax2.set_yticklabels(...)</code></td>
+                            <td>Thiết lập tọa độ vạch chia và ghi chữ tên cảm xúc tương ứng vào trục đứng Y.</td>
                         </tr>
                         <tr>
                             <td><strong>111 - 113</strong></td>
-                            <td><code>ax2.set_xlabel('Thoi gian (giay)')<br>ax2.set_ylabel('Cam xuc')<br>ax2.grid(True, alpha=.3)</code></td>
-                            <td>Đặt nhãn tiêu đề cho các trục và hiển thị lưới tọa độ mờ (độ trong suốt alpha = 0.3) giúp biểu đồ dễ quan sát hơn.</td>
+                            <td><code>ax2.set_xlabel('Thoi gian (giay)')<br>ax2.grid(True, alpha=.3)</code></td>
+                            <td>Đặt nhãn trục nằm ngang X là "Thời gian (giây)" và bật lưới tọa độ mờ 0.3 để dễ nhìn.</td>
                         </tr>
                         <tr>
                             <td><strong>114</strong></td>
                             <td><code>plt.tight_layout()</code></td>
-                            <td>Gọi hàm tự động tối ưu hóa khoảng cách căn lề giữa các biểu đồ con để tránh đè chữ lên nhau.</td>
+                            <td>Tự động căn chỉnh lề các biểu đồ để chữ không bị đè lên nhau.</td>
                         </tr>
                         <tr>
                             <td><strong>115</strong></td>
-                            <td><code>plt.savefig(os.path.join(out_dir,'emotion_report.png'), dpi=150, ...)</code></td>
-                            <td>Lưu toàn bộ Dashboard đồ họa thành tệp ảnh PNG chất lượng cao (DPI = 150) tại đường dẫn <code>reports/emotion_report.png</code>.</td>
+                            <td><code>plt.savefig(..., dpi=150, ...)</code></td>
+                            <td>Lưu Dashboard thành file ảnh reports/emotion_report.png chất lượng cao (độ phân giải 150 DPI).</td>
                         </tr>
                         <tr>
                             <td><strong>116</strong></td>
                             <td><code>plt.close()</code></td>
-                            <td>Đóng hình vẽ matplotlib để giải phóng hoàn toàn bộ nhớ RAM, tránh rò rỉ bộ nhớ khi chạy nhiều phiên.</td>
+                            <td>Đóng hình vẽ matplotlib để giải phóng hoàn toàn bộ nhớ RAM cho máy tính.</td>
                         </tr>
                         <tr>
                             <td><strong>117</strong></td>
                             <td><code>print(f'  Da luu: reports/emotion_report.png')</code></td>
-                            <td>In dòng thông báo báo cáo đã lưu thành công ra màn hình console.</td>
+                            <td>In dòng thông báo báo cáo đã lưu thành công ra màn hình đen console.</td>
                         </tr>
                         <tr>
                             <td><strong>120</strong></td>
                             <td><code>def draw_boxes(frame, results):</code></td>
-                            <td>Định nghĩa hàm vẽ khung chữ nhật và nhãn cảm xúc lên khung hình hiện tại. Nhận vào khung hình thô và kết quả nhận diện.</td>
+                            <td>Hàm vẽ khung viền màu sắc và nhãn cảm xúc lên khung hình camera hiện tại.</td>
                         </tr>
                         <tr>
                             <td><strong>121</strong></td>
                             <td><code>out = frame.copy()</code></td>
-                            <td>Tạo một bản sao của khung hình thô để tránh vẽ đè trực tiếp lên ma trận ảnh gốc, giúp bảo toàn tính toàn vẹn của dữ liệu hình ảnh gốc nếu cần xử lý tiếp.</td>
+                            <td>Tạo bản sao của ảnh để vẽ vẽ lên, tránh vẽ trực tiếp làm hỏng ma trận ảnh gốc của webcam.</td>
                         </tr>
                         <tr>
-                            <td><strong>122</strong></td>
-                            <td><code>for r in results:</code></td>
-                            <td>Vòng lặp duyệt qua kết quả nhận dạng cảm xúc của từng khuôn mặt có trong khung hình.</td>
-                        </tr>
-                        <tr>
-                            <td><strong>123</strong></td>
-                            <td><code>x,y,w,h = r['bbox']; emo = r['emotion']; conf = r['confidence']</code></td>
-                            <td>Trích xuất tọa độ bounding box <code>(x, y, w, h)</code>, nhãn cảm xúc hiển thị <code>emo</code> và độ tin cậy <code>conf</code>.</td>
+                            <td><strong>122 - 123</strong></td>
+                            <td><code>for r in results:<br>x,y,w,h = r['bbox'] ...</code></td>
+                            <td>Vòng lặp duyệt kết quả nhận dạng của từng người, lấy tọa độ khung mặt, tên cảm xúc và độ tin cậy.</td>
                         </tr>
                         <tr>
                             <td><strong>124</strong></td>
                             <td><code>color = EMO_COLORS.get(emo,(255,255,255))</code></td>
-                            <td>Lấy mã màu tương ứng cho cảm xúc từ từ điển <code>EMO_COLORS</code>. Mặc định dùng màu trắng <code>(255,255,255)</code> nếu không tìm thấy nhãn.</td>
+                            <td>Lấy màu vẽ tương ứng cho cảm xúc từ từ điển EMO_COLORS. Mặc định dùng màu trắng nếu không có.</td>
                         </tr>
                         <tr>
                             <td><strong>125</strong></td>
@@ -1265,329 +1237,246 @@ FACE_CASCADE = cv2.data.haarcascades + <span class="style-string">'haacascade_fr
                         <tr>
                             <td><strong>126</strong></td>
                             <td><code>lbl = f'{emo}: {conf:.0%}'</code></td>
-                            <td>Tạo chuỗi văn bản nhãn hiển thị cảm xúc kèm phần trăm độ tin cậy được làm tròn không lấy chữ số thập phân (ví dụ: <code>Happy: 98%</code>).</td>
+                            <td>Tạo chuỗi văn bản nhãn hiển thị cảm xúc kèm phần trăm độ tin cậy được làm tròn (ví dụ: Happy: 98%).</td>
                         </tr>
                         <tr>
                             <td><strong>127</strong></td>
-                            <td><code>(lw,lh),_ = cv2.getTextSize(lbl,cv2.FONT_HERSHEY_SIMPLEX,.65,2)</code></td>
-                            <td>Sử dụng hàm của OpenCV để tính toán chiều rộng <code>lw</code> và chiều cao <code>lh</code> của chuỗi chữ nhãn để thiết kế kích thước nền đè.</td>
+                            <td><code>(lw,lh),_ = cv2.getTextSize(...)</code></td>
+                            <td>Tính toán chiều rộng và độ cao của chữ nhãn để thiết kế nền ô nhãn nằm vừa khít.</td>
                         </tr>
                         <tr>
                             <td><strong>128</strong></td>
                             <td><code>cv2.rectangle(out,(x,y-lh-10),(x+lw+6,y),color,-1)</code></td>
-                            <td>Vẽ hình chữ nhật đặc (độ dày nét vẽ là <code>-1</code>) làm nền cho chữ nhãn nằm ngay trên đỉnh của bounding box khuôn mặt.</td>
+                            <td>Vẽ một ô chữ nhật đặc (độ dày nét vẽ là -1) làm nền nhãn nằm đè ngay phía trên khung mặt để chữ hiển thị rõ ràng.</td>
                         </tr>
                         <tr>
                             <td><strong>129</strong></td>
-                            <td><code>cv2.putText(out,lbl,(x+3,y-5),cv2.FONT_HERSHEY_SIMPLEX,.65,(0,0,0),2)</code></td>
-                            <td>Viết chữ nhãn màu đen <code>(0,0,0)</code> đè lên nền đặc vừa vẽ. Font chữ là HERSHEY_SIMPLEX, cỡ chữ 0.65, nét chữ dày 2 pixel để hiển thị rõ ràng nhất.</td>
+                            <td><code>cv2.putText(out,lbl,(x+3,y-5),...)</code></td>
+                            <td>Viết chữ nhãn màu đen đè lên trên ô hộp nền đặc vừa vẽ. Cỡ chữ 0.65, nét chữ dày 2 pixel.</td>
                         </tr>
                         <tr>
                             <td><strong>130</strong></td>
                             <td><code>return out</code></td>
-                            <td>Trả về khung hình đã được vẽ hoàn thiện giao diện đồ họa.</td>
+                            <td>Trả về khung hình đã được vẽ bounding box và nhãn hoàn thiện.</td>
                         </tr>
                         <tr>
                             <td><strong>133</strong></td>
                             <td><code>def mode_webcam(args):</code></td>
-                            <td>Định nghĩa chế độ chạy thời gian thực trực tiếp từ Webcam camera của người học.</td>
+                            <td>Định nghĩa chế độ chạy Webcam trực tiếp thời gian thực của người học.</td>
                         </tr>
                         <tr>
                             <td><strong>134 - 135</strong></td>
-                            <td><code>cap = cv2.VideoCapture(args.camera, cv2.CAP_DSHOW)<br>if not cap.isOpened(): cap = cv2.VideoCapture(...)</code></td>
-                            <td>Mở kết nối camera. Sử dụng cờ cấu hình <code>cv2.CAP_DSHOW</code> (DirectShow) trên Windows giúp bật webcam lên ngay lập tức mà không gặp độ trễ nạp trình điều khiển. Thử lại bằng hàm mặc định nếu thất bại.</td>
+                            <td><code>cap = cv2.VideoCapture(args.camera, ...)</code></td>
+                            <td>Mở camera bằng DirectShow để camera khởi động nhanh, không bị trễ nạp driver trên Windows. Thử lại bằng hàm mặc định nếu thất bại.</td>
                         </tr>
                         <tr>
                             <td><strong>136</strong></td>
-                            <td><code>if not cap.isOpened(): print('Ko mo duoc camera!'); return</code></td>
-                            <td>Kiểm tra nếu camera bị lỗi (bị ứng dụng khác chiếm dụng hoặc không có camera kết nối), in thông báo lỗi và kết thúc chương trình.</td>
+                            <td><code>if not cap.isOpened(): print(...); return</code></td>
+                            <td>Nếu camera bị lỗi không mở được (bị app khác chiếm dụng), báo lỗi và kết thúc chương trình.</td>
                         </tr>
                         <tr>
                             <td><strong>137</strong></td>
-                            <td><code>cap.set(cv2.CAP_PROP_FRAME_WIDTH,640); cap.set(...)</code></td>
-                            <td>Thiết lập độ phân giải khung hình webcam tiêu chuẩn là 640x480 pixel để cân bằng hiệu năng xử lý.</td>
+                            <td><code>cap.set(cv2.CAP_PROP_FRAME_WIDTH,640); ...</code></td>
+                            <td>Thiết lập độ phân giải của camera chuẩn là 640x480 pixel.</td>
                         </tr>
                         <tr>
                             <td><strong>138</strong></td>
                             <td><code>eng = EmotionEngine(args.model)</code></td>
-                            <td>Khởi tạo bộ xử lý cảm xúc <code>EmotionEngine</code>, nạp mô hình mạng nơ-ron học sâu đã chọn.</td>
+                            <td>Khởi tạo bộ máy xử lý cảm xúc với model EfficientNet đã nạp.</td>
                         </tr>
                         <tr>
                             <td><strong>139</strong></td>
-                            <td><code>stats = SessionStats(); fc=0; skip=2; last=[]; start_t = time.time()</code></td>
-                            <td>Khởi tạo bộ thống kê, biến đếm khung hình <code>fc = 0</code>, bước nhảy khung hình <code>skip = 2</code>, danh sách kết quả khung hình trước <code>last</code>, và ghi nhận mốc thời gian bắt đầu chạy.</td>
+                            <td><code>stats = SessionStats(); fc=0; skip=2; ...</code></td>
+                            <td>Khởi tạo bộ thống kê, đếm frame fc, bước nhảy frame skip=2, last lưu trữ kết quả và start_t đo thời gian.</td>
                         </tr>
                         <tr>
                             <td><strong>141</strong></td>
                             <td><code>os.makedirs('data', exist_ok=True)</code></td>
-                            <td>Tạo thư mục <code>data/</code> dùng để lưu giữ các ảnh chụp màn hình nhận dạng cảm xúc.</td>
+                            <td>Tạo thư mục data/ dùng để chứa các ảnh chụp màn hình nhận dạng cảm xúc.</td>
                         </tr>
                         <tr>
                             <td><strong>143</strong></td>
                             <td><code>try:</code></td>
-                            <td>Khởi chạy khối lệnh an toàn <code>try</code>. Giúp đảm bảo kể cả khi có lỗi lập trình xảy ra trong vòng lặp, camera vẫn sẽ được giải phóng hoàn toàn ở khối <code>finally</code> bên dưới.</td>
+                            <td>Khối lệnh try an toàn giúp giải phóng webcam kể cả khi có lỗi tắt đột ngột xảy ra.</td>
                         </tr>
                         <tr>
-                            <td><strong>144</strong></td>
-                            <td><code>while True:</code></td>
-                            <td>Bắt đầu vòng lặp vô hạn để liên tục đọc và phân tích hình ảnh camera thời gian thực từ webcam.</td>
-                        </tr>
-                        <tr>
-                            <td><strong>145</strong></td>
-                            <td><code>ret,frame = cap.read()</code></td>
-                            <td>Đọc khung hình hiện tại từ camera. <code>ret</code> là True/False báo đọc thành công/thất bại, <code>frame</code> là ma trận ảnh màu thu được.</td>
-                        </tr>
-                        <tr>
-                            <td><strong>146</strong></td>
-                            <td><code>if not ret: break</code></td>
-                            <td>Nếu camera bị lỗi ngắt kết nối đột ngột hoặc không lấy được ảnh, thoát khỏi vòng lặp vô hạn.</td>
+                            <td><strong>144 - 146</strong></td>
+                            <td><code>while True:<br>ret,frame = cap.read()<br>if not ret: break</code></td>
+                            <td>Vòng lặp đọc và phân tích hình ảnh camera webcam thời gian thực. Thoát vòng lặp nếu không lấy được ảnh từ camera.</td>
                         </tr>
                         <tr>
                             <td><strong>147</strong></td>
                             <td><code>fc+=1</code></td>
-                            <td>Tăng bộ đếm khung hình của phiên chạy lên 1 đơn vị.</td>
+                            <td>Tăng bộ đếm khung hình của phiên chạy thêm 1 đơn vị.</td>
                         </tr>
                         <tr>
                             <td><strong>148</strong></td>
-                            <td><code>if fc%skip==0: last=eng.process(frame); stats.record(...)</code></td>
-                            <td><strong>Nhảy khung hình chẵn lẻ:</strong> Chỉ chạy AI nhận diện ở các khung hình chia hết cho 2 để giảm tải $50\%$ khối lượng tính toán cho CPU. Ghi nhận kết quả của Primary Face kèm mốc thời gian thực tế vào stats.</td>
+                            <td><code>if fc%skip==0: last=eng.process(frame); ...</code></td>
+                            <td>Nhảy khung hình: chỉ chạy AI xử lý ở khung hình chẵn (2,4,6...) để giảm tải 50% CPU, ghi nhận kết quả và mốc thời gian vào stats.</td>
                         </tr>
                         <tr>
                             <td><strong>149</strong></td>
                             <td><code>display = draw_boxes(frame, last)</code></td>
-                            <td>Vẽ các bounding box và nhãn cảm xúc lên khung hình hiện tại bằng cách gọi hàm hỗ trợ ở dòng 120.</td>
+                            <td>Vẽ bounding box viền màu sắc và nhãn cảm xúc lên khung hình hiện tại.</td>
                         </tr>
                         <tr>
                             <td><strong>150</strong></td>
-                            <td><code>cv2.putText(display,f'Frame:{fc} Faces:{len(last)}',...)</code></td>
-                            <td>Viết chữ hiển thị số thứ tự khung hình hiện tại và số lượng khuôn mặt nhận diện được lên góc trái màn hình.</td>
+                            <td><code>cv2.putText(display,f'Frame:{fc} ...',...)</code></td>
+                            <td>Ghi thông số frame và số mặt phát hiện lên góc trên bên trái màn hình.</td>
                         </tr>
                         <tr>
                             <td><strong>151</strong></td>
                             <td><code>cv2.putText(display,'q:thoat s:chup',...)</code></td>
-                            <td>Viết chữ hướng dẫn phím tắt (nhấn q để thoát, s để chụp ảnh) nằm ở góc dưới bên trái màn hình.</td>
+                            <td>Ghi dòng chữ hướng dẫn phím tắt (nhấn q để thoát, s để chụp ảnh) dưới đáy màn hình bên trái.</td>
                         </tr>
                         <tr>
                             <td><strong>152</strong></td>
                             <td><code>cv2.imshow('Emotion Detection',display)</code></td>
-                            <td>Mở cửa sổ đồ họa hiển thị luồng webcam đã được vẽ nhãn cảm xúc lên màn hình.</td>
+                            <td>Hiển thị cửa sổ camera nhận diện cảm xúc lên màn hình máy tính.</td>
                         </tr>
                         <tr>
-                            <td><strong>153</strong></td>
-                            <td><code>k=cv2.waitKey(1)&0xFF</code></td>
-                            <td>Chờ người dùng nhấn phím trong 1 mili giây và lưu mã ASCII của phím bấm đó vào biến <code>k</code>.</td>
-                        </tr>
-                        <tr>
-                            <td><strong>154</strong></td>
-                            <td><code>if k in (ord('q'),27): break</code></td>
-                            <td>Nếu người dùng nhấn phím <code>q</code> hoặc phím <code>ESC</code> (mã ASCII 27), thoát khỏi vòng lặp đọc webcam để đóng chương trình.</td>
+                            <td><strong>153 - 154</strong></td>
+                            <td><code>k=cv2.waitKey(1)&0xFF<br>if k in (ord('q'),27): break</code></td>
+                            <td>Đọc phím nhấn của người dùng trong 1 mili giây. Thoát vòng lặp video nếu người dùng nhấn phím q hoặc phím ESC.</td>
                         </tr>
                         <tr>
                             <td><strong>155</strong></td>
-                            <td><code>elif k==ord('s'): cv2.imwrite(f'data/{datetime.now():%Y%m%d_%H%M%S}.jpg',display)</code></td>
-                            <td>Nếu người dùng nhấn phím <code>s</code>, chụp ảnh màn hình giao diện hiện tại lưu thành tệp hình ảnh định dạng JPG lấy tên tệp theo ngày giờ thực tế.</td>
+                            <td><code>elif k==ord('s'): cv2.imwrite(...)</code></td>
+                            <td>Nếu người dùng nhấn phím s, chụp ảnh màn hình lưu thành tệp JPG theo ngày giờ thực tế lưu vào thư mục data/.</td>
                         </tr>
                         <tr>
                             <td><strong>156 - 158</strong></td>
                             <td><code>finally:<br>cap.release(); cv2.destroyAllWindows()<br>stats.report()</code></td>
-                            <td>Khối giải phóng tài nguyên bắt buộc: tắt kết nối webcam camera, đóng toàn bộ các cửa sổ giao diện OpenCV hiển thị trên màn hình và gọi hàm tự động xuất Dashboard báo cáo cảm xúc.</td>
+                            <td>Giải phóng webcam camera, tắt cửa sổ OpenCV hiển thị trên màn hình và tự động xuất đồ thị Dashboard báo cáo.</td>
                         </tr>
                         <tr>
                             <td><strong>160</strong></td>
                             <td><code>def mode_video(args):</code></td>
-                            <td>Định nghĩa chế độ chạy nhận dạng cảm xúc từ một tệp video offline có sẵn trên ổ cứng.</td>
+                            <td>Định nghĩa chế độ nhận dạng cảm xúc từ tệp video offline có sẵn.</td>
                         </tr>
                         <tr>
                             <td><strong>161</strong></td>
-                            <td><code>if not args.input or not os.path.isfile(args.input): print(...); return</code></td>
-                            <td>Kiểm tra xem đường dẫn video đầu vào có trống hoặc file có thực sự tồn tại hay không. Nếu không tìm thấy, in thông báo và kết thúc.</td>
+                            <td><code>if not args.input or not ...: print(...); return</code></td>
+                            <td>Kiểm tra xem file video đầu vào có tồn tại hay không. Nếu không tìm thấy, báo lỗi và kết thúc.</td>
                         </tr>
                         <tr>
                             <td><strong>162</strong></td>
                             <td><code>cap = cv2.VideoCapture(args.input)</code></td>
-                            <td>Mở kết nối đọc luồng video từ đường dẫn tệp tin bằng OpenCV.</td>
+                            <td>Mở tệp video bằng thư viện OpenCV.</td>
                         </tr>
                         <tr>
                             <td><strong>163 - 164</strong></td>
-                            <td><code>eng = EmotionEngine(args.model)<br>stats = SessionStats(); fc=0; skip=2; ...</code></td>
-                            <td>Khởi tạo bộ xử lý cảm xúc, stats ghi nhận lịch sử, đếm khung hình, bước nhảy khung hình chẵn lẻ và ghi nhận mốc thời gian bắt đầu.</td>
+                            <td><code>eng = EmotionEngine(args.model)<br>stats = ...</code></td>
+                            <td>Khởi tạo bộ xử lý cảm xúc và stats ghi nhận thống kê tương tự webcam.</td>
                         </tr>
                         <tr>
                             <td><strong>165</strong></td>
                             <td><code>fps = cap.get(cv2.CAP_PROP_FPS) or 25</code></td>
-                            <td>Lấy tốc độ khung hình gốc (FPS) của video (mặc định là 25 nếu không đọc được thông số) để phục vụ ghi video đầu ra chính xác.</td>
+                            <td>Lấy tốc độ khung hình gốc (FPS) của video để ghi video kết quả đầu ra khớp tốc độ.</td>
                         </tr>
                         <tr>
                             <td><strong>166</strong></td>
                             <td><code>total = int(cap.get(cv2.CAP_PROP_FRAME_COUNT))</code></td>
-                            <td>Lấy tổng số lượng khung hình của tệp video để phục vụ tính toán phần trăm tiến độ xử lý.</td>
+                            <td>Lấy tổng số lượng khung hình của tệp video để phục vụ tính toán phần trăm tiến độ chạy.</td>
                         </tr>
                         <tr>
                             <td><strong>167 - 170</strong></td>
-                            <td><code>writer = None<br>if args.output:<br>w=...; h=...<br>writer = cv2.VideoWriter(args.output, ...)</code></td>
-                            <td>Nếu người dùng truyền đường dẫn ghi kết quả, khởi tạo đối tượng <code>cv2.VideoWriter</code> để xuất video kết quả ra ổ cứng với định dạng codec MP4.</td>
+                            <td><code>writer = None<br>if args.output:<br>writer = cv2.VideoWriter(...)</code></td>
+                            <td>Nếu người dùng yêu cầu lưu tệp video kết quả, khởi tạo đối tượng ghi file VideoWriter định dạng MP4.</td>
                         </tr>
                         <tr>
                             <td><strong>173 - 176</strong></td>
                             <td><code>while True:<br>ret,frame = cap.read()<br>if not ret: break<br>fc+=1</code></td>
-                            <td>Vòng lặp đọc từng khung hình video tuần tự cho đến khi hết video thì thoát vòng lặp và tăng bộ đếm khung hình.</td>
+                            <td>Vòng lặp đọc và phân tích từng khung hình của video. Thoát vòng lặp khi video chạy hết khung hình.</td>
                         </tr>
                         <tr>
                             <td><strong>177</strong></td>
-                            <td><code>if fc%skip==0: last=eng.process(frame); stats.record(...)</code></td>
-                            <td>Chỉ xử lý nhận dạng cảm xúc bằng AI ở các khung hình chẵn để tiết kiệm tài nguyên CPU và ghi nhận dữ liệu cảm xúc vào bộ nhớ RAM.</td>
+                            <td><code>if fc%skip==0: last=eng.process(frame); ...</code></td>
+                            <td>Chỉ chạy AI xử lý cảm xúc ở khung hình chẵn để video chạy mượt, ghi nhận stats cảm xúc của học sinh vào RAM.</td>
                         </tr>
                         <tr>
                             <td><strong>178</strong></td>
                             <td><code>display = draw_boxes(frame, last)</code></td>
-                            <td>Vẽ bounding box màu và nhãn cảm xúc đã lọc mịn lên khung hình video hiện tại.</td>
+                            <td>Vẽ nhãn cảm xúc và bounding box lên khung hình video hiện tại.</td>
                         </tr>
                         <tr>
                             <td><strong>179</strong></td>
                             <td><code>prog = fc/total if total>0 else 0</code></td>
-                            <td>Tính toán tỷ lệ phần trăm tiến độ xử lý video hiện tại (từ 0.0 đến 1.0) bằng cách lấy số khung hình hiện tại chia cho tổng khung hình.</td>
+                            <td>Tính toán phần trăm tiến độ xử lý video hiện tại (từ 0.0 đến 1.0).</td>
                         </tr>
                         <tr>
-                            <td><strong>180</strong></td>
-                            <td><code>cv2.rectangle(display,(0,display.shape[0]-6),(display.shape[1],display.shape[0]),(50,50,50),-1)</code></td>
-                            <td>Vẽ một dải hình chữ nhật đặc màu xám đậm dày 6 pixel dọc theo sát đáy dưới màn hình để làm thanh ray nền cho thanh tiến trình video.</td>
-                        </tr>
-                        <tr>
-                            <td><strong>181</strong></td>
-                            <td><code>cv2.rectangle(display,(0,display.shape[0]-6),(int(display.shape[1]*prog),display.shape[0]),(0,200,255),-1)</code></td>
-                            <td>Vẽ chồng một dải hình chữ nhật đặc màu vàng sáng biểu thị phần tiến độ thực tế <code>prog</code> đã xử lý của video.</td>
+                            <td><strong>180 - 181</strong></td>
+                            <td><code>cv2.rectangle(display,...)...</code></td>
+                            <td>Vẽ thanh tiến trình video màu vàng sáng chạy ở đáy màn hình dựa theo tiến độ prog đã xử lý.</td>
                         </tr>
                         <tr>
                             <td><strong>182</strong></td>
-                            <td><code>cv2.putText(display,f'Frame {fc}/{total} Faces:{len(last)}',...)</code></td>
-                            <td>Viết chữ in thông số tiến độ khung hình hiện tại trên tổng số khung hình của video lên góc trên màn hình.</td>
+                            <td><code>cv2.putText(display,f'Frame {fc}/{total}...',...)</code></td>
+                            <td>Ghi thông số tiến trình khung hình video hiện tại lên góc trên bên trái màn hình.</td>
                         </tr>
                         <tr>
                             <td><strong>183</strong></td>
                             <td><code>if writer: writer.write(display)</code></td>
-                            <td>Nếu được yêu cầu ghi tệp đầu ra, ghi khung hình video đã được vẽ nhãn cảm xúc vào tệp video xuất ra.</td>
+                            <td>Ghi khung hình đã vẽ nhãn cảm xúc vào tệp video đầu ra nếu được cấu hình lưu file.</td>
                         </tr>
                         <tr>
                             <td><strong>184</strong></td>
                             <td><code>cv2.imshow('Emotion Detection',display)</code></td>
-                            <td>Hiển thị cửa sổ giao diện video nhận dạng cảm xúc lên màn hình.</td>
+                            <td>Hiển thị cửa sổ video nhận dạng cảm xúc lên màn hình máy tính.</td>
                         </tr>
                         <tr>
                             <td><strong>185 - 186</strong></td>
                             <td><code>k=cv2.waitKey(1)&0xFF<br>if k in (ord('q'),27): break</code></td>
-                            <td>Chờ phím bấm của người dùng trong 1 mili giây. Thoát vòng lặp video nếu người dùng nhấn phím <code>q</code> hoặc phím <code>ESC</code>.</td>
+                            <td>Bắt phím nhấn của người học. Thoát và dừng video nếu người học nhấn phím q hoặc phím ESC.</td>
                         </tr>
                         <tr>
                             <td><strong>187 - 190</strong></td>
-                            <td><code>elif k==ord(' '):<br>while True:<br>if cv2.waitKey(100)&0xFF!=ord(' '): continue<br>else: break</code></td>
-                            <td><strong>Xử lý tạm dừng video bằng phím cách:</strong> Nếu người dùng nhấn phím <code>SPACE</code>, hệ thống rơi vào vòng lặp treo chờ, tạm dừng hoàn toàn video. Video chỉ tiếp tục chạy khi người dùng nhấn phím cách <code>SPACE</code> một lần nữa.</td>
+                            <td><code>elif k==ord(' '): while True: ...</code></td>
+                            <td>Tạm dừng video bằng phím cách: Nếu nhấn phím SPACE, chạy vòng lặp treo đứng yên video. Nhấn lại SPACE để chạy tiếp.</td>
                         </tr>
                         <tr>
                             <td><strong>191 - 195</strong></td>
-                            <td><code>finally:<br>cap.release()<br>if writer: writer.release()<br>cv2.destroyAllWindows()<br>stats.report()</code></td>
-                            <td>Giải phóng luồng đọc video, đóng luồng ghi tệp xuất ra, tắt toàn bộ các cửa sổ hiển thị OpenCV và tự động xuất Dashboard báo cáo cảm xúc cuối cùng.</td>
+                            <td><code>finally:<br>cap.release() ...</code></td>
+                            <td>Giải phóng kết nối video, đóng tệp xuất ra, tắt các cửa sổ hiển thị OpenCV và tự động xuất Dashboard báo cáo PNG.</td>
                         </tr>
                         <tr>
-                            <td><strong>197</strong></td>
-                            <td><code>def mode_image(args):</code></td>
-                            <td>Định nghĩa chế độ nhận dạng cảm xúc trên một tệp hình ảnh tĩnh duy nhất.</td>
+                            <td><strong>197 - 200</strong></td>
+                            <td><code>def mode_image(args):<br>... frame = cv2.imread(...)</code></td>
+                            <td>Chế độ ảnh tĩnh: Kiểm tra file ảnh đầu vào, dùng cv2.imread để đọc ma trận ảnh màu từ ổ cứng. Báo lỗi nếu không đọc được.</td>
                         </tr>
                         <tr>
-                            <td><strong>198</strong></td>
-                            <td><code>if not args.input or not os.path.isfile(args.input): print(...); return</code></td>
-                            <td>Kiểm tra sự tồn tại của file ảnh đầu vào. In thông báo lỗi và kết thúc nếu không tìm thấy tệp.</td>
-                        </tr>
-                        <tr>
-                            <td><strong>199</strong></td>
-                            <td><code>frame = cv2.imread(args.input)</code></td>
-                            <td>Gọi hàm OpenCV để đọc ma trận điểm ảnh màu thô từ tệp ảnh đầu vào.</td>
-                        </tr>
-                        <tr>
-                            <td><strong>200</strong></td>
-                            <td><code>if frame is None: print('Ko doc duoc anh!'); return</code></td>
-                            <td>Kiểm tra nếu file ảnh bị lỗi định dạng không thể đọc được, in lỗi và thoát.</td>
-                        </tr>
-                        <tr>
-                            <td><strong>201</strong></td>
-                            <td><code>eng = EmotionEngine(args.model)</code></td>
-                            <td>Khởi tạo bộ xử lý cảm xúc với cấu hình model được chỉ định.</td>
-                        </tr>
-                        <tr>
-                            <td><strong>202</strong></td>
-                            <td><code>results = eng.process(frame)</code></td>
-                            <td>Gọi hàm tổng xử lý ở dòng 48 để tìm và nhận dạng cảm xúc cho toàn bộ các khuôn mặt xuất hiện trong bức ảnh.</td>
-                        </tr>
-                        <tr>
-                            <td><strong>203</strong></td>
-                            <td><code>display = draw_boxes(frame, results)</code></td>
-                            <td>Vẽ bounding box viền màu sắc và nhãn chữ cảm xúc lên bức ảnh kết quả.</td>
+                            <td><strong>201 - 203</strong></td>
+                            <td><code>eng = ... results = ... display = ...</code></td>
+                            <td>Khởi tạo bộ xử lý cảm xúc, chạy process nhận dạng tất cả khuôn mặt trong ảnh và vẽ nhãn cảm xúc lên ảnh.</td>
                         </tr>
                         <tr>
                             <td><strong>204</strong></td>
-                            <td><code>if args.output: cv2.imwrite(args.output, display); print(...)</code></td>
-                            <td>Nếu người dùng cấu hình đường dẫn đầu ra, tiến hành ghi lưu bức ảnh kết quả đã được vẽ nhãn cảm xúc ra ổ cứng.</td>
+                            <td><code>if args.output: cv2.imwrite(...)</code></td>
+                            <td>Lưu bức ảnh kết quả đã được vẽ nhãn cảm xúc xuống ổ cứng nếu người dùng cấu hình tham số.</td>
                         </tr>
                         <tr>
-                            <td><strong>205</strong></td>
-                            <td><code>cv2.imshow('Emotion Detection',display)</code></td>
-                            <td>Mở cửa sổ đồ họa hiển thị bức ảnh kết quả nhận dạng cảm xúc lên màn hình.</td>
-                        </tr>
-                        <tr>
-                            <td><strong>206</strong></td>
-                            <td><code>cv2.waitKey(0); cv2.destroyAllWindows()</code></td>
-                            <td>Treo màn hình hiển thị vô hạn thời gian (chờ phím bấm của người dùng bằng tham số 0) để người dùng xem kết quả, tắt toàn bộ các cửa sổ khi người dùng bấm một phím bất kỳ.</td>
+                            <td><strong>205 - 206</strong></td>
+                            <td><code>cv2.imshow(...)<br>cv2.waitKey(0)...</code></td>
+                            <td>Hiển thị cửa sổ ảnh kết quả, treo màn hình chờ cho đến khi người dùng ấn một phím bất kỳ thì tự động tắt cửa sổ.</td>
                         </tr>
                         <tr>
                             <td><strong>209</strong></td>
                             <td><code>if __name__ == '__main__':</code></td>
-                            <td>Điểm vào (Entry Point) chính thức của chương trình Python khi được thực thi chạy trực tiếp từ terminal.</td>
+                            <td>Điểm vào khởi chạy chính thức của chương trình Python chạy trực tiếp từ dòng lệnh terminal.</td>
                         </tr>
                         <tr>
-                            <td><strong>210</strong></td>
-                            <td><code>p = argparse.ArgumentParser(description='Nhan dang cam xuc')</code></td>
-                            <td>Khởi tạo bộ đọc các tham số dòng lệnh từ phía người dùng khi gọi chương trình.</td>
+                            <td><strong>210 - 215</strong></td>
+                            <td><code>p = argparse.ArgumentParser(...)<br>p.add_argument(...)</code></td>
+                            <td>Khởi tạo bộ đọc tham số và khai báo các tùy chọn: --mode (chế độ), --model (chọn model), --camera, --input, --output.</td>
                         </tr>
                         <tr>
-                            <td><strong>211</strong></td>
-                            <td><code>p.add_argument('--mode', default='webcam', choices=['webcam','image','video'])</code></td>
-                            <td>Thêm tùy chọn tham số <code>--mode</code> cho phép người học chọn chạy camera thực tế (webcam), ảnh tĩnh (image) hoặc video có sẵn (video). Mặc định là webcam.</td>
-                        </tr>
-                        <tr>
-                            <td><strong>212</strong></td>
-                            <td><code>p.add_argument('--model', default='enet_b0_8_best_afew')</code></td>
-                            <td>Thêm tùy chọn tham số <code>--model</code> để chọn model trọng số mạng nơ-ron học sâu của HSEmotion. Mặc định dùng EfficientNet-B0.</td>
-                        </tr>
-                        <tr>
-                            <td><strong>213</strong></td>
-                            <td><code>p.add_argument('--camera', type=int, default=0)</code></td>
-                            <td>Thêm tùy chọn tham số <code>--camera</code> để chọn chỉ số cổng kết nối webcam vật lý (mặc định là cổng 0 - webcam tích hợp sẵn).</td>
-                        </tr>
-                        <tr>
-                            <td><strong>214</strong></td>
-                            <td><code>p.add_argument('--input', default=None)</code></td>
-                            <td>Thêm tùy chọn tham số <code>--input</code> để người dùng truyền đường dẫn file video hoặc ảnh đầu vào khi chạy chế độ video/image.</td>
-                        </tr>
-                        <tr>
-                            <td><strong>215</strong></td>
-                            <td><code>p.add_argument('--output', default=None)</code></td>
-                            <td>Thêm tùy chọn tham số <code>--output</code> để người dùng chỉ định đường dẫn lưu trữ video hoặc ảnh kết quả sau khi nhận diện.</td>
-                        </tr>
-                        <tr>
-                            <td><strong>216</strong></td>
-                            <td><code>args = p.parse_args()</code></td>
-                            <td>Gọi hàm đọc và phân tích toàn bộ các đối số mà người dùng đã truyền trên terminal, đóng gói chúng vào biến đối tượng <code>args</code>.</td>
-                        </tr>
-                        <tr>
-                            <td><strong>217</strong></td>
-                            <td><code>{'webcam':mode_webcam,'image':mode_image,'video':mode_video}[args.mode](args)</code></td>
-                            <td><strong>Kỹ thuật Ánh xạ Từ điển (Dictionary Mapping) gọi hàm động:</strong> Tra cứu và gọi hàm tương ứng (<code>mode_webcam</code> / <code>mode_image</code> / <code>mode_video</code>) dựa trên chế độ đã chọn trong <code>args.mode</code>, đồng thời truyền tham số cấu hình <code>args</code> vào hàm đó để vận hành hệ thống.</td>
+                            <td><strong>216 - 217</strong></td>
+                            <td><code>args = p.parse_args()<br>{...}[args.mode](args)</code></td>
+                            <td>Phân tích các đối số người dùng nhập và gọi hàm chế độ chạy tương ứng (webcam, image hoặc video) bằng kỹ thuật ánh xạ từ điển.</td>
                         </tr>
                     </tbody>
                 </table>
-            </div>
-
-
-            <!-- 6. GIẢI THÍCH THUẬT NGỮ CHUYÊN NGÀNH -->
+            </div><!-- 6. GIẢI THÍCH THUẬT NGỮ CHUYÊN NGÀNH -->
             <section id="thuat-ngu">
                 <h2><span class="section-num">6</span> Giải thích thuật ngữ chuyên ngành</h2>
                 <p>Phần này giải thích chi tiết ý nghĩa khoa học của các công nghệ được tích hợp trong hệ thống theo cách bình dân, dễ hiểu nhất:</p>
