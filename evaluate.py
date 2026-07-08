@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 """
-evaluate.py - Chuong trinh danh gia mo hinh tren tap kiem thu Dong Nam A
+evaluate.py - Chuong trinh danh gia mo hinh tren tap kiem thu Dong Nam A (co cat mat)
 Su dung: python evaluate.py
 """
 
@@ -24,7 +24,7 @@ def run_evaluation():
     y_true = []
     y_pred = []
 
-    print("\n--- Scanning test dataset ---")
+    print("\n--- Scanning test dataset with Face Cropping ---")
     for folder_name in EMOTIONS:
         folder_path = os.path.join(dataset_dir, folder_name)
         if not os.path.isdir(folder_path):
@@ -39,7 +39,15 @@ def run_evaluation():
             if img is None:
                 continue
                 
-            scores = eng.predict(img)
+            faces = eng.detect(img)
+            if len(faces) > 0:
+                faces = sorted(faces, key=lambda f: f[2]*f[3], reverse=True)
+                x, y, w, h = faces[0]
+                face_img = img[y:y+h, x:x+w]
+            else:
+                face_img = img
+                
+            scores = eng.predict(face_img)
             idx = np.argmax(scores)
             conf = float(scores[idx])
             pred_emo = EMOTIONS[idx]
