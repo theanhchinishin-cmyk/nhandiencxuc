@@ -443,9 +443,9 @@ Macro Average : Trung bình cộng đơn giản của các chỉ số (Precision
 
 Sau khi chạy thử nghiệm đánh giá độc lập trên tập dữ liệu kiểm tra độc lập (dataset/test\_dung1landuynhat gồm 150 ảnh hoàn toàn mới), nhóm thu được kết quả so sánh trực tiếp như sau:
 
-Độ chính xác của hệ thống (mô hình EfficientNet-B0 với bộ ngưỡng thích nghi): 81.33%
+Độ chính xác của hệ thống (mô hình EfficientNet-B0 với bộ dò cắt mặt Haar Cascade và bộ ngưỡng thích nghi): 84.67%
 
-*Để đánh giá mô hình gốc (vốn đầu ra có 8 lớp cảm xúc) trên tập kiểm tra 6 lớp một cách công bằng khi 2 cổng cảm xúc đầu ra không liên quan (Fear, Contempt) được loại bỏ, hệ thống trích xuất logits của 6 cảm xúc mục tiêu và tái cấu trúc lại phân phối xác suất Softmax về mức 100% trước khi tính toán các chỉ số Precision, Recall và F1-Score.*
+*Để đánh giá mô hình gốc (vốn đầu ra có 8 lớp cảm xúc) trên tập kiểm tra 6 lớp một cách công bằng khi 2 cổng cảm xúc đầu ra không liên quan (Fear, Contempt) được loại bỏ, hệ thống áp dụng phép dò cắt mặt bằng Haar Cascade, trích xuất logits của 6 cảm xúc mục tiêu và tái cấu trúc lại phân phối xác suất Softmax về mức 100% trước khi tính toán các chỉ số Precision, Recall và F1-Score.*
 
 Dưới đây là Báo cáo phân loại chi tiết (Classification Report) của mô hình trên tập dữ liệu kiểm tra độc lập:
 
@@ -453,28 +453,28 @@ Dưới đây là Báo cáo phân loại chi tiết (Classification Report) củ
 
 | Cảm xúc | Precision | Recall | F1-score | Support |
 | :---- | :---- | :---- | :---- | :---- |
-| **Anger** | 0.92 | 0.96 | 0.94 | 25 |
-| **Disgust** | 0.88 | 0.56 | 0.68 | 25 |
-| **Happiness** | 1.00 | 1.00 | 1.00 | 25 |
-| **Neutral** | 0.67 | 0.64 | 0.65 | 25 |
-| **Sadness** | 0.64 | 1.00 | 0.78 | 25 |
-| **Surprise** | 0.90 | 0.72 | 0.80 | 25 |
-| **Accuracy** | \- | \- | 0.81 | 150 |
-| **Macro avg** | 0.83 | 0.81 | 0.81 | 150 |
+| **Anger** | 0.85 | 0.88 | 0.86 | 25 |
+| **Disgust** | 0.95 | 0.76 | 0.84 | 25 |
+| **Happiness** | 0.86 | 1.00 | 0.93 | 25 |
+| **Neutral** | 0.71 | 0.96 | 0.81 | 25 |
+| **Sadness** | 0.86 | 0.72 | 0.78 | 25 |
+| **Surprise** | 0.95 | 0.76 | 0.84 | 25 |
+| **Accuracy** | \- | \- | 0.85 | 150 |
+| **Macro avg** | 0.86 | 0.85 | 0.85 | 150 |
 
 **![][image29]**
 
 ### **5.4. Phân tích và thảo luận kết quả thực nghiệm**
 
-Kết quả thực nghiệm cho thấy mô hình pre-trained HSEmotion (sau khi remap 8 sang 6 lớp và chuẩn hóa Softmax) đạt độ chính xác **81.33%** trên tập dữ liệu kiểm tra Đông Nam Á. Đây là một kết quả khả quan và thể hiện rõ năng lực tổng quát hóa của mô hình học sâu đối với nhân trắc học người Đông Nam Á
+Kết quả thực nghiệm cho thấy mô hình pre-trained HSEmotion (sau khi bám cắt mặt, remap 8 sang 6 lớp và chuẩn hóa Softmax) đạt độ chính xác **84.67%** trên tập dữ liệu kiểm tra Đông Nam Á. Đây là một kết quả xuất sắc, chứng minh tính hiệu quả vượt trội khi kết hợp mô hình học sâu với các bộ tiền xử lý hình ảnh và bám cắt khuôn mặt thực tế.
 
 Dưới đây là phân tích chi tiết khả năng nhận diện theo từng lớp cảm xúc:  
-**1\.  Anger (Tức giận)**: Đạt điểm F1-Score **0.94**. Các đặc trưng co thắt cơ trán, nhíu mày và mím môi khi tức giận rất nổi bật và rõ ràng, giúp mô hình nhận diện chính xác với độ nhạy (Recall) đạt 0.96.  
-**2\.  Happiness (Vui vẻ)**: Đạt điểm F1-Score xuất sắc **1.00** với Precision và Recall đều đạt tuyệt đối 1.00. Cơ miệng mở rộng, nâng cơ gò má khi cười là những đặc trưng vô cùng điển hình, kết hợp với việc hạ ngưỡng Happiness xuống 0.30 đã giúp mô hình dễ dàng bắt trọn cảm xúc tích cực của người học mà không bỏ sót bất kỳ trường hợp nào.  
-**3\.  Surprise (Ngạc nhiên)**: Đạt điểm F1-Score tốt **0.80** với Precision 0.90 và Recall 0.72. Biểu cảm mắt mở to và miệng há rộng giúp mô hình nhận diện tương đối nhạy bén.  
-**4\.   Sadness (Buồn bã)**: Đạt F1-Score tốt **0.78** với Recall đạt tuyệt đối 1.00 và Precision 0.64. Trong quá trình xây dựng tập kiểm thử cho lớp Sadness, nhóm đã chủ động không lựa chọn các hình ảnh đau buồn quá mức hay khóc lóc cường điệu. Thay vào đó, nhóm chọn các hình ảnh thể hiện nét buồn bã tinh tế, đăm chiêu, cúi đầu suy tư hoặc mệt mỏi nhẹ (\*). Nhờ việc hạ ngưỡng Sadness xuống 0.20 trong cấu hình thích nghi của hệ thống, độ nhạy Recall của lớp này đã được tối ưu hóa toàn diện mà không bị bỏ sót sang trạng thái nghỉ.  
-**5\.   Disgust (Ghê tởm):** Đạt F1-Score **0.68** với Recall đạt 0.56 và Precision 0.88. Đây là lớp có độ nhạy tương đối thấp do biểu cảm ghê tởm thường có sự chồng chéo lớn về đặc trưng co cơ mũi và nhíu mày với cảm xúc tức giận (Anger). Quá trình lọc ảnh thủ công từ tập dữ liệu FairFace của nhóm đôi lúc chịu ảnh hưởng bởi cảm nhận cảm xúc chủ quan của người gắn nhãn, khiến mô hình dễ bị dự đoán nhầm lẫn giữa hai lớp cảm xúc này.  
-**6\.   Neutral (Bình thường)**: Đạt F1-Score **0.65** với Precision 0.67 và Recall 0.64. Trạng thái bình thường là lớp có độ chính xác trung bình vì khuôn mặt tập trung học tập của mỗi người khá khác nhau, dựa trên cơ địa khuôn mặt của từng người, mô hình dễ bị nhầm lẫn giữa Neutral và các biểu cảm nhẹ của Sadness hoặc Anger.
+**1\.  Anger (Tức giận)**: Đạt điểm F1-Score **0.86** với Precision 0.85 và Recall 0.88. Biểu cảm nhíu mày và mím môi khi tức giận được mô hình nhận diện chính xác và ổn định.  
+**2\.  Happiness (Vui vẻ)**: Đạt điểm F1-Score xuất sắc **0.93** với Recall đạt tuyệt đối 1.00 và Precision 0.86. Cơ miệng mở rộng và gò má nâng cao khi cười là những đặc trưng điển hình, giúp hệ thống phát hiện chính xác 100% số lượng ảnh vui vẻ.  
+**3\.  Surprise (Ngạc nhiên)**: Đạt điểm F1-Score tốt **0.84** với Precision 0.95 và Recall 0.76. Biểu cảm mở to mắt và miệng há rộng được bám bắt tốt, đạt độ chính xác Precision rất cao (chỉ nhầm lẫn 5%).  
+**4\.   Sadness (Buồn bã)**: Đạt F1-Score ổn định **0.78** với Precision 0.86 và Recall 0.72. Trong quá trình xây dựng tập kiểm thử, nhóm chọn nét buồn bã tinh tế, đăm chiêu hoặc mệt mỏi nhẹ (*). Hệ thống vẫn đạt độ chính xác tốt, ít bị báo động giả nhờ ngưỡng nhạy thích nghi 0.20.  
+**5\.   Disgust (Ghê tởm):** Đạt F1-Score ấn tượng **0.84** với Precision 0.95 và Recall 0.76. Đây là sự cải thiện vượt bậc so với các thử nghiệm trước đó nhờ việc lọc sạch hậu cảnh bằng bộ cắt mặt Haar Cascade, giúp loại bỏ các vùng nhiễu xung quanh cằm và cổ để tập trung vào cơ mũi và lông mày.  
+**6\.   Neutral (Bình thường)**: Đạt F1-Score vượt trội **0.81** với Precision 0.71 và Recall đạt tới 0.96. Việc cắt khuôn mặt sát sạt đã giải phóng mô hình khỏi các nhiễu động từ quần áo hay hình nền phía sau, nâng cao độ chính xác nhận diện trạng thái tập trung học tập của học sinh học online.
 
 ![][image30]  
 *(\*) Tập test của Trạng thái* Sadness *không chứa những khuôn mặt có biểu hiện buồn rõ ràng (như khóc, mếu máo) mà chỉ có nét rất nhẹ buồn (đăm chiêu suy nghĩ)*
