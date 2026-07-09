@@ -3,7 +3,7 @@
 > **Môn học:** Khai thác thông tin đa phương tiện — Đại học Bách khoa Hà Nội  
 > **Mô hình:** EfficientNet-B0 (HSEmotion) với cơ chế remap 8 sang 6 lớp  
 > **Ngôn ngữ:** Python 3.8+ | PyTorch | OpenCV  
-> **Độ chính xác thực nghiệm:** **81.33%** trên tập dữ liệu Đông Nam Á độc lập  
+> **Độ chính xác thực nghiệm:** **84.67%** trên tập dữ liệu Đông Nam Á độc lập  
 
 ---
 
@@ -128,7 +128,7 @@ python main.py --mode video --input duong_dan_video.mp4 [--output ket_qua.mp4]
 Hệ thống được đánh giá trên **Tập kiểm thử Đông Nam Á độc lập** gồm 150 ảnh (25 ảnh cho mỗi lớp cảm xúc) được trích chọn từ tập FairFace chủng tộc Southeast Asian, nhóm tuổi 10-29 và gán nhãn thủ công.
 
 ### 5.1. Báo cáo phân loại chi tiết (Classification Report)
-- **Độ chính xác toàn cục (Accuracy):** **81.33%**
+- **Độ chính xác toàn cục (Accuracy):** **84.67%**
 - **Macro F1-Score:** **0.81**
 
 | Lớp cảm xúc | Precision | Recall | F1-Score | Support |
