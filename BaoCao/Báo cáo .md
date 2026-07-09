@@ -537,7 +537,7 @@ Thông qua bài tập lớn này, nhóm đã hoàn thành các mục tiêu đề
 
 Mặc dù đạt được những kết quả khả quan, hệ thống vẫn tồn tại một số hạn chế:
 
-1. **Độ chính xác đánh giá bị ảnh hưởng bởi hai yếu tố thủ công (gán nhãn dữ liệu và cấu hình ngưỡng cảm xúc):** Con số độ chính xác toàn cục 84.67% thực chất bị tác động trực tiếp bởi hai yếu tố mang tính chủ quan của con người: một là tập kiểm thử 150 ảnh do nhóm tự lọc và dán nhãn thủ công nên không tránh khỏi sai số cảm quan (annotation noise) trước các nét mặt đăm chiêu, suy tư; hai là việc tinh chỉnh thực nghiệm bộ ngưỡng kích hoạt động cho từng cảm xúc (Happiness: 0.50, Sadness: 0.30,...) được nhóm thiết lập thủ công qua quan sát camera để cân bằng tính ổn định khi chạy thực tế.  
+1. **Độ chính xác đánh giá bị ảnh hưởng bởi hai yếu tố thủ công (gán nhãn dữ liệu và cấu hình ngưỡng cảm xúc):** Con số độ chính xác toàn cục 84.67% thực chất bị tác động trực tiếp bởi hai yếu tố mang tính chủ quan của con người: một là tập kiểm thử 150 ảnh do nhóm tự lọc và dán nhãn thủ công nên không tránh khỏi sai số cảm quan (annotation noise) trước các nét mặt đăm chiêu, suy tư; hai là việc tinh chỉnh thực nghiệm bộ ngưỡng kích hoạt động cho từng cảm xúc (Happiness: 0.30, Sadness: 0.20,...) được nhóm thiết lập thủ công qua quan sát camera để cân bằng tính ổn định khi chạy thực tế.  
 2. **Độ ổn định của Haar Cascade**: Thuật toán phát hiện mặt Haar Cascade đôi khi bị mất dấu khuôn mặt nếu người học quay nghiêng đầu quá sâu hoặc đưa tay lên che mặt.  
 3. **Chưa đánh giá trên diện rộng**: Hệ thống mới được thử nghiệm trên webcam các cá nhân trong nhóm, ảnh và video đơn lẻ, chưa tích hợp trên một lớp học online để đánh giá độ trễ đường truyền và khả năng chịu tải.
 
