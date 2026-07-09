@@ -486,31 +486,31 @@ Kết quả thực nghiệm cho thấy sự chênh lệch rõ rệt về hiệu 
 *   **Thiết lập 1 (Ảnh thô):** Chỉ đạt độ chính xác toàn cục **72.00%**.
 *   **Thiết lập 2 (Có cắt mặt):** Đạt độ chính xác toàn cục vượt trội **84.67%** (tăng mạnh **+12.67%**).
 
-Dưới đây là phân tích chi tiết biến động của 3 chỉ số (Precision / Recall / F1-score) và mối quan hệ ràng buộc thực tế giữa chúng cho từng cảm xúc:
+Dưới đây là phân tích chi tiết biến động của 3 chỉ số (Precision / Recall / F1-score) và mối liên hệ ràng buộc thực tế giữa chúng cho từng cảm xúc dựa trên số liệu ma trận nhầm lẫn:
 
 **1. Happiness (Vui vẻ):**
-*   **Biến động chỉ số:** Precision ($1.00 \rightarrow 0.86$), Recall ($1.00 \rightarrow 1.00$), F1-score ($1.00 \rightarrow 0.93$).
-*   **Mối quan hệ & Phân tích:** Khi cắt mặt cận cảnh, độ nhạy Recall vẫn giữ vững tuyệt đối ở mức $100.00\%$, tuy nhiên Precision bị giảm nhẹ do các nếp gấp khóe miệng phóng đại của các lớp khác bị AI nhận nhầm thành cười mỉm (tăng báo động giả).
+*   **Biến động chỉ số:** Precision ($1.00 \rightarrow 0.86$), Recall ($1.00 \rightarrow 1.00$), F1-score ($1.00 \rightarrow 0.93$). Số lượng ảnh đoán đúng trên đường chéo chính **giữ vững ở mức tuyệt đối 25/25 ảnh**.
+*   **Mối quan hệ & Phân tích:** Mô hình bám bắt nụ cười nhạy bén đạt Recall 100%, tuy nhiên khi cắt mặt cận cảnh, AI bị nhạy cảm quá mức với khóe miệng nên nhận nhầm 4 ảnh thuộc lớp khác (1 Neutral, 1 Sadness, 2 Surprise) thành Happiness, làm Precision giảm từ 100% xuống 86.21%.
 
 **2. Anger (Tức giận):**
-*   **Biến động chỉ số:** Precision ($0.89 \rightarrow 0.85$), Recall ($0.68 \rightarrow 0.88$), F1-score ($0.77 \rightarrow 0.86$).
-*   **Mối quan hệ & Phân tích:** Độ nhạy Recall tăng mạnh $+20.00\%$ đổi lấy Precision giảm nhẹ $4.85\%$, chứng minh việc cắt mặt giúp AI khoanh vùng tốt hơn nét nhíu mày tức giận và giảm thiểu việc bỏ sót ảnh thực tế.
+*   **Biến động chỉ số:** Precision ($0.89 \rightarrow 0.85$), Recall ($0.68 \rightarrow 0.88$), F1-score ($0.77 \rightarrow 0.86$). Số lượng ảnh đoán đúng trên đường chéo chính **tăng từ 17 lên 22 ảnh**.
+*   **Mối quan hệ & Phân tích:** Nhờ bám cắt mặt giúp mô hình bắt nét nhíu mày tốt hơn, số ảnh tức giận bị bỏ sót (FN) giảm mạnh từ 8 ảnh xuống chỉ còn 3 ảnh (1 Disgust, 1 Neutral, 1 Sadness), giúp Recall tăng mạnh từ 68% lên 88%, đổi lại Precision giảm nhẹ do nhận nhầm 4 ảnh từ các lớp khác sang Anger.
 
 **3. Surprise (Ngạc nhiên):**
-*   **Biến động chỉ số:** Precision ($0.87 \rightarrow 0.95$), Recall ($0.52 \rightarrow 0.76$), F1-score ($0.65 \rightarrow 0.84$).
-*   **Mối quan hệ & Phân tích:** Cả Precision và Recall đều tăng trưởng đồng đều, cho thấy bám cắt mặt giúp mô hình cô lập hoàn hảo đặc trưng mắt mở to miệng há rộng mà không bị nhầm lẫn với hậu cảnh xung quanh.
+*   **Biến động chỉ số:** Precision ($0.87 \rightarrow 0.95$), Recall ($0.52 \rightarrow 0.76$), F1-score ($0.65 \rightarrow 0.84$). Số lượng ảnh đoán đúng trên đường chéo chính **tăng từ 13 lên 19 ảnh**.
+*   **Mối quan hệ & Phân tích:** Cả Precision và Recall đồng loạt tăng mạnh, số ảnh ngạc nhiên bị bỏ sót giảm từ 12 xuống còn 6 ảnh, đồng thời số ảnh bị nhận nhầm từ lớp khác sang Surprise giảm từ 2 xuống chỉ còn 1 ảnh, đạt độ chính xác Precision rất cao (95.00%).
 
 **4. Sadness (Buồn bã):**
-*   **Biến động chỉ số:** Precision ($0.52 \rightarrow 0.86$), Recall ($1.00 \rightarrow 0.72$), F1-score ($0.68 \rightarrow 0.78$). Số lượng ảnh đoán đúng trên đường chéo chính giảm từ **25 xuống 18 ảnh**.
-*   **Mối quan hệ & Phân tích:** Ở ảnh thô, mô hình dự đoán nhãn Sadness quá nhiều (48 lần, trong đó nhận nhầm tới 23 ảnh từ lớp khác sang Sadness do nhiễu background), giúp nó ăn may đoán đúng toàn bộ 25 ảnh Sadness thật (Recall ảo 100% nhưng Precision thực tế chỉ 52%). Khi có cắt mặt, AI bớt đoán bừa (chỉ còn nhận nhầm 3 ảnh), tập trung phân tích nét mặt buồn nhẹ thực tế giúp Precision vọt lên 85.71%, đổi lại số ảnh đoán đúng giảm về giá trị thực là 18 ảnh (7 ảnh còn lại do biểu cảm quá nhẹ nên bị xếp nhầm sang Neutral).
+*   **Biến động chỉ số:** Precision ($0.52 \rightarrow 0.86$), Recall ($1.00 \rightarrow 0.72$), F1-score ($0.68 \rightarrow 0.78$). Số lượng ảnh đoán đúng trên đường chéo chính **giảm từ 25 xuống 18 ảnh**.
+*   **Mối quan hệ & Phân tích:** Ở ảnh thô, mô hình bị lệch pha phân phối dữ liệu (Data Mismatch) do ảnh thô chứa nhiều background (tóc, vai, hậu cảnh). Trong khi đó, bộ trọng số gốc của mô hình pre-trained HSEmotion vốn được huấn luyện hoàn toàn trên các tập dữ liệu khuôn mặt đã được bám cắt sát sạt và không chừa lề (**"cropped faces without margins"** - theo arXiv:2103.17107). Do đó, khi nhận ảnh thô chưa cắt, mô hình bị nhiễu loạn phân bố đặc trưng và có xu hướng dự đoán nhầm hàng loạt ảnh từ các lớp khác (5 Anger, 7 Disgust, 7 Neutral, 4 Surprise) thành Sadness, làm Precision của lớp này thấp tệ hại ($52.08\%$) dù Recall đạt $100.00\%$. Khi bám cắt mặt, AI bớt đoán bừa (chỉ còn nhận nhầm 3 ảnh), tập trung phân tích nét mặt buồn nhẹ thực tế giúp Precision vọt lên 85.71%, đổi lại số ảnh đoán đúng giảm về giá trị thực là 18 ảnh (7 ảnh còn lại do biểu cảm quá nhẹ nên bị xếp nhầm sang Neutral).
 
 **5. Disgust (Ghê tởm):**
-*   **Biến động chỉ số:** Precision ($1.00 \rightarrow 0.95$), Recall ($0.48 \rightarrow 0.76$), F1-score ($0.65 \rightarrow 0.84$).
-*   **Mối quan hệ & Phân tích:** Recall tăng vọt $+28.00\\%$ trong khi Precision được giữ vững ở mức rất cao ($95.00\\%$), chứng tỏ việc loại bỏ nhiễu vùng cằm/cổ giúp mô hình học sâu tập trung phân tích chính xác nếp nhăn nhỏ quanh mũi.
+*   **Biến động chỉ số:** Precision ($1.00 \rightarrow 0.95$), Recall ($0.48 \rightarrow 0.76$), F1-score ($0.65 \rightarrow 0.84$). Số lượng ảnh đoán đúng trên đường chéo chính **tăng từ 12 lên 19 ảnh**.
+*   **Mối quan hệ & Phân tích:** Recall tăng vọt từ 48% lên 76% (số ảnh bị bỏ sót giảm từ 13 xuống còn 6 ảnh). Việc bám cắt mặt giúp mô hình học sâu tập trung phân tích chính xác các nếp nhăn nhỏ quanh mũi, hạn chế việc bị nhiễu vai/cằm làm lệch hướng phân tích đặc trưng.
 
 **6. Neutral (Bình thường):**
-*   **Biến động chỉ số:** Precision ($0.52 \rightarrow 0.71$), Recall ($0.64 \rightarrow 0.96$), F1-score ($0.57 \rightarrow 0.81$).
-*   **Mối quan hệ & Phân tích:** Cả Precision và Recall cùng bứt phá mạnh mẽ, chứng tỏ việc loại bỏ background (tóc, vai, phông nền học tập) đưa ảnh về đúng khuôn mặt chuẩn hóa đã học, giúp AI nhận dạng đúng nét mặt thản nhiên học tập mà không bị đoán nhầm sang các cảm xúc tiêu cực khác.
+*   **Biến động chỉ số:** Precision ($0.52 \rightarrow 0.71$), Recall ($0.64 \rightarrow 0.96$), F1-score ($0.57 \rightarrow 0.81$). Số lượng ảnh đoán đúng trên đường chéo chính **tăng mạnh từ 16 lên 24 ảnh**.
+*   **Mối quan hệ & Phân tích:** Lớp có sự bứt phá lớn nhất khi số ảnh bị bỏ sót giảm từ 9 xuống chỉ còn đúng 1 ảnh. Việc loại bỏ background giúp mô hình nhận dạng đúng 96% nét mặt thản nhiên học tập mà không bị các đặc trưng phi khuôn mặt (nhiễu quần áo, tóc tai) của ảnh thô đánh lừa sang các cảm xúc tiêu cực khác.
 
 #### **Kết luận chung:**
 Thử nghiệm đối chứng khẳng định: bước tiền xử lý bám cắt khuôn mặt bằng Haar Cascade đóng vai trò cốt lõi giúp nâng độ chính xác toàn cục thêm **12.67%**. Bộ tiền xử lý đã giải quyết triệt để sự lệch pha phân phối dữ liệu (Data Mismatch) giữa tập dữ liệu huấn luyện của mô hình pre-trained (vốn được tối ưu trên ảnh cắt mặt sát không chừa lề theo nghiên cứu của **Andrey V. Savchenko, arXiv:2103.17107**) với dữ liệu thực nghiệm đầu vào (vốn là ảnh thô chứa nhiều hậu cảnh và vai), từ đó nâng cao tính ổn định và tin cậy của hệ thống nhận dạng cảm xúc.
