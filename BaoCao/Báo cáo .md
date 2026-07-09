@@ -486,7 +486,7 @@ Kết quả thực nghiệm cho thấy sự chênh lệch rõ rệt về hiệu 
 *   **Thiết lập 1 (Ảnh thô):** Chỉ đạt độ chính xác toàn cục **72.00%**.
 *   **Thiết lập 2 (Có cắt mặt):** Đạt độ chính xác toàn cục vượt trội **84.67%** (tăng mạnh **+12.67%**).
 
-Dưới đây là phân tích chi tiết biến động của 3 chỉ số (Precision / Recall / F1-score) và mối quan hệ ràng buộc giữa chúng cho từng cảm xúc:
+Dưới đây là phân tích chi tiết biến động của 3 chỉ số (Precision / Recall / F1-score) và mối quan hệ ràng buộc thực tế giữa chúng cho từng cảm xúc:
 
 **1. Happiness (Vui vẻ):**
 *   **Biến động chỉ số:** Precision ($1.00 \rightarrow 0.86$), Recall ($1.00 \rightarrow 1.00$), F1-score ($1.00 \rightarrow 0.93$).
@@ -502,23 +502,18 @@ Dưới đây là phân tích chi tiết biến động của 3 chỉ số (Prec
 
 **4. Sadness (Buồn bã):**
 *   **Biến động chỉ số:** Precision ($0.52 \rightarrow 0.86$), Recall ($1.00 \rightarrow 0.72$), F1-score ($0.68 \rightarrow 0.78$).
-*   **Mối quan hệ & Phân tích:** Mối quan hệ đánh đổi điển hình: ở ảnh thô AI lạm đoán Sadness theo bóng tối bối cảnh dẫn đến Recall đạt tuyệt đối $100.00\\%$ nhưng Precision chỉ đạt $52.08\\%$ (đoán bừa nhiều nên không bỏ sót nhưng đoán sai một nửa); khi cắt mặt loại bỏ bóng tối, AI bớt đoán bừa giúp Precision vọt lên $85.71\\%$ dù Recall giảm về thực tế cơ mặt.
+*   **Mối quan hệ & Phân tích:** Ở ảnh thô, mô hình bị lệch pha phân phối dữ liệu (Data Mismatch) do nhận ảnh chứa nhiều background trong khi các trọng số mô hình pre-trained HSEmotion vốn được huấn luyện trên các tập dữ liệu khuôn mặt đã được cắt sát sạt (cropped). Do đó, khi nhận ảnh thô chưa cắt, mô hình bị nhiễu loạn phân bố đặc trưng và có xu hướng dự đoán nhầm hàng loạt ảnh từ các lớp khác (5 Anger, 7 Disgust, 7 Neutral, 4 Surprise) thành Sadness, làm Precision của lớp này thấp tệ hại ($52.08\%$) dù Recall đạt $100.00\%$. Khi bám cắt mặt, AI được đưa về đúng phân phối dữ liệu đã học giúp Precision của Sadness vọt lên $85.71\%$.
 
 **5. Disgust (Ghê tởm):**
 *   **Biến động chỉ số:** Precision ($1.00 \rightarrow 0.95$), Recall ($0.48 \rightarrow 0.76$), F1-score ($0.65 \rightarrow 0.84$).
-*   **Mối quan hệ & Phân tích:** Recall tăng vọt $+28.00\\%$ trong khi Precision được giữ vững ở mức rất cao ($95.00\\%$), chứng tỏ việc loại bỏ nhiễu vùng cằm/cổ giúp mô hình học sâu tập trung phân tích chính xác nếp nhăn nhỏ quanh mũi.
+*   **Mối quan hệ & Phân tích:** Recall tăng vọt $+28.00\%$ trong khi Precision được giữ vững ở mức rất cao ($95.00\\%$), chứng tỏ việc loại bỏ nhiễu vùng cằm/cổ giúp mô hình học sâu tập trung phân tích chính xác nếp nhăn nhỏ quanh mũi.
 
 **6. Neutral (Bình thường):**
 *   **Biến động chỉ số:** Precision ($0.52 \rightarrow 0.71$), Recall ($0.64 \rightarrow 0.96$), F1-score ($0.57 \rightarrow 0.81$).
-*   **Mối quan hệ & Phân tích:** Cả Precision và Recall cùng bứt phá mạnh mẽ, chứng tỏ việc loại bỏ background học tập ở nhà giúp AI nhận diện chuẩn nét mặt thản nhiên học tập mà không bị bóng tối hậu cảnh đánh lừa sang cảm xúc buồn bã hay tức giận.
+*   **Mối quan hệ & Phân tích:** Cả Precision và Recall cùng bứt phá mạnh mẽ, chứng tỏ việc loại bỏ background (tóc, vai, phông nền học tập) đưa ảnh về đúng khuôn mặt chuẩn hóa đã học, giúp AI nhận dạng đúng nét mặt thản nhiên học tập mà không bị đoán nhầm sang các cảm xúc tiêu cực khác.
 
 #### **Kết luận chung:**
-Thử nghiệm đối chứng khẳng định: bước tiền xử lý bám cắt khuôn mặt bằng Haar Cascade đóng vai trò cốt lõi giúp nâng độ chính xác toàn cục thêm **12.67%**. Bộ tiền xử lý đã dịch chuyển mô hình học sâu từ việc nhận diện cảm tính theo màu sắc bối cảnh (nhận diện theo hậu cảnh) sang phân tích thực chất các biểu cảm cơ học trên khuôn mặt học sinh, giúp các chỉ số đánh giá có độ tin cậy thực tế cao hơn.
-
-![][image30]  
-*(\*) Tập test của Trạng thái* Sadness *không chứa những khuôn mặt có biểu hiện buồn rõ ràng (như khóc, mếu máo) mà chỉ có nét rất nhẹ buồn (đăm chiêu suy nghĩ)*
-
-# CHƯƠNG 6: KẾT LUẬN VÀ HƯỚNG PHÁT TRIỂN
+Thử nghiệm đối chứng khẳng định: bước tiền xử lý bám cắt khuôn mặt bằng Haar Cascade đóng vai trò cốt lõi giúp nâng độ chính xác toàn cục thêm **12.67%**. Bộ tiền xử lý đã giải quyết triệt để sự lệch pha phân phối dữ liệu (Data Mismatch) giữa tập dữ liệu huấn luyện của mô hình pre-trained (vốn là ảnh cắt mặt sát) với dữ liệu thực nghiệm đầu vào (vốn là ảnh thô chứa nhiều hậu cảnh và cơ thể), từ đó nâng cao tính tin cậy thực tế của hệ thống nhận dạng cảm xúc.# CHƯƠNG 6: KẾT LUẬN VÀ HƯỚNG PHÁT TRIỂN
 
 ## **CHƯƠNG 6: KẾT LUẬN VÀ HƯỚNG PHÁT TRIỂN** 
 
