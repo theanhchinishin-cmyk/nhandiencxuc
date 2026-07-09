@@ -418,34 +418,39 @@ Các thành phần của Dashboard báo cáo cảm xúc (reports/emotion\_report
 
 ### **5.1. Môi trường cài đặt và tham số thực nghiệm**
 
-Để đánh giá chính xác hiệu năng thực tế của hệ thống nhận diện cảm xúc (mô hình pre-trained EfficientNet-B0 kết hợp ánh xạ 8 sang 6 lớp), nhóm đã thiết lập môi trường và quy trình thử nghiệm như sau:
+Để đánh giá chính xác hiệu năng thực tế của hệ thống nhận diện cảm xúc (mô hình pre-trained EfficientNet-B0 kết hợp ánh xạ 8 sang 6 lớp), nhóm đã thiết lập môi trường và quy trình thử nghiệm đối chứng như sau:
 
-\- Tập dữ liệu kiểm tra: Sử dụng tập dữ liệu thử nghiệm Đông Nam Á độc lập gồm 150 hình ảnh (25 ảnh cho mỗi lớp cảm xúc) được trích chọn từ tập FairFace chủng tộc Đông Nam Á nhóm tuổi 10-29.  
-\- Quy trình đánh giá: Hệ thống chạy mô hình nhận dạng cảm xúc trực tiếp trên 150 ảnh kiểm tra, áp dụng bộ lọc tiền xử lý CLAHE và thực hiện ánh xạ từ 8 lớp sang 6 lớp. Sau đó, so sánh nhãn dự đoán của mô hình với nhãn thực tế để tính toán các chỉ số đo lường hiệu năng (Accuracy, Precision, Recall, F1-Score).
+*   **Môi trường cài đặt:** Hệ thống được chạy nghiệm thu trên máy tính cá nhân CPU Intel/AMD phổ thông chạy hệ điều hành Windows 11. Các phiên bản thư viện lập trình chính được thiết lập đồng bộ bao gồm: `python==3.12`, `torch==2.2.0`, `hsemotion==0.2.0`, `scikit-learn==1.4.1`, và `opencv-python==4.9.0.80`.
+*   **Tập dữ liệu kiểm tra (Test Dataset):** Sử dụng tập dữ liệu thử nghiệm Đông Nam Á độc lập gồm 150 hình ảnh (25 ảnh cho mỗi lớp cảm xúc) được trích chọn từ tập FairFace chủng tộc Đông Nam Á nhóm tuổi 10-29. Tập dữ liệu này đã được nhóm xử lý làm sạch, đảm bảo 100% hình ảnh đều chứa khuôn mặt có thể phát hiện và cắt thành công bằng Haar Cascade (tần suất 25/25 ảnh mỗi lớp).
+*   **Quy trình đánh giá đối chứng (Ablation Study):** Để đo lường cụ thể đóng góp của các bước tiền xử lý đa phương tiện do nhóm lập trình, quy trình đánh giá được chia làm 2 thiết lập chạy song song trên cùng 150 ảnh:
+    *   *Thiết lập 1 (Ảnh gốc thô):* Đưa trực tiếp ảnh kiểm thử thô chưa qua cắt khuôn mặt vào mô hình dự đoán.
+    *   *Thiết lập 2 (Có cắt mặt):* Áp dụng Haar Cascade quét tìm khuôn mặt, cắt lấy vùng khuôn mặt (ROI) rồi mới đưa vào mô hình dự đoán.
 
 ### **5.2. Các độ đo đánh giá hiệu năng**
 
-Thống được đánh giá bằng các chỉ số toán học chuẩn trong phân loại:
+Hiệu năng phân loại của hệ thống được đánh giá bằng các chỉ số toán học tiêu chuẩn trong học máy dựa trên Ma trận nhầm lẫn (Confusion Matrix):
 
-TP (True Positive \- Dương tính thật): Số lượng mẫu cảm xúc X được mô hình dự đoán chính xác là X.  
-FP (False Positive \- Dương tính giả / Báo động nhầm): Số lượng mẫu cảm xúc khác bị mô hình dự đoán nhầm thành cảm xúc X.  
-FN (False Negative \- Báo sót / Bỏ sót): Số lượng mẫu cảm xúc X bị mô hình dự đoán sai thành cảm xúc khác.  
-TN (True Negative \- Âm tính thật): Số lượng mẫu cảm xúc khác được mô hình dự đoán chính xác không phải là cảm xúc X.
+*   **TP (True Positive - Dương tính thật):** Số lượng mẫu cảm xúc $X$ được mô hình dự đoán chính xác là $X$.
+*   **FP (False Positive - Dương tính giả / Báo động nhầm):** Số lượng mẫu cảm xúc khác bị mô hình dự đoán nhầm thành cảm xúc $X$.
+*   **FN (False Negative - Báo sót / Bỏ sót):** Số lượng mẫu cảm xúc $X$ bị mô hình dự đoán sai thành cảm xúc khác.
+*   **TN (True Negative - Âm tính thật):** Số lượng mẫu cảm xúc khác được mô hình dự đoán chính xác không phải là cảm xúc $X$.
 
-Accuracy (Độ chính xác toàn cục): Tỷ lệ phần trăm tổng số ảnh đoán đúng trên tổng số ảnh kiểm tra. Chỉ số này cho thấy hiệu năng tổng quát của hệ thống trên toàn bộ tập dữ liệu \= TP \+ TNTP \+ FP \+ FN \+ TN  
-Precision (Độ chính xác chi tiết / Khả năng tránh nhận nhầm): Tỷ lệ phần trăm số ảnh thực sự là cảm xúc X trong tổng số ảnh mà mô hình đã dự đoán là X. Chỉ số này càng cao chứng tỏ hệ thống càng ít bị báo động giả (không bị nhận nhầm khi học sinh đang có nét mặt bình thường) \= TPTP \+ FP  
-Recall (Độ nhạy / Khả năng tránh bỏ sót): Tỷ lệ phần trăm số ảnh cảm xúc X được mô hình nhận diện đúng trên tổng số ảnh thực tế ngoài đời có cảm xúc X. Chỉ số này càng cao chứng tỏ hệ thống càng ít bỏ sót cảm xúc của người học \= TPTP \+ FN  
-F1-Score (Điểm F1): Giá trị trung bình điều hòa (Harmonic Mean) giữa Precision và Recall. F1-Score đóng vai trò là một thước đo cân bằng, phản ánh khách quan hiệu năng của mô hình khi có sự đánh đổi giữa Precision và Recall \= 2 x Precision x Recall  Precision \+ Recall  
-Support: Số lượng mẫu ảnh thực tế thuộc mỗi lớp cảm xúc có trong tập kiểm tra (Test Set).  
-Macro Average : Trung bình cộng đơn giản của các chỉ số (Precision, Recall, F1-Score) trên tất cả các lớp cảm xúc, coi trọng vai trò của mọi lớp cảm xúc ngang nhau mà không phụ thuộc vào kích thước mẫu của mỗi lớp.
+Dựa trên các khái niệm này, các chỉ số đánh giá được tính toán theo các công thức toán học chi tiết sau:
+
+*   **Accuracy (Độ chính xác toàn cục):** Tỷ lệ phần trăm tổng số ảnh đoán đúng trên tổng số ảnh kiểm tra:
+    $$\text{Accuracy} = \frac{\sum \text{Các phần tử trên đường chéo chính}}{\text{Tổng số mẫu thử nghiệm}} = \frac{TP + TN}{TP + TN + FP + FN}$$
+*   **Precision (Độ chính xác chi tiết / Khả năng tránh nhận nhầm):** Tỷ lệ phần trăm số ảnh thực sự là cảm xúc $X$ trong tổng số ảnh mà mô hình đã dự đoán là $X$:
+    $$\text{Precision} = \frac{TP}{TP + FP}$$
+*   **Recall (Độ nhạy / Khả năng tránh bỏ sót):** Tỷ lệ phần trăm số ảnh cảm xúc $X$ được mô hình nhận diện đúng trên tổng số ảnh thực tế ngoài đời có cảm xúc $X$:
+    $$\text{Recall} = \frac{TP}{TP + FN}$$
+*   **F1-Score (Điểm F1):** Giá trị trung bình điều hòa (Harmonic Mean) giữa Precision và Recall, đại diện cho độ cân bằng tổng thể:
+    $$\text{F1-Score} = 2 \times \frac{\text{Precision} \times \text{Recall}}{\text{Precision} + \text{Recall}}$$
+*   **Support:** Số lượng mẫu ảnh thực tế thuộc mỗi lớp cảm xúc có trong tập kiểm tra (đều bằng 25 ảnh/lớp).
+*   **Macro Average (Trung bình vĩ mô):** Trung bình cộng đơn giản của các chỉ số trên tất cả các lớp cảm xúc, coi trọng vai trò của mọi lớp cảm xúc ngang nhau.
 
 ### **5.3. Kết quả thực nghiệm và so sánh**
 
-Sau khi chạy thử nghiệm đánh giá độc lập trên tập dữ liệu kiểm tra độc lập (dataset/test\_dung1landuynhat gồm 150 ảnh hoàn toàn mới), nhóm thu được kết quả so sánh trực tiếp như sau:
-
-Để đánh giá đóng góp thực tế của các khối tiền xử lý do nhóm tự thiết kế, nhóm tiến hành một thử nghiệm đối chứng độc lập trên 2 thiết lập cấu hình chạy trên cùng tập dữ liệu kiểm thử (150 ảnh đã làm sạch):
-*   **Thiết lập 1 (Ảnh gốc thô):** Đưa trực tiếp toàn bộ ảnh kiểm thử không qua cắt khuôn mặt vào mô hình nhận dạng.
-*   **Thiết lập 2 (Có cắt mặt):** Áp dụng bộ lọc bám cắt khuôn mặt Haar Cascade để cô lập vùng mặt trước khi đưa vào mô hình nhận dạng.
+Sau khi chạy thử nghiệm đối chứng độc lập trên tập dữ liệu kiểm tra 150 ảnh đã làm sạch, nhóm thu được báo cáo phân loại chi tiết của hai thiết lập như sau:
 
 #### **Báo cáo phân loại của Thiết lập 1 (Ảnh gốc thô - Accuracy: 72.00%)**
 
@@ -512,7 +517,7 @@ Thông qua bài tập lớn này, nhóm đã hoàn thành các mục tiêu đề
 
 Mặc dù đạt được những kết quả khả quan, hệ thống vẫn tồn tại một số hạn chế:
 
-1. **Độ chính xác đánh giá bị ảnh hưởng bởi hai yếu tố thủ công (gán nhãn dữ liệu và cấu hình ngưỡng cảm xúc):** Con số độ chính xác toàn cục 81.33% thực chất bị tác động trực tiếp bởi hai yếu tố mang tính chủ quan của con người: một là tập kiểm thử 150 ảnh do nhóm tự lọc và dán nhãn thủ công nên không tránh khỏi sai số cảm quan (annotation noise) trước các nét mặt đăm chiêu, suy tư; hai là việc tinh chỉnh thực nghiệm bộ ngưỡng kích hoạt động cho từng cảm xúc (Happiness: 0.50, Sadness: 0.30,...) được nhóm thiết lập thủ công qua quan sát camera để cân bằng tính ổn định khi chạy thực tế.  
+1. **Độ chính xác đánh giá bị ảnh hưởng bởi hai yếu tố thủ công (gán nhãn dữ liệu và cấu hình ngưỡng cảm xúc):** Con số độ chính xác toàn cục 84.67% thực chất bị tác động trực tiếp bởi hai yếu tố mang tính chủ quan của con người: một là tập kiểm thử 150 ảnh do nhóm tự lọc và dán nhãn thủ công nên không tránh khỏi sai số cảm quan (annotation noise) trước các nét mặt đăm chiêu, suy tư; hai là việc tinh chỉnh thực nghiệm bộ ngưỡng kích hoạt động cho từng cảm xúc (Happiness: 0.50, Sadness: 0.30,...) được nhóm thiết lập thủ công qua quan sát camera để cân bằng tính ổn định khi chạy thực tế.  
 2. **Độ ổn định của Haar Cascade**: Thuật toán phát hiện mặt Haar Cascade đôi khi bị mất dấu khuôn mặt nếu người học quay nghiêng đầu quá sâu hoặc đưa tay lên che mặt.  
 3. **Chưa đánh giá trên diện rộng**: Hệ thống mới được thử nghiệm trên webcam các cá nhân trong nhóm, ảnh và video đơn lẻ, chưa tích hợp trên một lớp học online để đánh giá độ trễ đường truyền và khả năng chịu tải.
 
