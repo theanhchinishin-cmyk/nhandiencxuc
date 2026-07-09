@@ -502,18 +502,23 @@ Dưới đây là phân tích chi tiết biến động của 3 chỉ số (Prec
 
 **4. Sadness (Buồn bã):**
 *   **Biến động chỉ số:** Precision ($0.52 \rightarrow 0.86$), Recall ($1.00 \rightarrow 0.72$), F1-score ($0.68 \rightarrow 0.78$).
-*   **Mối quan hệ & Phân tích:** Ở ảnh thô, mô hình bị lệch pha phân phối dữ liệu (Data Mismatch) do nhận ảnh chứa nhiều background trong khi các trọng số mô hình pre-trained HSEmotion vốn được huấn luyện trên các tập dữ liệu khuôn mặt đã được cắt sát sạt (cropped). Do đó, khi nhận ảnh thô chưa cắt, mô hình bị nhiễu loạn phân bố đặc trưng và có xu hướng dự đoán nhầm hàng loạt ảnh từ các lớp khác (5 Anger, 7 Disgust, 7 Neutral, 4 Surprise) thành Sadness, làm Precision của lớp này thấp tệ hại ($52.08\%$) dù Recall đạt $100.00\%$. Khi bám cắt mặt, AI được đưa về đúng phân phối dữ liệu đã học giúp Precision của Sadness vọt lên $85.71\%$.
+*   **Mối quan hệ & Phân tích:** Ở ảnh thô, mô hình bị lệch pha phân phối dữ liệu (Data Mismatch) do ảnh đầu vào chứa nhiều background (tóc, vai, hậu cảnh). Trong khi đó, bộ trọng số gốc của mô hình pre-trained HSEmotion vốn được huấn luyện hoàn toàn trên các tập dữ liệu khuôn mặt đã được bám cắt sát sạt và không chừa lề (**"cropped faces without margins"**) theo phương pháp công bố của tác giả thư viện **Andrey V. Savchenko** trong bài báo *"Facial expression and attributes recognition based on multi-task learning of lightweight neural networks"* (**arXiv:2103.17107**). Do đó, khi nhận ảnh thô chưa cắt, mô hình bị nhiễu loạn phân bố đặc trưng và có xu hướng dự đoán nhầm hàng loạt ảnh từ các lớp khác (5 Anger, 7 Disgust, 7 Neutral, 4 Surprise) thành Sadness, làm Precision của lớp này thấp tệ hại ($52.08\%$) dù Recall đạt $100.00\%$. Khi bám cắt mặt, AI được đưa về đúng định dạng đã học giúp Precision của Sadness vọt lên $85.71\%$.
 
 **5. Disgust (Ghê tởm):**
 *   **Biến động chỉ số:** Precision ($1.00 \rightarrow 0.95$), Recall ($0.48 \rightarrow 0.76$), F1-score ($0.65 \rightarrow 0.84$).
-*   **Mối quan hệ & Phân tích:** Recall tăng vọt $+28.00\%$ trong khi Precision được giữ vững ở mức rất cao ($95.00\\%$), chứng tỏ việc loại bỏ nhiễu vùng cằm/cổ giúp mô hình học sâu tập trung phân tích chính xác nếp nhăn nhỏ quanh mũi.
+*   **Mối quan hệ & Phân tích:** Recall tăng vọt $+28.00\\%$ trong khi Precision được giữ vững ở mức rất cao ($95.00\\%$), chứng tỏ việc loại bỏ nhiễu vùng cằm/cổ giúp mô hình học sâu tập trung phân tích chính xác nếp nhăn nhỏ quanh mũi.
 
 **6. Neutral (Bình thường):**
 *   **Biến động chỉ số:** Precision ($0.52 \rightarrow 0.71$), Recall ($0.64 \rightarrow 0.96$), F1-score ($0.57 \rightarrow 0.81$).
 *   **Mối quan hệ & Phân tích:** Cả Precision và Recall cùng bứt phá mạnh mẽ, chứng tỏ việc loại bỏ background (tóc, vai, phông nền học tập) đưa ảnh về đúng khuôn mặt chuẩn hóa đã học, giúp AI nhận dạng đúng nét mặt thản nhiên học tập mà không bị đoán nhầm sang các cảm xúc tiêu cực khác.
 
 #### **Kết luận chung:**
-Thử nghiệm đối chứng khẳng định: bước tiền xử lý bám cắt khuôn mặt bằng Haar Cascade đóng vai trò cốt lõi giúp nâng độ chính xác toàn cục thêm **12.67%**. Bộ tiền xử lý đã giải quyết triệt để sự lệch pha phân phối dữ liệu (Data Mismatch) giữa tập dữ liệu huấn luyện của mô hình pre-trained (vốn là ảnh cắt mặt sát) với dữ liệu thực nghiệm đầu vào (vốn là ảnh thô chứa nhiều hậu cảnh và cơ thể), từ đó nâng cao tính tin cậy thực tế của hệ thống nhận dạng cảm xúc.# CHƯƠNG 6: KẾT LUẬN VÀ HƯỚNG PHÁT TRIỂN
+Thử nghiệm đối chứng khẳng định: bước tiền xử lý bám cắt khuôn mặt bằng Haar Cascade đóng vai trò cốt lõi giúp nâng độ chính xác toàn cục thêm **12.67%**. Bộ tiền xử lý đã giải quyết triệt để sự lệch pha phân phối dữ liệu (Data Mismatch) giữa tập dữ liệu huấn luyện của mô hình pre-trained (vốn được tối ưu trên ảnh cắt mặt sát không chừa lề theo nghiên cứu của **Andrey V. Savchenko, arXiv:2103.17107**) với dữ liệu thực nghiệm đầu vào (vốn là ảnh thô chứa nhiều hậu cảnh và vai), từ đó nâng cao tính ổn định và tin cậy của hệ thống nhận dạng cảm xúc.
+
+![][image30]  
+*(\*) Tập test của Trạng thái* Sadness *không chứa những khuôn mặt có biểu hiện buồn rõ ràng (như khóc, mếu máo) mà chỉ có nét rất nhẹ buồn (đăm chiêu suy nghĩ)*
+
+# CHƯƠNG 6: KẾT LUẬN VÀ HƯỚNG PHÁT TRIỂN
 
 ## **CHƯƠNG 6: KẾT LUẬN VÀ HƯỚNG PHÁT TRIỂN** 
 
