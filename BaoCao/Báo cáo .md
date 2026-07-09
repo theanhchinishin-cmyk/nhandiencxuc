@@ -486,20 +486,31 @@ Kết quả thực nghiệm cho thấy sự chênh lệch rõ rệt về hiệu 
 *   **Thiết lập 1 (Ảnh thô):** Chỉ đạt độ chính xác toàn cục **72.00%**.
 *   **Thiết lập 2 (Có cắt mặt):** Đạt độ chính xác toàn cục vượt trội **84.67%** (tăng mạnh **+12.67%**).
 
-Tuy nhiên, việc phân tích chi tiết từng lớp cảm xúc cho thấy đây không phải là sự cải thiện đồng đều ở mọi chỉ số, mà là một quá trình đánh đổi (trade-off) và tối ưu hóa đặc trưng hình học rất rõ ràng:
+Dưới đây là bảng phân tích biến động 3 chỉ số (Precision / Recall / F1-score) và kết luận cụ thể cho từng lớp cảm xúc:
 
-1.  **Sự đánh đổi thực tế ở lớp Sadness (Buồn bã):**
-    *   *Thiết lập 1 (Ảnh thô):* Đạt độ nhạy (Recall) tuyệt đối **100.00%** nhưng độ chính xác (Precision) lại thấp tệ hại ở mức **52.08%**. Điều này chứng tỏ mô hình bị hiện tượng "lạm đoán" Sadness: khi ảnh còn nguyên hậu cảnh tối hoặc bóng đổ quần áo, AI dễ bị đánh lừa và đoán bừa các trạng thái khác thành buồn bã. Đoán bừa nhiều giúp Recall đạt 100% (không bỏ sót ảnh buồn nào) nhưng gây ra tỷ lệ báo động giả cực cao (gần một nửa số lần đoán Sadness là sai).
-    *   *Thiết lập 2 (Có cắt mặt):* Precision tăng vọt lên **85.71%** (đoán lớp nào chuẩn lớp đó) nhưng Recall giảm về **72.00%** (bắt đầu có sự bỏ sót các biểu cảm buồn quá nhẹ). Việc Haar Cascade cắt bỏ quần áo và nền tối giúp mô hình không còn bị đánh lừa, đưa dự đoán về đúng bản chất cơ mặt thực tế.
-2.  **Sự sụt giảm chỉ số Precision ở lớp Happiness (Vui vẻ):**
-    *   *Thiết lập 1 (Ảnh thô):* Đạt Precision tuyệt đối **100.00%** và F1-Score **1.00**.
-    *   *Thiết lập 2 (Có cắt mặt):* Recall vẫn giữ nguyên mức **100.00%** nhưng Precision giảm xuống **86.21%** (kéo F1-Score giảm về **0.93**). Nguyên nhân là khi khuôn mặt được cắt sát sạt và phóng to lên, mô hình AI bị nhạy cảm thái quá với các nếp nhăn khóe miệng của một số ảnh thuộc lớp khác (như Neutral hoặc Surprise) và nhận nhầm chúng thành nụ cười nhẹ (Happiness).
-3.  **Sự cải thiện vượt bậc ở các lớp khó (Disgust và Neutral):**
-    *   *Disgust (Ghê tởm):* Recall tăng vọt từ **48.00% lên 76.00%** (F1-Score tăng từ 0.65 lên 0.84). Biểu cảm ghê tởm (nhăn mũi, nhíu mày) có diện tích nhỏ trên cơ mặt. Khi để ảnh thô, mô hình EfficientNet bị phân tán bởi các đặc trưng lớn (vai, tóc). Khi cắt sát khuôn mặt, mô hình tập trung tốt hơn vào vùng mũi/mắt để nhận diện biểu cảm nhăn mũi đặc trưng.
-    *   *Neutral (Bình thường):* Đạt bước nhảy vọt lớn nhất khi Recall tăng từ **64.00% lên 96.00%** và Precision tăng từ **51.61% lên 70.59%** (F1-Score tăng từ 0.57 lên 0.81). Việc loại bỏ hoàn toàn background học tập ở nhà giúp AI nhận diện chính xác trạng thái thản nhiên, tập trung của học sinh học online mà không bị nhầm sang Sadness hay Anger.
-4.  **Sự cải tiến ổn định ở lớp Anger (Tức giận) và Surprise (Ngạc nhiên):**
-    *   *Anger (Tức giận):* Recall tăng mạnh từ **68.00% lên 88.00%** (F1-Score tăng từ 0.77 lên 0.86). Cắt mặt giúp mô hình bắt nét nhíu mày tức giận nhạy bén hơn, giảm thiểu tỷ lệ bỏ sót ảnh tức giận từ 32% xuống còn 12%.
-    *   *Surprise (Ngạc nhiên):* F1-Score tăng từ **0.65 lên 0.84**, đặc biệt Precision đạt tới **95.00%** nhờ loại bỏ các ảnh khác bị nhận nhầm thành ngạc nhiên (chỉ nhầm lẫn 1 ảnh).
+**1. Happiness (Vui vẻ):**
+*   **Biến động chỉ số:** Precision ($1.00 ightarrow 0.86$), Recall ($1.00 ightarrow 1.00$), F1-score ($1.00 ightarrow 0.93$).
+*   **Kết luận:** Độ nhạy nhận dạng nụ cười được giữ vững tuyệt đối ($100\%$), tuy nhiên việc cắt khuôn mặt sát khiến mô hình đôi khi nhận nhầm các nếp nhăn cơ mặt của biểu cảm khác thành cười nhẹ, làm giảm nhẹ độ chính xác Precision.
+
+**2. Anger (Tức giận):**
+*   **Biến động chỉ số:** Precision ($0.89 ightarrow 0.85$), Recall ($0.68 ightarrow 0.88$), F1-score ($0.77 ightarrow 0.86$).
+*   **Kết luận:** Việc bám cắt mặt giúp mô hình bắt nét nhíu mày nhạy bén hơn, giúp tỷ lệ bỏ sót ảnh tức giận giảm mạnh từ $32\%$ xuống còn $12\%$.
+
+**3. Surprise (Ngạc nhiên):**
+*   **Biến động chỉ số:** Precision ($0.87 ightarrow 0.95$), Recall ($0.52 ightarrow 0.76$), F1-score ($0.65 ightarrow 0.84$).
+*   **Kết luận:** Cả 3 chỉ số đều tăng trưởng mạnh mẽ, các đặc trưng mắt mở to miệng há rộng được mô hình cô lập và nhận dạng chuẩn xác, giảm thiểu tối đa báo động giả (Precision đạt $95\%$).
+
+**4. Sadness (Buồn bã):**
+*   **Biến động chỉ số:** Precision ($0.52 ightarrow 0.86$), Recall ($1.00 ightarrow 0.72$), F1-score ($0.68 ightarrow 0.78$).
+*   **Kết luận:** Có sự đánh đổi rõ rệt; việc cắt mặt giúp loại bỏ hoàn toàn nhiễu bóng tối từ background học tập, ngăn AI đoán bừa thành Sadness giúp Precision vọt lên $86\%$, dù Recall có giảm về mức thực tế của biểu cảm cơ mặt.
+
+**5. Disgust (Ghê tởm):**
+*   **Biến động chỉ số:** Precision ($1.00 ightarrow 0.95$), Recall ($0.48 ightarrow 0.76$), F1-score ($0.65 ightarrow 0.84$).
+*   **Kết luận:** Độ nhạy Recall tăng vọt $28\%$ nhờ cắt bỏ nhiễu vùng cằm và cổ, giúp mô hình học sâu tập trung phân tích chính xác các nếp nhăn nhỏ quanh mũi và chân mày.
+
+**6. Neutral (Bình thường):**
+*   **Biến động chỉ số:** Precision ($0.52 ightarrow 0.71$), Recall ($0.64 ightarrow 0.96$), F1-score ($0.57 ightarrow 0.81$).
+*   **Kết luận:** Lớp có sự bứt phá lớn nhất nhờ cắt mặt loại bỏ background học tập ở nhà, giúp AI nhận dạng đúng $96\%$ nét mặt thản nhiên học tập của học sinh mà không bị nhầm sang buồn bã.
 
 ![][image30]  
 *(\*) Tập test của Trạng thái* Sadness *không chứa những khuôn mặt có biểu hiện buồn rõ ràng (như khóc, mếu máo) mà chỉ có nét rất nhẹ buồn (đăm chiêu suy nghĩ)*
