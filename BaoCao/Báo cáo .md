@@ -370,19 +370,18 @@ Nhóm giải quyết bằng cách áp dụng bộ lọc CLAHE (Contrast Limited 
 ![][image25]  
 *Hàm predict thực hiện self.clahe.apply(gray)* 
 
-**4.3.3. Mạng EfficientNet-B0**  
-Vùng ảnh khuôn mặt sau khi tiền xử lý CLAHE được đưa qua các bước chuẩn hóa bắt buộc:
+**4.3.3. Mạng EfficientNet-B0 và Thư viện HSEmotion**  
+Hệ thống sử dụng kiến trúc mạng nơ-ron tích chập hiện đại **EfficientNet-B0** làm mô hình học sâu cốt lõi để nhận diện cảm xúc. Mô hình này được triển khai thông qua thư viện chuyên dụng **HSEmotion (High-Speed Emotion Recognition)** do tác giả Andrey V. Savchenko phát triển, đi kèm với bộ trọng số pre-trained `enet_b0_8_best_afew.pt` đã được tối ưu hóa trên tập dữ liệu video cảm xúc AFEW.
+
+Vùng ảnh khuôn mặt sau khi tiền xử lý CLAHE được đưa qua các bước chuẩn hóa bắt buộc trước khi nạp vào mô hình:
 
 - Chuyển đổi định dạng ảnh từ BGR của OpenCV sang định dạng Tensor trong PyTorch.  
 - Thay đổi kích thước về kích thước chuẩn của mạng: 224×224 pixel.  
 - Chuẩn hóa giá trị điểm ảnh về dải phân phối chuẩn của ImageNet với trung bình (mean) là \[0.485, 0.456, 0.406\] và độ lệch chuẩn (std) là \[0.229, 0.224, 0.225\]. Đây là bộ tham số chuẩn hóa chuẩn mực của thư viện PyTorch/Torchvision dành cho tất cả các mô hình đã được huấn luyện sẵn.
 
-Sau đó, ảnh được đưa qua mô hình EfficientNet-B0 để trích xuất đặc trưng không gian.
+Sau khi chuẩn hóa, ảnh được đưa qua mô hình EfficientNet-B0 của HSEmotion để trích xuất đặc trưng không gian và tính toán điểm số logits cho các lớp cảm xúc.
 
 Đối với mô hình (Pretrained \- 8 đầu ra): Để nhận diện 6 cảm xúc đích từ mô hình gốc có 8 đầu ra của HSEmotion, hệ thống trích xuất điểm số của 6 lớp tương ứng trong tập hợp {Anger, Disgust, Happiness, Neutral, Sadness, Surprise} (bỏ qua nhãn Fear và Contempt). Sau đó, điểm số của 6 nhãn này được chia cho tổng của chúng để tổng xác suất quy về đúng 100%. Cơ chế này đảm bảo tổng phân phối xác suất luôn hợp lệ toán học mà không cần thay đổi kiến trúc mô hình gốc.
-
-![][image26]  
-*Đoạn code thuật toán tiền xử lý CLAHE và ánh xạ chuẩn hóa xác suất 6 cảm xúc đích*
 
 **4.3.4. Temporal Smoothing & Tracking**
 
