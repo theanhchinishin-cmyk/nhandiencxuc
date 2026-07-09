@@ -512,8 +512,11 @@ Dưới đây là phân tích chi tiết biến động của 3 chỉ số (Prec
 *   **Biến động chỉ số:** Precision ($0.52 \rightarrow 0.71$), Recall ($0.64 \rightarrow 0.96$), F1-score ($0.57 \rightarrow 0.81$). Số lượng ảnh đoán đúng trên đường chéo chính **tăng mạnh từ 16 lên 24 ảnh**.
 *   **Mối quan hệ & Phân tích:** Lớp có sự bứt phá lớn nhất khi số ảnh bị bỏ sót giảm từ 9 xuống chỉ còn đúng 1 ảnh. Việc loại bỏ background giúp mô hình nhận dạng đúng 96% nét mặt thản nhiên học tập mà không bị các đặc trưng phi khuôn mặt (nhiễu quần áo, tóc tai) của ảnh thô đánh lừa sang các cảm xúc tiêu cực khác.
 
-#### **Kết luận chung:**
-Thử nghiệm đối chứng khẳng định: bước tiền xử lý bám cắt khuôn mặt bằng Haar Cascade đóng vai trò cốt lõi giúp nâng độ chính xác toàn cục thêm **12.67%**. Bộ tiền xử lý đã giải quyết triệt để sự lệch pha phân phối dữ liệu (Data Mismatch) giữa tập dữ liệu huấn luyện của mô hình pre-trained (vốn được tối ưu trên ảnh cắt mặt sát không chừa lề theo nghiên cứu của **Andrey V. Savchenko, arXiv:2103.17107**) với dữ liệu thực nghiệm đầu vào (vốn là ảnh thô chứa nhiều hậu cảnh và vai), từ đó nâng cao tính ổn định và tin cậy của hệ thống nhận dạng cảm xúc.
+#### **Kết luận về thử nghiệm đối chứng:**
+Thử nghiệm đối chứng khẳng định: bước tiền xử lý bám cắt khuôn mặt bằng Haar Cascade đóng vai trò cốt lõi giúp nâng độ chính xác toàn cục thêm **12.67%** (từ 72.00% lên 84.67%). Việc tiền xử lý đã giải quyết triệt để sự lệch pha phân phối dữ liệu (Data Mismatch) giữa tập dữ liệu huấn luyện của mô hình pre-trained (vốn được tối ưu trên ảnh cắt mặt sát không chừa lề theo nghiên cứu của **Andrey V. Savchenko, arXiv:2103.17107**) với dữ liệu thực nghiệm đầu vào (vốn là ảnh thô chứa nhiều hậu cảnh và vai).
+
+#### **Đánh giá chung về hiệu năng hệ thống đề xuất:**
+Đối với cấu hình hệ thống hoàn chỉnh có tiền xử lý của nhóm, độ chính xác toàn cục đạt **84.67%** trên tập dữ liệu kiểm thử độc lập Đông Nam Á. Kết quả thực nghiệm này khẳng định hệ thống hoạt động ổn định, đạt độ tin cậy cao và hoàn toàn đáp ứng tốt các yêu cầu khai thác thông tin đa phương tiện trong bài toán FER. Với các chỉ số F1-score ấn tượng ở các lớp Neutral (0.81) và Happiness (0.93), hệ thống chứng minh khả năng ứng dụng thực tế cao trong việc giám sát tự động mức độ tập trung học tập trực tuyến của học sinh qua webcam.
 
 ![][image30]  
 *(\*) Tập test của Trạng thái* Sadness *không chứa những khuôn mặt có biểu hiện buồn rõ ràng (như khóc, mếu máo) mà chỉ có nét rất nhẹ buồn (đăm chiêu suy nghĩ)*
