@@ -10,7 +10,7 @@ torchvision==0.17.0
 timm==0.9.16
 
 # --- Fine-tuning & Evaluation ---
-scikit-learn==1.4.1          # Confusion matrix, classification report, accuracy score
+scikit-learn>=1.4.1          # Confusion matrix, classification report, accuracy score
 
 # --- Visualization (training curve, confusion matrix heatmap) ---
 matplotlib==3.8.3
